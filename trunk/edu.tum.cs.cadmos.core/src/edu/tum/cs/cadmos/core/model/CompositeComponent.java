@@ -1,12 +1,12 @@
 package edu.tum.cs.cadmos.core.model;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
+import java.util.Set;
 
 public class CompositeComponent extends AbstractComponent implements
 		ICompositeComponent {
 
-	private final Collection<IComponent> children = new LinkedHashSet<>();
+	private final Set<IComponent> children = new HashSet<>();
 
 	public CompositeComponent(Object id, String name, ICompositeComponent parent) {
 		super(id, name, parent);
@@ -17,7 +17,7 @@ public class CompositeComponent extends AbstractComponent implements
 	}
 
 	@Override
-	public Collection<IComponent> getChildren() {
+	public Set<IComponent> getChildren() {
 		return children;
 	}
 
