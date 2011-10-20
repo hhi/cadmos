@@ -39,4 +39,4 @@ This automatically adds the SVN-properties (mime-type, eol-style, keywords) to n
 
 By convention we use the keywords $Author: $ and $Rev: $ in header comments of Cadmos java-files, to show the latest author and revision of a java-file.
 
-On Windows systems, the SVN config file is typically found in a path similar to *...\<user>\AppData\Roaming\Subversion*.
+On Windows systems, the SVN config file is typically found in a path similar to {{{*...\<user>\AppData\Roaming\Subversion*}}}.
