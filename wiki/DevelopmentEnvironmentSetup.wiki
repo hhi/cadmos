@@ -9,9 +9,8 @@ This page describes the steps to set up a working development environment.
 Cadmos is developed using new Java 7 language features like inferred type parameters (e.g {{{Set<String> names = new HashSet<>();}}}), so you need a Java 7 runtime or SDK on the development machine, e.g. available at [http://www.oracle.com/technetwork/java/javase/downloads/index.html] .
 
 = Download and Install Eclipse e4 =
-
-Add your content here.
-
+Cadmos has a _"pure Java"_ *core* part and an eclipse e4 based *ui* part.
+Eclipse e4 has build-in full Java 7 support starting from version 4.1.1, which can be downloaded and installed for many platforms and operating systems from [http://download.eclipse.org/eclipse/downloads/] . 
 
 = Details =
 
