@@ -2,6 +2,6 @@
 #labels Phase-Design,Phase-Implementation
 
 || Name || Purpose || Check-out || Console ||
-|| default-project || Provides default "./settings" for formatter, compiler warnings and errors and save actions (imported by most other projects via svn:externals). || Not necessary || Yes ||
+|| default-project || Provide default "./settings" for formatter, compiler warnings and errors and save actions (imported by most other projects via svn:externals). || Not necessary || Yes ||
 || edu.tum.cs.cadmos.commons || Provide common classes like "Assert". || Always || Yes ||
-|| edu.tum.cs.cadmos.core || Provide core structure and functionality like a hierarchical dataflow graph model, expressions, non-deterministic transition machines, and datatypes || Always || Yes ||
+|| edu.tum.cs.cadmos.core || Provide core structure and functionality like a hierarchical dataflow graph model, expressions, non-deterministic transition machines, and datatypes. || Always || Yes ||
