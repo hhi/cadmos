@@ -4,7 +4,7 @@ import static edu.tum.cs.cadmos.core.utils.Assert.assertTrue;
 import edu.tum.cs.cadmos.core.types.IType;
 import edu.tum.cs.cadmos.core.types.VoidType;
 
-public class Channel extends Variable implements IChannel {
+public class Channel extends AbstractVariable implements IChannel {
 
 	private final IComponent src;
 
