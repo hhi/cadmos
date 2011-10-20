@@ -3,102 +3,102 @@ package edu.tum.cs.cadmos.core.expressions;
 public enum EOperator {
 
 	/** Parallel combination: {@link ParallelExpression} */
-	PARALLEL("_;_"),
+	PARALLEL(";"),
 
 	/** Select along path: {@link SelectExpression} */
-	SELECT("_._"),
+	SELECT("."),
 
 	/** Constant value: {@link ConstantExpression} */
-	CONSTANT("_"),
+	CONSTANT(),
 
 	/** Reference to identifier: {@link ReferenceExpression} */
-	REFERENCE("_"),
+	REFERENCE(),
 
 	/** Boolean negation: {@link UnaryExpression} */
-	NOT("!_"),
+	NOT("!"),
 
 	/** Arithmetic negation: {@link UnaryExpression} */
-	NEG("-_"),
+	NEG("-"),
 
 	/** Arithmetic increment: {@link UnaryExpression} */
-	INC("++_"),
+	INC("++"),
 
 	/** Arithmetic decrement: {@link UnaryExpression} */
-	DEC("--_"),
+	DEC("--"),
 
-	ASSIGN("_=_"),
+	ASSIGN("="),
 
 	/** Arithmetic addition: {@link BinaryExpression} */
-	ADD("_+_"),
+	ADD("+"),
 
 	/** Arithmetic subtraction: {@link BinaryExpression} */
-	SUB("_-_"),
+	SUB("-"),
 
 	/** Arithmetic multiplication: {@link BinaryExpression} */
-	MUL("_*_"),
+	MUL("*"),
 
 	/** Arithmetic division: {@link BinaryExpression} */
-	DIV("_/_"),
+	DIV("/"),
 
 	/** Arithmetic modulo: {@link BinaryExpression} */
-	MOD("_%_"),
+	MOD("%"),
 
 	/** Equality: {@link BinaryExpression} */
-	EQ("_==_"),
+	EQ("=="),
 
 	/** Non-equality: {@link BinaryExpression} */
-	NEQ("_!=_"),
+	NEQ("!="),
 
 	/** Greater than: {@link BinaryExpression} */
-	GT("_>_"),
+	GT(">"),
 
 	/** Greater than or equal: {@link BinaryExpression} */
-	GTE("_>=_"),
+	GTE(">="),
 
 	/** Less than: {@link BinaryExpression} */
-	LT("_<_"),
+	LT("<"),
 
 	/** Less than or equal: {@link BinaryExpression} */
-	LTE("_>=_"),
+	LTE(">="),
 
 	/** Lazy boolean conjunction: {@link BinaryExpression} */
-	AND("_&&_"),
+	AND("&&"),
 
 	/** Lazy boolean disjunction: {@link BinaryExpression} */
-	OR("_||_"),
+	OR("||"),
 
 	/** Boolean exclusive disjunction: {@link BinaryExpression} */
-	XOR("_^_"),
+	XOR("^"),
 
 	/** Strict boolean and binary conjunction: {@link BinaryExpression} */
-	STRICT_AND("_&_"),
+	STRICT_AND("&"),
 
 	/** Strict boolean and binary disjunction: {@link BinaryExpression} */
-	STRICT_OR("_|_"),
+	STRICT_OR("|"),
 
 	/** Binary complement: {@link BinaryExpression} */
-	BITWISE_COMPLEMENT("~_"),
+	BITWISE_COMPLEMENT("~"),
 
 	/** Binary shift left: {@link BinaryExpression} */
-	SHL("_<<_"),
+	SHL("<<"),
 
 	/** Binary shift right with sign extend: {@link BinaryExpression} */
-	SHR("_>>_"),
+	SHR(">>"),
 
 	/** Binary shift right with zero extend: {@link BinaryExpression} */
-	UNSIGNED_SHR("_>>>_"),
+	UNSIGNED_SHR(">>>"),
 
-	/** Conditional if-then-else: {@link IfExpression} */
-	IF("if (_) _ else _");
+	/** Conditional if-then-else: {@link IfElseExpression} */
+	IF_ELSE("if", "else");
 
-	private final String pattern;
+	private final String[] symbols;
 
-	private EOperator(String pattern) {
-		this.pattern = pattern;
+	private EOperator(String... symbols) {
+		this.symbols = symbols;
 	}
 
-	public String getPattern() {
-		return pattern;
+	public String[] getSymbols() {
+		return symbols.clone();
 	}
 
 }
