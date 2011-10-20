@@ -23,6 +23,6 @@ Cadmos uses a review based quality rating (*RED*, *YELLOW* or *GREEN*) for each 
  * *RED:* File is under development or has pending todos after review.
  * *YELLOW:* File is marked _"ready for review"_ by developer.
  * *GREEN:* File passed review.
-This quality rating is tool-supported for eclipse by the *ConQAT rating support", which can be installed by the eclipse update manager, using the url: [http://www4.in.tum.de/~ccsm/eclipse_update_site]
+This quality rating is tool-supported for eclipse by the *ConQAT rating support*, which can be installed by the eclipse update manager, using the url: [http://www4.in.tum.de/~ccsm/eclipse_update_site]
 
 For our purposes, it is sufficient to select solely the plug-in *"ConQAT Development Tools"* in the eclipse update manager.
