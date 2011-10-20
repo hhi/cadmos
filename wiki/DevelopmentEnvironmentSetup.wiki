@@ -26,3 +26,17 @@ Cadmos uses a review based quality rating (*RED*, *YELLOW* or *GREEN*) for each 
 This quality rating is tool-supported for eclipse by the *ConQAT rating support*, which can be installed by the eclipse update manager, using the url: [http://www4.in.tum.de/~ccsm/eclipse_update_site]
 
 For our purposes, it is sufficient to select solely the plug-in *"ConQAT Development Tools"* in the eclipse update manager.
+
+= Enable SVN Auto-Properties =
+In your system's SVN *config* file, some SVN-properties need to be added in the {{{[auto-props]}}} section:
+
+ * Make a backup copy of the original config file.
+ * Open the config file with a text editor (e.g. notepad).
+ * Go to the {{{[auto-props]}}} section.
+ * Add the entry {{{*.java = svn:mime-type=text/plain;svn:eol-style=native;svn:keywords=Date Author Id Revision HeadURL}}}
+
+This automatically adds the SVN-properties (mime-type, eol-style, keywords) to new java-files when these are commited for the first time.
+
+By convention we use the keywords $Author: $ and $Rev: $ in header comments of Cadmos java-files, to show the latest author and revision of a java-file.
+
+On Windows systems, the SVN config file is typically found in a path similar to *...\<user>\AppData\Roaming\Subversion*.
