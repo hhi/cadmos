@@ -17,3 +17,9 @@ Cadmos uses SVN for version control, which is supported by several client integr
 We use a eclipse SVN client called *subclipse*.
 
 You can use this eclipse update manager url to install subclipse 1.8.x: [http://subclipse.tigris.org/update_1.8.x]
+
+= Install ConQAT Rating Support =
+Cadmos uses a review based quality rating (*RED*, *YELLOW* or *GREEN*) for each file:
+ * *RED:* File is under development or has pending todos after review.
+ * *YELLOW:* File is marked _"ready for review"_ by developer.
+ * *GREEN:* File passed review.
