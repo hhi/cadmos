@@ -1,14 +1,7 @@
 #summary Overview of all eclipse projects in the workspace.
 #labels Phase-Design,Phase-Implementation
 
-= Introduction =
-
-Add your content here.
-
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+|| Name || Purpose || Check-out || Console ||
+|| default-project || Provides default "./settings" for formatter, compiler warnings and errors and save actions (imported by most other projects via svn:externals). || Not necessary || Yes ||
+|| edu.tum.cs.cadmos.commons || Provide common classes like "Assert". || Always || Yes ||
+|| edu.tum.cs.cadmos.core || Provide core structure and functionality like a hierarchical dataflow graph model, expressions, non-deterministic transition machines, and datatypes || Always || Yes ||
