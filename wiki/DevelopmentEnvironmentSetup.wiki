@@ -12,9 +12,4 @@ Cadmos is developed using new Java 7 language features like inferred type parame
 Cadmos has a _"pure Java"_ *core* part and an eclipse e4 based *ui* part.
 Eclipse e4 has build-in full Java 7 support starting from version 4.1.1, which can be downloaded and installed for many platforms and operating systems from [http://download.eclipse.org/eclipse/downloads/] . 
 
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+= Install Subclipse =
