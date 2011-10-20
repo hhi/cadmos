@@ -43,4 +43,4 @@ By convention we use the keywords $Author: $ and $Rev: $ in header comments of C
 On Windows systems, the SVN config file is typically found in a path similar to {{{*...\<user>\AppData\Roaming\Subversion*}}}.
 
 = Check-out the Source =
-Follow the guidelines on [http://code.google.com/p/cadmos/source/checkout] to check-out the source in your eclipse workspace.
+Follow the guidelines on [http://code.google.com/p/cadmos/source/checkout] to check-out the source into your eclipse workspace.
