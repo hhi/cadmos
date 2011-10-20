@@ -15,8 +15,8 @@ public class TestAssert {
 	public void test_assertTrue_ERR() {
 		try {
 			Assert.assertTrue(false, "%s", "ERROR");
-			junit.framework.Assert
-					.fail("Expected Assert.assertTrue(false, ...) to throw an AssertionError");
+			throw new Error(
+					"Expected Assert.assertTrue(false, ...) to throw an AssertionError");
 		} catch (final AssertionError e) {
 			junit.framework.Assert.assertEquals("ERROR", e.getMessage());
 		}
