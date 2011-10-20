@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Cadmos Core-Model and Utilities
 Bundle-SymbolicName: edu.tum.cs.cadmos.core
-Bundle-Version: 1.0.0.M1
+Bundle-Version: 1.0.0.M4
 Bundle-Vendor: http://www4.in.tum.de/
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.junit
