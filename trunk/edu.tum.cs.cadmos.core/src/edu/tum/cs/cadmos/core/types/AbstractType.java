@@ -1,6 +1,6 @@
 package edu.tum.cs.cadmos.core.types;
 
-import static edu.tum.cs.cadmos.core.utils.Assert.assertNotNull;
+import static edu.tum.cs.cadmos.commons.Assert.assertNotNull;
 
 public abstract class AbstractType implements IType {
 

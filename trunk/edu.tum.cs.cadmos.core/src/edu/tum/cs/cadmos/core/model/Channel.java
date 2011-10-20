@@ -1,6 +1,6 @@
 package edu.tum.cs.cadmos.core.model;
 
-import static edu.tum.cs.cadmos.core.utils.Assert.assertTrue;
+import static edu.tum.cs.cadmos.commons.Assert.assertTrue;
 import edu.tum.cs.cadmos.core.types.IType;
 import edu.tum.cs.cadmos.core.types.VoidType;
 

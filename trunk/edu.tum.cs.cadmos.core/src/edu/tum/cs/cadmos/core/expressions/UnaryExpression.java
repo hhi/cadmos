@@ -1,10 +1,10 @@
 package edu.tum.cs.cadmos.core.expressions;
 
+import static edu.tum.cs.cadmos.commons.Assert.assertTrue;
 import static edu.tum.cs.cadmos.core.expressions.EOperator.DEC;
 import static edu.tum.cs.cadmos.core.expressions.EOperator.INC;
 import static edu.tum.cs.cadmos.core.expressions.EOperator.NEG;
 import static edu.tum.cs.cadmos.core.expressions.EOperator.NOT;
-import static edu.tum.cs.cadmos.core.utils.Assert.assertTrue;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
 

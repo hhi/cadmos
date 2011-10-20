@@ -1,6 +1,6 @@
 package edu.tum.cs.cadmos.core.model;
 
-import static edu.tum.cs.cadmos.core.utils.Assert.assertNotNull;
+import static edu.tum.cs.cadmos.commons.Assert.assertNotNull;
 import edu.tum.cs.cadmos.core.types.IType;
 
 public abstract class AbstractVariable extends AbstractElement implements

@@ -1,6 +1,6 @@
 package edu.tum.cs.cadmos.core.expressions;
 
-import static edu.tum.cs.cadmos.core.utils.Assert.assertTrue;
+import static edu.tum.cs.cadmos.commons.Assert.assertTrue;
 
 public class SelectExpression extends AbstractExpression {
 

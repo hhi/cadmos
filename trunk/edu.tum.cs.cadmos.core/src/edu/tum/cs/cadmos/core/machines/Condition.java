@@ -1,6 +1,6 @@
 package edu.tum.cs.cadmos.core.machines;
 
-import static edu.tum.cs.cadmos.core.utils.Assert.assertNotNull;
+import static edu.tum.cs.cadmos.commons.Assert.assertNotNull;
 import edu.tum.cs.cadmos.core.expressions.IExpression;
 
 public class Condition implements ICondition {

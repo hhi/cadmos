@@ -1,5 +1,6 @@
 package edu.tum.cs.cadmos.core.expressions;
 
+import static edu.tum.cs.cadmos.commons.Assert.assertTrue;
 import static edu.tum.cs.cadmos.core.expressions.EOperator.ADD;
 import static edu.tum.cs.cadmos.core.expressions.EOperator.AND;
 import static edu.tum.cs.cadmos.core.expressions.EOperator.ASSIGN;
@@ -21,7 +22,6 @@ import static edu.tum.cs.cadmos.core.expressions.EOperator.STRICT_OR;
 import static edu.tum.cs.cadmos.core.expressions.EOperator.SUB;
 import static edu.tum.cs.cadmos.core.expressions.EOperator.UNSIGNED_SHR;
 import static edu.tum.cs.cadmos.core.expressions.EOperator.XOR;
-import static edu.tum.cs.cadmos.core.utils.Assert.assertTrue;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
 

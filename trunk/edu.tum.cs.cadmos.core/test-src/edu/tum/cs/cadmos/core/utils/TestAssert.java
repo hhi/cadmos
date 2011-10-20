@@ -2,6 +2,8 @@ package edu.tum.cs.cadmos.core.utils;
 
 import org.junit.Test;
 
+import edu.tum.cs.cadmos.commons.Assert;
+
 public class TestAssert {
 
 	@Test

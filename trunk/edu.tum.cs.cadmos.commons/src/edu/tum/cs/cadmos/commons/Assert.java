@@ -15,7 +15,7 @@
 | limitations under the License.                                           |
 +--------------------------------------------------------------------------*/
 
-package edu.tum.cs.cadmos.core.utils;
+package edu.tum.cs.cadmos.commons;
 
 /**
  * Assertions that build a possible error message "lazily", that is, only if

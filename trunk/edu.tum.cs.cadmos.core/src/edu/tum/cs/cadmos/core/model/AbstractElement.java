@@ -1,6 +1,6 @@
 package edu.tum.cs.cadmos.core.model;
 
-import static edu.tum.cs.cadmos.core.utils.Assert.assertNotNull;
+import static edu.tum.cs.cadmos.commons.Assert.assertNotNull;
 
 public abstract class AbstractElement implements IElement {
 
