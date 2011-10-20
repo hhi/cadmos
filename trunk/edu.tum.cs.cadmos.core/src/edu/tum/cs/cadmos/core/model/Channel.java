@@ -3,11 +3,8 @@ package edu.tum.cs.cadmos.core.model;
 import static edu.tum.cs.cadmos.core.utils.Assert.assertTrue;
 import edu.tum.cs.cadmos.core.types.IType;
 import edu.tum.cs.cadmos.core.types.VoidType;
-import edu.tum.cs.cadmos.core.utils.Assert;
 
-public class Channel extends AbstractElement implements IChannel {
-
-	private final IType type;
+public class Channel extends Variable implements IChannel {
 
 	private final IComponent src;
 
@@ -21,8 +18,7 @@ public class Channel extends AbstractElement implements IChannel {
 
 	public Channel(Object id, String name, IType type, IComponent src,
 			IComponent dst, int delay, int srcRate, int dstRate) {
-		super(id, name);
-		Assert.assertNotNull(type, "type");
+		super(id, name, type);
 		assertTrue(src != null || dst != null,
 				"Expected 'src' and 'dst' to be not null at the same time");
 		if (src != null && dst != null) {
@@ -37,7 +33,6 @@ public class Channel extends AbstractElement implements IChannel {
 				srcRate);
 		assertTrue(dstRate > 0, "Expected 'dstRate' to be > 0, but was '%s'",
 				dstRate);
-		this.type = type;
 		this.src = src;
 		this.dst = dst;
 		this.delay = delay;
@@ -59,11 +54,6 @@ public class Channel extends AbstractElement implements IChannel {
 
 	public Channel(Object id, IComponent src, IComponent dst, int delay) {
 		this(id, null, new VoidType(), src, dst, delay, 1, 1);
-	}
-
-	@Override
-	public IType getType() {
-		return type;
 	}
 
 	@Override

@@ -1,10 +1,7 @@
 package edu.tum.cs.cadmos.core.model;
 
-import edu.tum.cs.cadmos.core.types.IType;
 
-public interface IChannel extends IElement {
-
-	IType getType();
+public interface IChannel extends IVariable {
 
 	IComponent getSrc();
 
