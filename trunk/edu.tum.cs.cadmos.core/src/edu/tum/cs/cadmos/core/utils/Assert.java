@@ -30,7 +30,7 @@ package edu.tum.cs.cadmos.core.utils;
  * @author wolfgang.schwitzer
  * @author $Author$
  * @version $Rev$
- * @levd.rating RED
+ * @ConQAT.Rating GREEN Hash: 1ADF8F51278FCD485856FDBD4B9CF038
  */
 public class Assert {
 
