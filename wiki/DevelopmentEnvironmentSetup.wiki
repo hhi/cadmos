@@ -38,6 +38,6 @@ In your system's SVN *config* file, some SVN-properties need to be added in the 
 
 This automatically adds the SVN-properties (mime-type, eol-style, keywords) to new java-files when these are commited for the first time.
 
-By convention we use the keywords $Author: $ and $Rev: $ in header comments of Cadmos java-files, to show the latest author and revision of a java-file.
+By convention we use the keywords $Author: $ and $Rev: $ in header comments of Cadmos java-files, to automatically include the latest author and revision of a java-file on commit.
 
 On Windows systems, the SVN config file is typically found in a path similar to {{{*...\<user>\AppData\Roaming\Subversion*}}}.
