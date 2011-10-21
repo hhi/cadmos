@@ -102,4 +102,64 @@ public class TestModelElements {
 				"Expected AssertionError when creating a channel with src == dst == null");
 	}
 
+	@Test
+	public void test_Add_Variables_To_Component() {
+		final IAtomicComponent c = new AtomicComponent("C", null);
+		final IVariable v1 = new Variable("v1", c);
+		final IVariable v2 = new Variable("v2", c);
+		assertEquals(2, c.getVariables().size());
+		assertTrue(c.getVariables().contains(v1));
+		assertTrue(c.getVariables().contains(v2));
+	}
+
+	@SuppressWarnings("unused")
+	@Test(expected = AssertionError.class)
+	public void test_Add_Variables_Same_Id_To_Component_ERR() {
+		final IAtomicComponent c = new AtomicComponent("C", null);
+		new Variable("x", c);
+		new Variable("x", c);
+		throw new Error(
+				"Expected AssertionError when adding variables with equal ids to same component");
+	}
+
+	@SuppressWarnings("unused")
+	@Test(expected = AssertionError.class)
+	public void test_Add_Variable_Same_Id_As_Channel_To_Source_ERR() {
+		final IAtomicComponent c = new AtomicComponent("C", null);
+		new Channel("x", c, null, 0);
+		new Variable("x", c);
+		throw new Error(
+				"Expected AssertionError when adding variable with an id equal to the id of a channel");
+	}
+
+	@SuppressWarnings("unused")
+	@Test(expected = AssertionError.class)
+	public void test_Add_Channel_Same_Id_As_Variable_To_Source_ERR() {
+		final IAtomicComponent c = new AtomicComponent("C", null);
+		new Variable("x", c);
+		new Channel("x", c, null, 0);
+		throw new Error(
+				"Expected AssertionError when adding channel with an id equal to the id of a variable");
+	}
+
+	@SuppressWarnings("unused")
+	@Test(expected = AssertionError.class)
+	public void test_Add_Variable_Same_Id_As_Channel_To_Destination_ERR() {
+		final IAtomicComponent c = new AtomicComponent("C", null);
+		new Channel("x", null, c, 0);
+		new Variable("x", c);
+		throw new Error(
+				"Expected AssertionError when adding variable with an id equal to the id of a channel");
+	}
+
+	@SuppressWarnings("unused")
+	@Test(expected = AssertionError.class)
+	public void test_Add_Channel_Same_Id_As_Variable_To_Destination_ERR() {
+		final IAtomicComponent c = new AtomicComponent("C", null);
+		new Variable("x", c);
+		new Channel("x", null, c, 0);
+		throw new Error(
+				"Expected AssertionError when adding channel with an id equal to the id of a variable");
+	}
+
 }
