@@ -1,11 +1,11 @@
 package edu.tum.cs.cadmos.core.machines;
 
-import java.util.Set;
+import edu.tum.cs.cadmos.commons.IListSet;
 
 public interface ITransition {
 
-	Set<ICondition> getPreConditions();
+	IListSet<ICondition> getPreConditions();
 
-	Set<ICondition> getPostConditions();
+	IListSet<ICondition> getPostConditions();
 
 }

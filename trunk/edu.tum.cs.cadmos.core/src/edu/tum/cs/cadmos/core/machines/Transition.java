@@ -1,21 +1,21 @@
 package edu.tum.cs.cadmos.core.machines;
 
-import java.util.HashSet;
-import java.util.Set;
+import edu.tum.cs.cadmos.commons.IListSet;
+import edu.tum.cs.cadmos.commons.ListSet;
 
 public class Transition implements ITransition {
 
-	private final Set<ICondition> preConditions = new HashSet<>();
+	private final IListSet<ICondition> preConditions = new ListSet<>();
 
-	private final Set<ICondition> postConditions = new HashSet<>();
+	private final IListSet<ICondition> postConditions = new ListSet<>();
 
 	@Override
-	public Set<ICondition> getPreConditions() {
+	public IListSet<ICondition> getPreConditions() {
 		return preConditions;
 	}
 
 	@Override
-	public Set<ICondition> getPostConditions() {
+	public IListSet<ICondition> getPostConditions() {
 		return postConditions;
 	}
 

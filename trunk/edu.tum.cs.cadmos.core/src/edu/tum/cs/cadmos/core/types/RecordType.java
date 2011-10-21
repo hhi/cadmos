@@ -1,18 +1,17 @@
 package edu.tum.cs.cadmos.core.types;
 
-import java.util.Collections;
-import java.util.List;
+import edu.tum.cs.cadmos.commons.IListSet;
 
 public class RecordType extends AbstractType {
 
-	private final List<RecordMember> members;
+	private final IListSet<RecordMember> members;
 
-	public RecordType(List<RecordMember> members) {
+	public RecordType(IListSet<RecordMember> members) {
 		super(EType.RECORD);
-		this.members = Collections.unmodifiableList(members);
+		this.members = members;
 	}
 
-	public List<RecordMember> getMembers() {
+	public IListSet<RecordMember> getMembers() {
 		return members;
 	}
 
