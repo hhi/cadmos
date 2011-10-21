@@ -14,7 +14,7 @@ public abstract class AbstractComponent extends AbstractElement implements
 
 	private final Set<IChannel> outgoing = new HashSet<>();
 
-	public AbstractComponent(Object id, String name, ICompositeComponent parent) {
+	public AbstractComponent(String id, String name, ICompositeComponent parent) {
 		super(id, name);
 		this.parent = parent;
 		if (parent != null) {

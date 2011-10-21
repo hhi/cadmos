@@ -8,7 +8,7 @@ public abstract class AbstractVariable extends AbstractElement implements
 
 	private final IType type;
 
-	public AbstractVariable(Object id, String name, IType type) {
+	public AbstractVariable(String id, String name, IType type) {
 		super(id, name);
 		assertNotNull(type, "type");
 		this.type = type;

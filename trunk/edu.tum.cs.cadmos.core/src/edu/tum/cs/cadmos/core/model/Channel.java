@@ -17,7 +17,7 @@ public class Channel extends AbstractVariable implements IChannel {
 
 	private final int dstRate;
 
-	public Channel(Object id, String name, IType type, IComponent src,
+	public Channel(String id, String name, IType type, IComponent src,
 			IComponent dst, int delay, int srcRate, int dstRate) {
 		super(id, name, type);
 		assertTrue(src != null || dst != null,
@@ -61,7 +61,7 @@ public class Channel extends AbstractVariable implements IChannel {
 		}
 	}
 
-	public Channel(Object id, IComponent src, IComponent dst, int delay) {
+	public Channel(String id, IComponent src, IComponent dst, int delay) {
 		this(id, null, new VoidType(), src, dst, delay, 1, 1);
 	}
 

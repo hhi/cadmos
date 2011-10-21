@@ -7,7 +7,7 @@ import edu.tum.cs.cadmos.core.types.VoidType;
 
 public class Variable extends AbstractVariable {
 
-	public Variable(Object id, String name, IType type,
+	public Variable(String id, String name, IType type,
 			IAtomicComponent component) {
 		super(id, name, type);
 		assertNotNull(component, "component");
@@ -25,11 +25,11 @@ public class Variable extends AbstractVariable {
 		component.getVariables().add(this);
 	}
 
-	public Variable(Object id, IType type, IAtomicComponent component) {
+	public Variable(String id, IType type, IAtomicComponent component) {
 		this(id, null, type, component);
 	}
 
-	public Variable(Object id, IAtomicComponent component) {
+	public Variable(String id, IAtomicComponent component) {
 		this(id, null, new VoidType(), component);
 	}
 

@@ -5,11 +5,11 @@ import edu.tum.cs.cadmos.core.expressions.IExpression;
 
 public class Condition implements ICondition {
 
-	private final Object id;
+	private final String id;
 
 	private final IExpression expression;
 
-	public Condition(Object id, IExpression expression) {
+	public Condition(String id, IExpression expression) {
 		assertNotNull(id, "id");
 		assertNotNull(expression, "expression");
 		this.id = id;
@@ -17,7 +17,7 @@ public class Condition implements ICondition {
 	}
 
 	@Override
-	public Object getId() {
+	public String getId() {
 		return id;
 	}
 

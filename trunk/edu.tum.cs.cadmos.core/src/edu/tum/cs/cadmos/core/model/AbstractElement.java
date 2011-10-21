@@ -4,18 +4,18 @@ import static edu.tum.cs.cadmos.commons.Assert.assertNotNull;
 
 public abstract class AbstractElement implements IElement {
 
-	private final Object id;
+	private final String id;
 
 	private final String name;
 
-	public AbstractElement(Object id, String name) {
+	public AbstractElement(String id, String name) {
 		assertNotNull(id, "id");
 		this.id = id;
-		this.name = name != null ? name : id.toString();
+		this.name = name != null ? name : id;
 	}
 
 	@Override
-	public Object getId() {
+	public String getId() {
 		return id;
 	}
 

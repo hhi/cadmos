@@ -4,7 +4,7 @@ import edu.tum.cs.cadmos.core.expressions.IExpression;
 
 public interface ICondition {
 
-	Object getId();
+	String getId();
 
 	IExpression getExpression();
 

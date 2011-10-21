@@ -8,11 +8,11 @@ public class CompositeComponent extends AbstractComponent implements
 
 	private final Set<IComponent> children = new HashSet<>();
 
-	public CompositeComponent(Object id, String name, ICompositeComponent parent) {
+	public CompositeComponent(String id, String name, ICompositeComponent parent) {
 		super(id, name, parent);
 	}
 
-	public CompositeComponent(Object id, ICompositeComponent parent) {
+	public CompositeComponent(String id, ICompositeComponent parent) {
 		this(id, null, parent);
 	}
 

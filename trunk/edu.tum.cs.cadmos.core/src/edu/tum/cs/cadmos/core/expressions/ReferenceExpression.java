@@ -2,14 +2,14 @@ package edu.tum.cs.cadmos.core.expressions;
 
 public class ReferenceExpression extends AbstractExpression {
 
-	private final Object id;
+	private final String id;
 
-	public ReferenceExpression(Object id) {
+	public ReferenceExpression(String id) {
 		super(EOperator.REFERENCE);
 		this.id = id;
 	}
 
-	public Object getId() {
+	public String getId() {
 		return id;
 	}
 

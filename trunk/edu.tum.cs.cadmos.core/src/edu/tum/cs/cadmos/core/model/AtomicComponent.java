@@ -12,13 +12,13 @@ public class AtomicComponent extends AbstractComponent implements
 
 	private final IMachine machine;
 
-	public AtomicComponent(Object id, String name, ICompositeComponent parent,
+	public AtomicComponent(String id, String name, ICompositeComponent parent,
 			IMachine machine) {
 		super(id, name, parent);
 		this.machine = machine;
 	}
 
-	public AtomicComponent(Object id, ICompositeComponent parent) {
+	public AtomicComponent(String id, ICompositeComponent parent) {
 		this(id, null, parent, null);
 	}
 
