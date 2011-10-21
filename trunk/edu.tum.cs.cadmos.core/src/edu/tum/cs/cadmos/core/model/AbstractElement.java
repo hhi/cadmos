@@ -26,8 +26,8 @@ public abstract class AbstractElement implements IElement {
 
 	@Override
 	public boolean equals(Object other) {
-		return (other instanceof AbstractElement)
-				&& ((AbstractElement) other).id.equals(id);
+		return (other instanceof IElement)
+				&& ((IElement) other).getId().equals(id);
 	}
 
 	@Override
