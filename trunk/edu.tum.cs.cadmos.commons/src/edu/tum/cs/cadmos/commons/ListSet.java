@@ -44,8 +44,18 @@ public class ListSet<E extends IIdentifiable> implements IListSet<E> {
 	}
 
 	@Override
+	public boolean contains(E element) {
+		return contains(element.getId());
+	}
+
+	@Override
 	public boolean contains(String id) {
 		return map.containsKey(id);
+	}
+
+	@Override
+	public E get(E element) {
+		return get(element.getId());
 	}
 
 	@Override

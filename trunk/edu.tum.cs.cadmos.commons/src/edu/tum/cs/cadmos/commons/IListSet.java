@@ -10,7 +10,11 @@ public interface IListSet<E extends IIdentifiable> extends Iterable<E>,
 
 	void addAll(Collection<E> elements);
 
+	boolean contains(E element);
+
 	boolean contains(String id);
+
+	E get(E element);
 
 	E get(String id);
 
