@@ -1,5 +1,6 @@
 package edu.tum.cs.cadmos.core.model;
 
+import static edu.tum.cs.cadmos.commons.Assert.assertNotContainedIn;
 import static edu.tum.cs.cadmos.commons.Assert.assertTrue;
 import edu.tum.cs.cadmos.core.types.IType;
 import edu.tum.cs.cadmos.core.types.VoidType;
@@ -39,15 +40,23 @@ public class Channel extends AbstractVariable implements IChannel {
 		this.srcRate = srcRate;
 		this.dstRate = dstRate;
 		if (src != null) {
-			assertTrue(!src.getOutgoing().contains(this),
-					"Channel with id '%s' is outgoing from '%s' already",
-					getId(), src);
+			assertNotContainedIn(this, src.getOutgoing(), "this",
+					"src.getOutgoing()");
+			if (src instanceof IAtomicComponent) {
+				assertNotContainedIn(this,
+						((IAtomicComponent) src).getVariables(), "this",
+						"src.getVariables()");
+			}
 			src.getOutgoing().add(this);
 		}
 		if (dst != null) {
-			assertTrue(!dst.getIncoming().contains(this),
-					"Channel with id '%s' is incoming in '%s' already",
-					getId(), dst);
+			assertNotContainedIn(this, dst.getIncoming(), "this",
+					"dst.getIncoming()");
+			if (dst instanceof IAtomicComponent) {
+				assertNotContainedIn(this,
+						((IAtomicComponent) dst).getVariables(), "this",
+						"dst.getVariables()");
+			}
 			dst.getIncoming().add(this);
 		}
 	}
