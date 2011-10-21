@@ -1,21 +1,12 @@
 package edu.tum.cs.cadmos.core.model;
 
-import java.util.Collections;
-import java.util.Set;
+import edu.tum.cs.cadmos.commons.IListSet;
+import edu.tum.cs.cadmos.commons.ListSet;
 
 public class ModelUtils {
 
-	public static <E extends IElement> E find(Object id, Set<E> set) {
-		for (final E e : set) {
-			if (e.getId().equals(id)) {
-				return e;
-			}
-		}
-		return null;
-	}
-
-	public static Set<IComponent> dissolveComponent(IComponent component) {
-		return Collections.EMPTY_SET;
+	public static IListSet<IComponent> dissolveComponent(IComponent component) {
+		return new ListSet<>();
 	}
 
 }

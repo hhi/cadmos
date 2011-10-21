@@ -11,15 +11,15 @@ public class Variable extends AbstractVariable {
 			IAtomicComponent component) {
 		super(id, name, type);
 		assertNotNull(component, "component");
-		assertTrue(!component.getVariables().contains(this),
+		assertTrue(!component.getVariables().contains(getId()),
 				"Variable with id '%s' is present in '%s' already", id,
 				component);
 		assertTrue(
-				!component.getIncoming().contains(this),
+				!component.getIncoming().contains(getId()),
 				"Channel with id '%s' is present in incoming channels of '%s' already",
 				id, component);
 		assertTrue(
-				!component.getOutgoing().contains(this),
+				!component.getOutgoing().contains(getId()),
 				"Channel with id '%s' is present in outgoing channels of '%s' already",
 				id, component);
 		component.getVariables().add(this);

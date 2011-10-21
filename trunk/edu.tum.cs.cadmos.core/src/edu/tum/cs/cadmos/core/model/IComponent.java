@@ -1,13 +1,13 @@
 package edu.tum.cs.cadmos.core.model;
 
-import java.util.Set;
+import edu.tum.cs.cadmos.commons.IListSet;
 
 public interface IComponent extends IElement {
 
 	ICompositeComponent getParent();
 
-	Set<IChannel> getIncoming();
+	IListSet<IChannel> getIncoming();
 
-	Set<IChannel> getOutgoing();
+	IListSet<IChannel> getOutgoing();
 
 }

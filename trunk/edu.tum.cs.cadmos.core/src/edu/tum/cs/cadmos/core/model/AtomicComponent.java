@@ -1,14 +1,13 @@
 package edu.tum.cs.cadmos.core.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import edu.tum.cs.cadmos.commons.IListSet;
+import edu.tum.cs.cadmos.commons.ListSet;
 import edu.tum.cs.cadmos.core.machines.IMachine;
 
 public class AtomicComponent extends AbstractComponent implements
 		IAtomicComponent {
 
-	private final Set<IVariable> variables = new HashSet<>();
+	private final IListSet<IVariable> variables = new ListSet<>();
 
 	private final IMachine machine;
 
@@ -23,7 +22,7 @@ public class AtomicComponent extends AbstractComponent implements
 	}
 
 	@Override
-	public Set<IVariable> getVariables() {
+	public IListSet<IVariable> getVariables() {
 		return variables;
 	}
 

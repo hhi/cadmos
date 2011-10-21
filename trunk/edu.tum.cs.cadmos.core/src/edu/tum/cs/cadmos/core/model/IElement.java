@@ -1,8 +1,8 @@
 package edu.tum.cs.cadmos.core.model;
 
-public interface IElement {
+import edu.tum.cs.cadmos.commons.IIdentifiable;
 
-	String getId();
+public interface IElement extends IIdentifiable {
 
 	String getName();
 

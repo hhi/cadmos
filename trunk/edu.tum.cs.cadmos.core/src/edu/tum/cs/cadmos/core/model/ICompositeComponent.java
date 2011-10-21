@@ -1,9 +1,9 @@
 package edu.tum.cs.cadmos.core.model;
 
-import java.util.Set;
+import edu.tum.cs.cadmos.commons.IListSet;
 
 public interface ICompositeComponent extends IComponent {
 
-	Set<IComponent> getChildren();
+	IListSet<IComponent> getChildren();
 
 }
