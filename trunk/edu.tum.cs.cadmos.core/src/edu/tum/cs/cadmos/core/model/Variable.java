@@ -3,6 +3,7 @@ package edu.tum.cs.cadmos.core.model;
 import static edu.tum.cs.cadmos.commons.Assert.assertNotNull;
 import static edu.tum.cs.cadmos.commons.Assert.assertTrue;
 import edu.tum.cs.cadmos.core.types.IType;
+import edu.tum.cs.cadmos.core.types.VoidType;
 
 public class Variable extends AbstractVariable {
 
@@ -26,6 +27,10 @@ public class Variable extends AbstractVariable {
 
 	public Variable(Object id, IType type, IAtomicComponent component) {
 		this(id, null, type, component);
+	}
+
+	public Variable(Object id, IAtomicComponent component) {
+		this(id, null, new VoidType(), component);
 	}
 
 }
