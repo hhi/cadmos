@@ -17,6 +17,8 @@
 
 package edu.tum.cs.cadmos.commons;
 
+import java.util.Collection;
+
 /**
  * Assertions that build a possible error message "lazily", that is, only if
  * conditions <b>do not hold</b>.
@@ -30,7 +32,7 @@ package edu.tum.cs.cadmos.commons;
  * @author wolfgang.schwitzer
  * @author $Author$
  * @version $Rev$
- * @ConQAT.Rating GREEN Hash: 1ADF8F51278FCD485856FDBD4B9CF038
+ * @ConQAT.Rating GREEN Hash: E00685E99C5E23B4CBB515E2DF21AC5F
  */
 public class Assert {
 
@@ -68,6 +70,33 @@ public class Assert {
 		if (object == null) {
 			throw new AssertionError(String.format(
 					"Expected '%s' to be not null", objectName));
+		}
+	}
+
+	/**
+	 * Asserts that the given <i>element</i> is not contained in the given
+	 * <i>collection</i> and throws an {@link AssertionError} otherwise.
+	 * <p>
+	 * The message will be formatted with the given <i>elementName</i> and
+	 * <i>collectionName</i> if the <i>element</i> is contained in the
+	 * <i>collection</i>.
+	 * <p>
+	 * Example: <code>assertNotContainedIn(e, c, "e", "c");</code> throws an
+	 * assertion error with message
+	 * "Element 'e' (e) is already present in collection 'c' ([..., e, ...])".
+	 * 
+	 * @param <E>
+	 * 
+	 * @throws AssertionError
+	 *             if the <i>element</i> is contained in the <i>collection</i>.
+	 */
+	public static <E> void assertNotContainedIn(E element,
+			Collection<E> collection, String elementName, String collectionName) {
+		if (collection.contains(element)) {
+			throw new AssertionError(
+					String.format(
+							"Element '%s' (%s) is already present in collection '%s' (%s)",
+							elementName, element, collectionName, collection));
 		}
 	}
 
