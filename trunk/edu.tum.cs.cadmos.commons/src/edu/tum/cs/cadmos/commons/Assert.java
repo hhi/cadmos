@@ -32,7 +32,7 @@ import java.util.Collection;
  * @author wolfgang.schwitzer
  * @author $Author$
  * @version $Rev$
- * @ConQAT.Rating GREEN Hash: E00685E99C5E23B4CBB515E2DF21AC5F
+ * @ConQAT.Rating GREEN Hash: ED9E657621541E4C00E3D9F23F21D94D
  */
 public class Assert {
 
@@ -97,6 +97,31 @@ public class Assert {
 					String.format(
 							"Element '%s' (%s) is already present in collection '%s' (%s)",
 							elementName, element, collectionName, collection));
+		}
+	}
+
+	/**
+	 * Asserts that the given <i>element</i> is not contained in the given
+	 * <i>set</i> and throws an {@link AssertionError} otherwise.
+	 * <p>
+	 * The message will be formatted with the given <i>elementName</i> and
+	 * <i>setName</i> if the <i>element</i> is contained in the <i>set</i>.
+	 * <p>
+	 * Example: <code>assertNotContainedIn(e, s, "e", "s");</code> throws an
+	 * assertion error with message
+	 * "Element 'e' (e) is already present in set 's' ([..., e, ...])".
+	 * 
+	 * @param <E>
+	 * 
+	 * @throws AssertionError
+	 *             if the <i>element</i> is contained in the <i>set</i>.
+	 */
+	public static <E extends IIdentifiable> void assertNotContainedIn(
+			E element, IListSet<E> set, String elementName, String setName) {
+		if (set.contains(element.getId())) {
+			throw new AssertionError(String.format(
+					"Element '%s' (%s) is already present in set '%s' (%s)",
+					elementName, element, setName, set));
 		}
 	}
 
