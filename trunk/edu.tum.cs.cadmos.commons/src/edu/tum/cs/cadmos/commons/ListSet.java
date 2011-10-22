@@ -91,12 +91,16 @@ public class ListSet<E extends IIdentifiable> implements IListSet<E> {
 	@Override
 	public boolean equals(Object other) {
 		return other instanceof ListSet<?>
-				&& ((ListSet<?>) other).map.equals(map);
+				&& ((ListSet<?>) other).map.keySet().equals(map.keySet());
 	}
 
 	@Override
 	public int hashCode() {
-		return map.hashCode();
+		int h = 0;
+		for (final E e : list) {
+			h += e.getId().hashCode();
+		}
+		return h;
 	}
 
 }

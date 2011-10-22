@@ -1,4 +1,4 @@
-package edu.tum.cs.cadmos.core.utils;
+package edu.tum.cs.cadmos.commons;
 
 import org.junit.Test;
 
