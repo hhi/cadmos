@@ -17,18 +17,19 @@
 
 package edu.tum.cs.cadmos.core.model;
 
+import edu.tum.cs.cadmos.core.types.IType;
+
 /**
- * A typed variable with id and name that exists within the scope of an
- * {@link IAtomicComponent}.
+ * An element that has a data type.
  * 
  * @author wolfgang.schwitzer
  * @author $Author$
  * @version $Rev$
  * @ConQAT.Rating RED Hash:
  */
-public interface IVariable extends ITypedElement {
+public interface ITypedElement extends IElement {
 
-	/** Returns the component scope in which this variable exists. */
-	IAtomicComponent getScope();
+	/** Returns the data type of this element. */
+	IType getType();
 
 }
