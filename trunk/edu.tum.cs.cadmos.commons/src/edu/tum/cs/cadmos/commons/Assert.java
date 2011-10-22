@@ -32,7 +32,7 @@ import java.util.Collection;
  * @author wolfgang.schwitzer
  * @author $Author$
  * @version $Rev$
- * @ConQAT.Rating GREEN Hash: ED9E657621541E4C00E3D9F23F21D94D
+ * @ConQAT.Rating GREEN Hash: 59235AA77262706E1E9B5BAE81DB5296
  */
 public class Assert {
 
@@ -117,7 +117,8 @@ public class Assert {
 	 *             if the <i>element</i> is contained in the <i>set</i>.
 	 */
 	public static <E extends IIdentifiable> void assertNotContainedIn(
-			E element, IListSet<E> set, String elementName, String setName) {
+			IIdentifiable element, IListSet<E> set, String elementName,
+			String setName) {
 		if (set.contains(element.getId())) {
 			throw new AssertionError(String.format(
 					"Element '%s' (%s) is already present in set '%s' (%s)",
