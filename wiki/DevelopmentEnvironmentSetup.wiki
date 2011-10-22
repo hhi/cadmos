@@ -8,8 +8,7 @@ This page describes the steps to set up a working development environment:
  # Eclipse e4
  # Subclipse
  # Quality Rating
- # SVN Auto-Properties
-<wiki:comment> # Additional e4 Tooling </wiki:comment>
+ # SVN Auto-Properties <wiki:comment> # Additional e4 Tooling </wiki:comment>
  # Source Check-out
 
 = Prerequisites =
