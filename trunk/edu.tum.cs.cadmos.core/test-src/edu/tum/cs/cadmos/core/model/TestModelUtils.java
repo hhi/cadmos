@@ -2,38 +2,20 @@ package edu.tum.cs.cadmos.core.model;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNotSame;
-import static junit.framework.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import edu.tum.cs.cadmos.commons.IListSet;
-import edu.tum.cs.cadmos.core.machines.IMachine;
-import edu.tum.cs.cadmos.core.machines.Machine;
 
 public class TestModelUtils {
 
 	@Test
-	public void test_dissolveComponent_AtomicComponent() {
-		final IMachine machine = new Machine();
-		final IAtomicComponent c = new AtomicComponent("c", null, null, machine);
-		final IVariable v = new Variable("x", c);
-		final IListSet<IComponent> network = ModelUtils.dissolveComponent(c);
-		assertEquals(1, network.size());
-		assertTrue(network.contains(c));
-		final IAtomicComponent new_c = (IAtomicComponent) network.getFirst();
-		assertNotSame(c, new_c);
-		assertEquals("c", new_c.getName());
-		assertSame(machine, new_c.getMachine());
-		assertSame(v, new_c.getVariables().getFirst());
-	}
-
-	@Test
-	public void test_dissolveComponent_CompositeComponent_With_AtomicComponents() {
-		final IComponent p = new CompositeComponent("p", null);
-		final IComponent c1 = new AtomicComponent("c1", null);
-		final IComponent c2 = new AtomicComponent("c2", null);
+	public void test_dissolveComponent_CompositeComponent() {
+		final ICompositeComponent p = new CompositeComponent("p", null);
+		final IComponent c1 = new AtomicComponent("c1", p);
+		final IComponent c2 = new AtomicComponent("c2", p);
 
 		final IChannel x_p = new Channel("x", null, p, 1);
 		final IChannel y_p = new Channel("y", p, null, 1);
@@ -48,10 +30,8 @@ public class TestModelUtils {
 		assertTrue(network.contains(c2));
 
 		for (final IComponent component : network) {
-			assertNotSame("Expected c1 to be a copy, but was same object", c1,
-					component);
-			assertNotSame("Expected c2 to be a copy, but was same object", c2,
-					component);
+			assertNotSame("Expected c1 to be a copy", c1, component);
+			assertNotSame("Expected c2 to be a copy", c2, component);
 		}
 
 		final IComponent new_c1 = network.get("c1");
