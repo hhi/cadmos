@@ -4,9 +4,9 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashSet;
-
 import org.junit.Test;
+
+import edu.tum.cs.cadmos.commons.ListSet;
 
 public class TestModelElements {
 
@@ -38,7 +38,7 @@ public class TestModelElements {
 		final IComponent c2 = new AtomicComponent("C2", p);
 		assertEquals(p, c1.getParent());
 		assertEquals(p, c2.getParent());
-		assertEquals(new HashSet<>(asList(c1, c2)), p.getChildren());
+		assertEquals(new ListSet<>(asList(c1, c2)), p.getChildren());
 		final IChannel x = new Channel("x", c1, c2, 0);
 		assertEquals(1, c1.getOutgoing().size());
 		assertEquals(1, c2.getIncoming().size());
