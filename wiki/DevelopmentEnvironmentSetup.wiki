@@ -9,6 +9,7 @@ This page describes the steps to set up a working development environment:
  # Subclipse
  # Quality Rating
  # SVN Auto-Properties
+ # Additional e4 Tooling
  # Source Check-out
 
 = Prerequisites =
@@ -53,6 +54,7 @@ For e4 user interface development, additional eclipse e4 tooling is downloaded a
 
 See [http://www.vogella.de/articles/EclipseE4/article.html#installation] 
 for details.
+
 = Check-out the Workspace Projects =
  * Follow the guidelines on [http://code.google.com/p/cadmos/source/checkout] to get read-only or write access to the source.
  * Read the page WorkspaceProjectsOverview that helps you to decide, which projects you need to check-out into your eclipse workspace.
