@@ -14,5 +14,8 @@ This directory is included by {{{svn:externals}}} and formatter and save actions
 Here are some key points concerning the format:
  * Blank line before field or method declaration.
  * Always use blocks {{{{...}}}} in {{{for}}}, {{{while}}} and {{{if}}} statements.
+ * Use {{{final}}} for fields and local varaibles where possible.
+ * Remove unnecessary casts.
+ * Remove trailing whitespace from all lines.
 
 = Naming =
