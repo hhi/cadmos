@@ -103,4 +103,10 @@ public class ListSet<E extends IIdentifiable> implements IListSet<E> {
 		return h;
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public String toString() {
+		return list.toString();
+	}
+
 }
