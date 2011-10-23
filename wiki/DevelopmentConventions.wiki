@@ -25,3 +25,4 @@ Here are some key points concerning the format:
  * Class names are combinations of nouns, while each noun starts with a uppercase letter, e.g. {{{Channel}}} and {{{AtomicComponent}}}.
  * Interface names follow the conventions of class names and additionally start with the letter "I", e.g. {{{IVariable}}} and {{{ICompositeComponent}}}.
  * Enumeration names follow the conventions of class names and additionally start with the letter "E", e.g. {{{EType}}} and {{{EOperator}}}.
+ * Class names of abstract classes follow the conventions of class names and additionally start with the prefix "Abstract", e.g. {{{AbstractComponent}}} and {{{AbstractTypedElement}}}.
