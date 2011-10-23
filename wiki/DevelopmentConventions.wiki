@@ -29,4 +29,4 @@ Here are some key points concerning the format:
   * Class names of abstract classes follow the conventions of class names and additionally start with the prefix "Abstract", e.g. {{{AbstractComponent}}} and {{{AbstractTypedElement}}}.
  * Members of types follow these naming conventions:
   * Field names are a combination of words (usually nouns and adjectives). A field name starts with a word in lowercase letters, while all following words start with an uppercase letter, e.g. {{{children}}} and {{{leftOperand}}}. Names of boolean fields are often adjectives, e.g. {{{enabled}}}.
-  * Field names start with a lowercase letter.
+  * Methods names start with a lowercase verb, e.g. {{{getIncoming()}}}.
