@@ -19,3 +19,6 @@ Here are some key points concerning the format:
  * Remove trailing whitespace from all lines.
 
 = Naming =
+ * Project names follow these patterns: 
+  * {{{edu.tum.cs.cadmos.<...>.core}}} for the _"console only"_ Java library part of a project.
+  * {{{edu.tum.cs.cadmos.<...>.ui}}} for the _"RCP/SWT"_ plug-in part of a project.
