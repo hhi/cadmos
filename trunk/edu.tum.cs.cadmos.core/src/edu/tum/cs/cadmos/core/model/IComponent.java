@@ -20,13 +20,19 @@ package edu.tum.cs.cadmos.core.model;
 import edu.tum.cs.cadmos.commons.IListSet;
 
 /**
- * A component of a hierarchical data-flow system model, which has a parent that
- * optionally can be <code>null</code> and a set of incoming and outgoing
- * channels.
+ * A component in a hierarchical data-flow system model, which has a parent and
+ * a set of incoming and outgoing channels. The incoming and outgoing channels
+ * allow to connect this component to sibling components that have the same
+ * parent.
+ * <p>
+ * Note that the parent optionally can be <code>null</code> to indicate that
+ * this is a root-level component.
  * <p>
  * The non-abstract instances of components implement the
  * {@link IAtomicComponent} and {@link ICompositeComponent} interfaces. This
- * architecture resembles the well-known <i>composite pattern</i>.
+ * architecture resembles the well-known <a
+ * href="http://en.wikipedia.org/wiki/Composite_pattern"><i>composite
+ * pattern</i></a>.
  * 
  * @see AbstractComponent
  * @see IAtomicComponent
@@ -36,14 +42,26 @@ import edu.tum.cs.cadmos.commons.IListSet;
  * @author wolfgang.schwitzer
  * @author $Author$
  * @version $Rev$
- * @ConQAT.Rating RED Hash:
+ * @ConQAT.Rating GREEN Hash: 873587029FE8D954E7681BC406120A6D
  */
 public interface IComponent extends IElement {
 
+	/**
+	 * Returns the parent component, which optionally can be <code>null</code>
+	 * to indicate that this is a root-level component.
+	 */
 	ICompositeComponent getParent();
 
+	/**
+	 * Returns the set of incoming channels, that is, for each channel
+	 * <code>c</code> in incoming <code>c.getDst().equals(this)</code> holds.
+	 */
 	IListSet<IChannel> getIncoming();
 
+	/**
+	 * Returns the set of outgoing channels, that is, for each channel
+	 * <code>c</code> in outgoing <code>c.getSrc().equals(this)</code> holds.
+	 */
 	IListSet<IChannel> getOutgoing();
 
 	/**
