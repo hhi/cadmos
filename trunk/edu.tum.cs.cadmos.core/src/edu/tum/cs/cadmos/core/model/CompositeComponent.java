@@ -27,11 +27,11 @@ public class CompositeComponent extends AbstractComponent implements
 	public IComponent clone(ICompositeComponent newParent) {
 		final ICompositeComponent clone = new CompositeComponent(getId(),
 				getName(), newParent);
-		/* Clone the child components. */
+		/* Clone the children components. */
 		for (final IComponent child : getChildren()) {
 			child.clone(clone);
 		}
-		/* Rewire the cloned child components. */
+		/* Rewire the cloned children components. */
 		final IListSet<IComponent> cloneChildren = clone.getChildren();
 		for (final IComponent child : getChildren()) {
 			for (final IChannel c : child.getIncoming()) {
