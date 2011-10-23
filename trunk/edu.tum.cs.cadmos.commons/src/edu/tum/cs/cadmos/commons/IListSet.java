@@ -1,12 +1,16 @@
 package edu.tum.cs.cadmos.commons;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.RandomAccess;
+import java.util.Set;
 
 public interface IListSet<E extends IIdentifiable> extends Iterable<E>,
 		RandomAccess {
 
 	void add(E element);
+
+	void addAll(IListSet<E> elements);
 
 	void addAll(Collection<E> elements);
 
@@ -27,5 +31,9 @@ public interface IListSet<E extends IIdentifiable> extends Iterable<E>,
 	int size();
 
 	boolean isEmpty();
+
+	List<E> toList();
+
+	Set<E> toSet();
 
 }
