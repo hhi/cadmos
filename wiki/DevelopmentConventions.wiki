@@ -1,13 +1,18 @@
 #summary Conventions for development.
+#labels Phase-Implementation
 
 = Introduction =
 
-Add your content here.
+Cadmos development follows a number of conventions that are documented in this page.
 
+= Format =
+If you have a properly set-up development environment (see DevelopmentEnvironmentSetup) most format issues are automatically handled by eclipse.   
 
-= Details =
+Eclipse's automatic code formatter and save actions are enabled for each project in the background by using a common {{{./settings}}} directory.
+This directory is included by {{{svn:externals}}} and formatter and save actions are maintained in the *default-project*.
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+Here are some key points concerning the format:
+ * Blank line before field or method declaration.
+ * Always use blocks {{{{...}}}} in {{{for}}}, {{{while}}} and {{{if}}} statements.
+
+= Naming =
