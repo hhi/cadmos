@@ -90,4 +90,11 @@ public class Channel extends AbstractTypedElement implements IChannel {
 		return dstRate;
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public IChannel clone(IComponent newSrc, IComponent newDst) {
+		return new Channel(getId(), getName(), getType(), newSrc, newDst,
+				getDelay(), getSrcRate(), getDstRate());
+	}
+
 }

@@ -40,4 +40,10 @@ public class Variable extends AbstractTypedElement implements IVariable {
 		return scope;
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public IVariable clone(IAtomicComponent newScope) {
+		return new Variable(getId(), getName(), getType(), newScope);
+	}
+
 }

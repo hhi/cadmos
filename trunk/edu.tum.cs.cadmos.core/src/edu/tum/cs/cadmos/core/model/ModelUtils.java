@@ -6,9 +6,9 @@ import edu.tum.cs.cadmos.commons.ListSet;
 public class ModelUtils {
 
 	public static IListSet<IComponent> dissolveComponent(
-			ICompositeComponent parent) {
+			ICompositeComponent component) {
 		final IListSet<IComponent> result = new ListSet<>();
-		for (final IComponent child : parent.getChildren()) {
+		for (final IComponent child : component.getChildren()) {
 			final IComponent childCopy;
 			if (child instanceof IAtomicComponent) {
 				childCopy = new AtomicComponent(child.getId(), child.getName(),

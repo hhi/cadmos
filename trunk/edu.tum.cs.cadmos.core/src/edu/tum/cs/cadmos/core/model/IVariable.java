@@ -20,6 +20,9 @@ package edu.tum.cs.cadmos.core.model;
 /**
  * A typed variable with id and name that exists within the scope of an
  * {@link IAtomicComponent}.
+ * <p>
+ * A clone of this variable, which is added to a new scope, is created with
+ * {@link #clone(IAtomicComponent)}.
  * 
  * @author wolfgang.schwitzer
  * @author $Author$
@@ -30,5 +33,8 @@ public interface IVariable extends ITypedElement {
 
 	/** Returns the component scope in which this variable exists. */
 	IAtomicComponent getScope();
+
+	/** Returns a clone of this variable within the given <i>newScope</i>. */
+	IVariable clone(IAtomicComponent newScope);
 
 }

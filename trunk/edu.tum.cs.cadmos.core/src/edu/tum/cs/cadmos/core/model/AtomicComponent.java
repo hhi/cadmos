@@ -31,4 +31,15 @@ public class AtomicComponent extends AbstractComponent implements
 		return machine;
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public IComponent clone(ICompositeComponent newParent) {
+		final IAtomicComponent clone = new AtomicComponent(getId(), getName(),
+				newParent, getMachine());
+		for (final IVariable variable : variables) {
+			variable.clone(clone);
+		}
+		return clone;
+	}
+
 }
