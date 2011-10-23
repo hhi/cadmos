@@ -20,5 +20,5 @@ Here are some key points concerning the format:
 
 = Naming =
  * Project names follow these patterns: 
-  * {{{edu.tum.cs.cadmos.<...>.core}}} for the _"console only"_ Java library part of a project, providing core functionality.
-  * {{{edu.tum.cs.cadmos.<...>.ui}}} for the _"RCP/SWT"_ plug-in part of a project, provising a user interface for the functionality implemented in the _"core project"_.
+  * {{{edu.tum.cs.cadmos.<...>.core}}} for the _"console only"_ Java library part of a project, providing core functionality. Such a _"core project"_ solely has a {{{META_INF/MANIFEST.MF}}} file.
+  * {{{edu.tum.cs.cadmos.<...>.ui}}} for the _"RCP/SWT"_ plug-in part of a project, provising a user interface for the functionality implemented in the _"core project"_. Such a _"ui project"_ additionally has a {{{plugin.xml}}} file to define views, extensions points etc. 
