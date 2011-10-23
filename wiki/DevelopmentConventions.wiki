@@ -23,7 +23,10 @@ Here are some key points concerning the format:
   * {{{edu.tum.cs.cadmos.<...>.core}}} for the _"console only"_ Java library part of a project, providing core functionality. Such a _"core project"_ solely has a {{{META_INF/MANIFEST.MF}}} file.
   * {{{edu.tum.cs.cadmos.<...>.ui}}} for the _"RCP/SWT"_ plug-in part of a project, provising a user interface for the functionality implemented in the _"core project"_. Such a _"ui project"_ additionally has a {{{plugin.xml}}} file to define views, extensions points etc.
  * Type names have the following conventions:
-  * Class names are combinations of nouns, while each noun starts with a uppercase letter, e.g. {{{Channel}}} and {{{AtomicComponent}}}.
+  * Class names are combinations of nouns, while each noun starts with an uppercase letter, e.g. {{{Channel}}} and {{{AtomicComponent}}}.
   * Interface names follow the conventions of class names and additionally start with the letter "I", e.g. {{{IVariable}}} and {{{ICompositeComponent}}}.
   * Enumeration names follow the conventions of class names and additionally start with the letter "E", e.g. {{{EType}}} and {{{EOperator}}}.
   * Class names of abstract classes follow the conventions of class names and additionally start with the prefix "Abstract", e.g. {{{AbstractComponent}}} and {{{AbstractTypedElement}}}.
+ * Members of types follow these naming conventions:
+  * Field names are a combination of words (usually nouns and adjectives) and start with a lowercase letter, while all other words start with an uppercase letter, e.g. {{{children}}} and {{{leftOperand}}}. Names of boolean fields are often adjectives, e.g. {{{enabled}}}.
+  * Field names start with a lowercase letter.
