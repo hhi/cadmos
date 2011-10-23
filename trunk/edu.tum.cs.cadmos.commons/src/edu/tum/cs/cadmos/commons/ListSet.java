@@ -27,6 +27,13 @@ public class ListSet<E extends IIdentifiable> implements IListSet<E> {
 		addAll(initialElements);
 	}
 
+	@SafeVarargs
+	public ListSet(E... initialElements) {
+		for (final E e : initialElements) {
+			add(e);
+		}
+	}
+
 	/** {@inheritDoc} */
 	@Override
 	public Iterator<E> iterator() {
