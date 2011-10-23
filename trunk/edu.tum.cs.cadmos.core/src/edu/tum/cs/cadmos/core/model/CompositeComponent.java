@@ -39,17 +39,17 @@ public class CompositeComponent extends AbstractComponent implements
 					assertNotNull(c.getDst(), "c.getDst()");
 					final IComponent newDst = cloneChildren.get(c.getDst());
 					c.clone(null, newDst);
-				} else {
-					assertNotNull(c.getSrc(), "c.getSrc()");
-					final IComponent newSrc = cloneChildren.get(c.getSrc());
-					final IComponent newDst;
-					if (c.getDst() == null) {
-						newDst = null;
-					} else {
-						newDst = cloneChildren.get(c.getDst());
-					}
-					c.clone(newSrc, newDst);
 				}
+			}
+			for (final IChannel c : child.getOutgoing()) {
+				final IComponent newSrc = cloneChildren.get(c.getSrc());
+				final IComponent newDst;
+				if (c.getDst() == null) {
+					newDst = null;
+				} else {
+					newDst = cloneChildren.get(c.getDst());
+				}
+				c.clone(newSrc, newDst);
 			}
 		}
 		return clone;
