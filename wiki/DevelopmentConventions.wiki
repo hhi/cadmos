@@ -24,4 +24,4 @@ Here are some key points concerning the format:
   * {{{edu.tum.cs.cadmos.<...>.ui}}} for the _"RCP/SWT"_ plug-in part of a project, provising a user interface for the functionality implemented in the _"core project"_. Such a _"ui project"_ additionally has a {{{plugin.xml}}} file to define views, extensions points etc.
  * Class names are combinations of nouns, while each noun starts with a uppercase letter, e.g. {{{Channel}}} and {{{AtomicComponent}}}.
  * Interface names follow the conventions of class names and additionally start with the letter "I", e.g. {{{IVariable}}} and {{{ICompositeComponent}}}.
- * Enumeration names follow the conventions of class names and additionally start with the letter "I", e.g. {{{EType}}} and {{{EOperator}}}.
+ * Enumeration names follow the conventions of class names and additionally start with the letter "E", e.g. {{{EType}}} and {{{EOperator}}}.
