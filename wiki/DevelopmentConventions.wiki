@@ -28,5 +28,5 @@ Here are some key points concerning the format:
   * Enumeration names follow the conventions of class names and additionally start with the letter "E", e.g. {{{EType}}} and {{{EOperator}}}.
   * Class names of abstract classes follow the conventions of class names and additionally start with the prefix "Abstract", e.g. {{{AbstractComponent}}} and {{{AbstractTypedElement}}}.
  * Members of types follow these naming conventions:
-  * Field names are a combination of words (usually nouns and adjectives) and start with a lowercase letter, while all other words start with an uppercase letter, e.g. {{{children}}} and {{{leftOperand}}}. Names of boolean fields are often adjectives, e.g. {{{enabled}}}.
+  * Field names are a combination of words (usually nouns and adjectives). A field name starts with a word in lowercase letters, while all following words start with an uppercase letter, e.g. {{{children}}} and {{{leftOperand}}}. Names of boolean fields are often adjectives, e.g. {{{enabled}}}.
   * Field names start with a lowercase letter.
