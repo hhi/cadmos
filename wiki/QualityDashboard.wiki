@@ -1,0 +1,4 @@
+#summary Nightly updated quality assurance information.
+#labels Phase-QA,Phase-Implementation
+
+<wiki:gadget url="http://www4.in.tum.de/~schwitze/cadmos/qa.xml" width="900" height="900" />
