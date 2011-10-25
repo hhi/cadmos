@@ -1,0 +1,8 @@
+#summary Terminology and concepts applied during source development.
+#labels Phase-Design,Phase-Implementation
+
+=== Component ===
+A component defines function that maps messages of incoming channels to messages on outgoing channels.
+This function of a component is also called the _behavior_ of the component.
+The behavior of a component is either defined directly by a non-deterministic transition machine or it is defined by the composed behavior of several _children_ components.
+This hierarchical parent-children relation describes the _structure_ of a system.
