@@ -28,10 +28,21 @@ Furthermore, a channel can _buffer_ messages by a certain _delay_, so a message 
 A channel with a given buffer length of _d_ also requires _d_ initial messages.
 
 See also:*
+[Terminology#Component Component],
 [Terminology#Message Message],
 [Terminology#System_Boundary System Boundary],
 [Terminology#Buffer Buffer],
-[Terminology#Synchronous_System Synchronous System]
+[Terminology#Rate Rate]
 *
 
 == Message ==
+A message has a data _type_ and is transmitted over a _channel_ with the same data _type_.
+Any message is produced and sent by the _source component_ of a channel and received and consumed by the _destination component_ of a channel.
+Messages can be _buffered_ in channels and can be produced and consumed at different _rates_.
+
+See also:*
+[Terminology#Component Component],
+[Terminology#Channel Channel],
+[Terminology#Buffer Buffer],
+[Terminology#Rate Rate]
+* 
