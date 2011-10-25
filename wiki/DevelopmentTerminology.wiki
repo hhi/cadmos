@@ -1,7 +1,10 @@
 #summary Terminology and concepts applied during source development.
 #labels Phase-Design,Phase-Implementation
 
-=== Component ===
+= Terminology =
+http://www4.in.tum.de/~schwitze/cadmos/cadmos-lens-reflections.png
+
+== Component ==
 A component defines function that maps _messages_ received on _incoming channels_ to messages sent on _outgoing channels_.
 The function of a component is also called the _behavior_ of the component.
 The behavior of a component is either defined directly by a _non-deterministic transition machine_ or it is defined by the composed behavior of several _children_ components.
@@ -15,7 +18,7 @@ See also:*
 [DevelopmentTerminology#Machine Machine]
 *
 
-=== Channel ===
+== Channel ==
 A channel represents a stream of _messages_ transmitted from a source component to a destination component.
 We say, a channel is _outgoing_ from its source component and _incoming_ to its destination component.
 A channel is _outbound_ to the _system boundary_ if its destination component is undefined.
@@ -31,4 +34,4 @@ See also:*
 [DevelopmentTerminology#Synchronous_System Synchronous System]
 *
 
-=== Message ===
+== Message ==
