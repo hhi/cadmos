@@ -11,4 +11,6 @@ This hierarchical parent-children relation describes the _structure_ of a system
 A channel represents a stream of _messages_ transmitted from a source component to a destination component.
 A channel is _outbound_ to the _system boundary_ if its destination component is undefined.
 A channel is _inbound_ from the _system boundary_ if its source component is undefined.
-If a channel is neither outbound nor inbound, it can only _connect_ two components that belong to the same parent.
+If a channel is neither outbound nor inbound, it can only _connect_ two components that belong to the same parent component.
+Furthermore, a channel can buffer messages by a certain _delay_, so a message sent by the source component at step _i_ will be received by the destination component at step _i + delay_.
+A channel with a given buffer length of _delay_ also requires _delay_ initial messages for this buffer.
