@@ -2,7 +2,13 @@
 #labels Phase-Design,Phase-Implementation
 
 === Component ===
-A component defines function that maps messages of incoming channels to messages on outgoing channels.
-This function of a component is also called the _behavior_ of the component.
-The behavior of a component is either defined directly by a non-deterministic transition machine or it is defined by the composed behavior of several _children_ components.
+A component defines function that maps _messages_ received on incoming channels to messages sent on outgoing channels.
+The function of a component is also called the _behavior_ of the component.
+The behavior of a component is either defined directly by a _non-deterministic transition machine_ or it is defined by the composed behavior of several _children_ components.
 This hierarchical parent-children relation describes the _structure_ of a system.
+
+=== Channel ===
+A channel represents a stream of _messages_ transmitted from a source component to a destination component.
+A channel is _outbound_ to the _system boundary_ if its destination component is undefined.
+A channel is _inbound_ from the _system boundary_ if its source component is undefined.
+If a channel is neither outbound nor inbound, it can only _connect_ two components that belong to the same parent.
