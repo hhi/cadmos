@@ -7,7 +7,7 @@ The function of a component is also called the _behavior_ of the component.
 The behavior of a component is either defined directly by a _non-deterministic transition machine_ or it is defined by the composed behavior of several _children_ components.
 This hierarchical parent-children relation describes the _structure_ of a system.
 
-See also: 
+See also: DevelopmentTerminology#Message
 
 === Channel ===
 A channel represents a stream of _messages_ transmitted from a source component to a destination component.
