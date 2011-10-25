@@ -1,4 +1,4 @@
-#summary Terminology and concepts applied during source development.
+#summary Terminology and concepts behind Cadmos, explained for users and developers.
 #labels Phase-Design,Phase-Implementation
 
 = Terminology =
