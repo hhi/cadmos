@@ -19,7 +19,7 @@ See also:*
 *
 
 == Channel ==
-A channel represents a stream of _messages_ transmitted from a source component to a destination component.
+A channel represents a stream of _typed messages_ transmitted from a source component to a destination component.
 We say, a channel is _outgoing_ from its source component and _incoming_ to its destination component.
 A channel is _outbound_ to the _system boundary_ if its destination component is undefined.
 A channel is _inbound_ from the _system boundary_ if its source component is undefined.
@@ -30,6 +30,7 @@ A channel with a given buffer length of _d_ also requires _d_ initial messages.
 See also:*
 [Terminology#Component Component],
 [Terminology#Message Message],
+[Terminology#Type Type],
 [Terminology#System_Boundary System Boundary],
 [Terminology#Buffer Buffer],
 [Terminology#Rate Rate]
@@ -43,6 +44,9 @@ Messages can be _buffered_ in channels and can be produced and consumed at diffe
 See also:*
 [Terminology#Component Component],
 [Terminology#Channel Channel],
+[Terminology#Type Type],
 [Terminology#Buffer Buffer],
 [Terminology#Rate Rate]
-* 
+*
+
+== Type ==
