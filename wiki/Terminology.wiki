@@ -11,10 +11,10 @@ The behavior of a component is either defined directly by a _non-deterministic t
 This hierarchical parent-children relation describes the _structure_ of a system.
 
 See also:*
-[Terminology#Channel Channel]
-[Terminology#Message Message]
-[Terminology#Structure Structure]
-[Terminology#Behavior Behavior]
+[Terminology#Channel Channel],
+[Terminology#Message Message],
+[Terminology#Structure Structure],
+[Terminology#Behavior Behavior],
 [Terminology#Machine Machine]
 *
 
@@ -28,9 +28,9 @@ Furthermore, a channel can _buffer_ messages by a certain _delay_, so a message 
 A channel with a given buffer length of _d_ also requires _d_ initial messages.
 
 See also:*
-[Terminology#Message Message]
-[Terminology#System_Boundary System Boundary]
-[Terminology#Buffer Buffer]
+[Terminology#Message Message],
+[Terminology#System_Boundary System Boundary],
+[Terminology#Buffer Buffer],
 [Terminology#Synchronous_System Synchronous System]
 *
 
