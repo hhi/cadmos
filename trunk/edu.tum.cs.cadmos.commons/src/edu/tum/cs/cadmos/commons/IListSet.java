@@ -1,13 +1,9 @@
 package edu.tum.cs.cadmos.commons;
 
-import java.util.Set;
 
-public interface IListSet<E extends IIdentifiable> extends IListCollection<E> {
+public interface IListSet<E extends IIdentifiable> extends
+		IListCollection<E, E> {
 
-	E get(E element);
-
-	E get(String id);
-
-	Set<E> toSet();
+	/* Nothing to declare. Type parameters resolve all concrete methods. */
 
 }

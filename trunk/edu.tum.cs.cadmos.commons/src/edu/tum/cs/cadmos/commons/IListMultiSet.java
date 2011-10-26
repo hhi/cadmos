@@ -3,10 +3,8 @@ package edu.tum.cs.cadmos.commons;
 import java.util.List;
 
 public interface IListMultiSet<E extends IIdentifiable> extends
-		IListCollection<E> {
+		IListCollection<E, List<E>> {
 
-	List<E> get(E element);
-
-	List<E> get(String id);
+	/* Nothing to declare. Type parameters resolve all concrete methods. */
 
 }
