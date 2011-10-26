@@ -57,7 +57,7 @@ See also:*
 *
 
 == Type ==
-A type is basically defined by a set of all possible values that instances of that type can take. We distinguish between _elementary types_ and _composite types_. Elementary types are _Boolean_ = {*false*, *true*}, subsets of _Integer_ = {_min_, _min_+1, ..., _max_-1, _max_} and ranges in _Real_ = [min, ..., max].
+A type is basically defined by a set of all possible values that instances of that type can take. We distinguish between _elementary types_ and _composite types_. Elementary types are _Boolean_ = {*false*, *true*}, subsets of _Integer_ = {_min_, _min_+1, ..., _max_-1, _max_} and ranges in _Real_ = {{{[}}}_min_, ..., _max_{{{]}}}.
 
 == Stream ==
 
