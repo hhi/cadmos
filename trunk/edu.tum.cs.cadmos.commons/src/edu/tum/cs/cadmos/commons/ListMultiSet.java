@@ -3,32 +3,30 @@ package edu.tum.cs.cadmos.commons;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-public class ListSet<E extends IIdentifiable> implements IListSet<E> {
+public class ListMultiSet<E extends IIdentifiable> implements IListMultiSet<E> {
 
 	private final List<E> list = new ArrayList<>();
 
-	private final Map<String, E> map = new HashMap<>();
+	private final Map<String, List<E>> map = new HashMap<>();
 
-	public ListSet() {
+	public ListMultiSet() {
 		// Default constructor.
 	}
 
-	public ListSet(Collection<E> initialElements) {
+	public ListMultiSet(Collection<E> initialElements) {
 		addAll(initialElements);
 	}
 
-	public ListSet(IListSet<E> initialElements) {
+	public ListMultiSet(IListCollection<E> initialElements) {
 		addAll(initialElements);
 	}
 
 	@SafeVarargs
-	public ListSet(E... initialElements) {
+	public ListMultiSet(E... initialElements) {
 		for (final E e : initialElements) {
 			add(e);
 		}
@@ -43,11 +41,12 @@ public class ListSet<E extends IIdentifiable> implements IListSet<E> {
 	/** {@inheritDoc} */
 	@Override
 	public void add(E element) {
-		if (map.containsKey(element.getId())) {
-			throw new IllegalArgumentException("Element '" + element
-					+ "' with id '" + element.getId() + "' is already present");
+		List<E> multiElements = map.get(element.getId());
+		if (multiElements == null) {
+			multiElements = new ArrayList<>();
+			map.put(element.getId(), multiElements);
 		}
-		map.put(element.getId(), element);
+		multiElements.add(element);
 		list.add(element);
 	}
 
@@ -81,14 +80,14 @@ public class ListSet<E extends IIdentifiable> implements IListSet<E> {
 
 	/** {@inheritDoc} */
 	@Override
-	public E get(E element) {
+	public List<E> get(E element) {
 		return get(element.getId());
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public E get(String id) {
-		return map.get(id);
+	public List<E> get(String id) {
+		return new ArrayList<>(map.get(id));
 	}
 
 	/** {@inheritDoc} */
@@ -124,8 +123,8 @@ public class ListSet<E extends IIdentifiable> implements IListSet<E> {
 	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof ListSet<?>
-				&& ((ListSet<?>) other).list.equals(list);
+		return other instanceof ListMultiSet<?>
+				&& ((ListMultiSet<?>) other).list.equals(list);
 	}
 
 	/** {@inheritDoc} */
@@ -148,12 +147,6 @@ public class ListSet<E extends IIdentifiable> implements IListSet<E> {
 	@Override
 	public List<E> toList() {
 		return new ArrayList<>(list);
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public Set<E> toSet() {
-		return new HashSet<>(map.values());
 	}
 
 }
