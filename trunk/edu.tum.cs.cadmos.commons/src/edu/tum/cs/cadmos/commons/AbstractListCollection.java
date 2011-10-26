@@ -20,11 +20,9 @@ package edu.tum.cs.cadmos.commons;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Abstract base class implementation of the {@link IListCollection} interface.
@@ -132,12 +130,6 @@ public abstract class AbstractListCollection<E extends IIdentifiable, R>
 	@Override
 	public List<E> toList() {
 		return new ArrayList<>(list);
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public Set<R> toSet() {
-		return new HashSet<>(map.values());
 	}
 
 }

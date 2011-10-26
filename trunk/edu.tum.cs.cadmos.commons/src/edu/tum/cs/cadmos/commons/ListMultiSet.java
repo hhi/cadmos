@@ -3,8 +3,10 @@ package edu.tum.cs.cadmos.commons;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ListMultiSet<E extends IIdentifiable> extends
 		AbstractListCollection<E, List<E>> implements IListMultiSet<E> {
@@ -42,8 +44,18 @@ public class ListMultiSet<E extends IIdentifiable> extends
 
 	/** {@inheritDoc} */
 	@Override
+	public Set<List<E>> toSet() {
+		final Set<List<E>> set = new HashSet<>();
+		for (final List<E> value : map.values()) {
+			set.add(new ArrayList<>(value));
+		}
+		return set;
+	}
+
+	/** {@inheritDoc} */
+	@Override
 	public Map<String, List<E>> toMap() {
-		final HashMap<String, List<E>> copy = new HashMap<>();
+		final Map<String, List<E>> copy = new HashMap<>();
 		for (final Map.Entry<String, List<E>> entry : map.entrySet()) {
 			copy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
 		}

@@ -2,7 +2,9 @@ package edu.tum.cs.cadmos.commons;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class ListSet<E extends IIdentifiable> extends
 		AbstractListCollection<E, E> implements IListSet<E> {
@@ -35,6 +37,12 @@ public class ListSet<E extends IIdentifiable> extends
 		}
 		map.put(element.getId(), element);
 		list.add(element);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Set<E> toSet() {
+		return new HashSet<>(map.values());
 	}
 
 	/** {@inheritDoc} */
