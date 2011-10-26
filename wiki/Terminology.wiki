@@ -5,6 +5,8 @@ http://www4.in.tum.de/~schwitze/cadmos/cadmos-sketch.png
 
 = Terminology and Concepts =
 
+*Authors:* W. Schwitzer
+
 This page defines central terms of Cadmos and explains the main concepts. The target audience are users as well as developers. 
 
 == Component ==
