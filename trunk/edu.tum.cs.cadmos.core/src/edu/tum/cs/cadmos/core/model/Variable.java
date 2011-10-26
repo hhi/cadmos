@@ -1,7 +1,7 @@
 package edu.tum.cs.cadmos.core.model;
 
-import static edu.tum.cs.cadmos.commons.Assert.assertNotNull;
-import static edu.tum.cs.cadmos.commons.Assert.assertTrue;
+import static edu.tum.cs.cadmos.commons.core.Assert.assertNotNull;
+import static edu.tum.cs.cadmos.commons.core.Assert.assertTrue;
 import static edu.tum.cs.cadmos.core.expressions.ConstantExpression.EMPTY_MESSAGE;
 import static edu.tum.cs.cadmos.core.types.VoidType.VOID;
 import edu.tum.cs.cadmos.core.expressions.IExpression;

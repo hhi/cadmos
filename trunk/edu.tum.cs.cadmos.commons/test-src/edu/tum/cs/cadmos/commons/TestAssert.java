@@ -2,7 +2,7 @@ package edu.tum.cs.cadmos.commons;
 
 import org.junit.Test;
 
-import edu.tum.cs.cadmos.commons.Assert;
+import edu.tum.cs.cadmos.commons.core.Assert;
 
 public class TestAssert {
 

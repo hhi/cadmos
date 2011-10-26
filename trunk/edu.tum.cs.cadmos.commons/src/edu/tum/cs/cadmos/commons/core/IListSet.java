@@ -1,4 +1,4 @@
-package edu.tum.cs.cadmos.commons;
+package edu.tum.cs.cadmos.commons.core;
 
 
 public interface IListSet<E extends IIdentifiable> extends

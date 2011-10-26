@@ -12,8 +12,8 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import edu.tum.cs.cadmos.commons.AbstractIdentifiable;
-import edu.tum.cs.cadmos.commons.ListSet;
+import edu.tum.cs.cadmos.commons.core.AbstractIdentifiable;
+import edu.tum.cs.cadmos.commons.core.ListSet;
 
 public class TestListSet {
 

@@ -8,7 +8,7 @@ import java.util.Deque;
 
 import org.junit.Test;
 
-import edu.tum.cs.cadmos.commons.IListSet;
+import edu.tum.cs.cadmos.commons.core.IListSet;
 
 public class TestModelUtils {
 

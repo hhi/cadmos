@@ -1,6 +1,6 @@
 package edu.tum.cs.cadmos.core.types;
 
-import edu.tum.cs.cadmos.commons.IListSet;
+import edu.tum.cs.cadmos.commons.core.IListSet;
 
 public class RecordType extends AbstractType {
 

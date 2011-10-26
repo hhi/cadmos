@@ -17,7 +17,7 @@
 
 package edu.tum.cs.cadmos.core.model;
 
-import edu.tum.cs.cadmos.commons.IListSet;
+import edu.tum.cs.cadmos.commons.core.IListSet;
 
 /**
  * A component in a hierarchical data-flow system model, which has a parent and

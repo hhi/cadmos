@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import edu.tum.cs.cadmos.commons.ListSet;
+import edu.tum.cs.cadmos.commons.core.ListSet;
 
 public class TestModelElements {
 

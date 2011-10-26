@@ -15,7 +15,7 @@
 | limitations under the License.                                           |
 +--------------------------------------------------------------------------*/
 
-package edu.tum.cs.cadmos.commons;
+package edu.tum.cs.cadmos.commons.core;
 
 /**
  * An object that is identified by a unique <i>id</i>.

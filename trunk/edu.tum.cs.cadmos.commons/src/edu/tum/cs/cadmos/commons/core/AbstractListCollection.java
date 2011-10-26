@@ -15,7 +15,7 @@
 | limitations under the License.                                           |
 +--------------------------------------------------------------------------*/
 
-package edu.tum.cs.cadmos.commons;
+package edu.tum.cs.cadmos.commons.core;
 
 import java.util.ArrayList;
 import java.util.Collection;

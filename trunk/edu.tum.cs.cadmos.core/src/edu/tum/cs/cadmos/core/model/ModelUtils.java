@@ -17,15 +17,15 @@
 
 package edu.tum.cs.cadmos.core.model;
 
-import static edu.tum.cs.cadmos.commons.Assert.assertNotNull;
-import static edu.tum.cs.cadmos.commons.Assert.assertTrue;
+import static edu.tum.cs.cadmos.commons.core.Assert.assertNotNull;
+import static edu.tum.cs.cadmos.commons.core.Assert.assertTrue;
 import static java.util.Arrays.asList;
 
 import java.util.Deque;
 import java.util.LinkedList;
 
-import edu.tum.cs.cadmos.commons.IListSet;
-import edu.tum.cs.cadmos.commons.ListSet;
+import edu.tum.cs.cadmos.commons.core.IListSet;
+import edu.tum.cs.cadmos.commons.core.ListSet;
 
 /**
  * A set of utility methods for operations on classes in the <span

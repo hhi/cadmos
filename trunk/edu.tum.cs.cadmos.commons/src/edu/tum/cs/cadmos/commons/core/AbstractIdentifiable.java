@@ -15,9 +15,9 @@
 | limitations under the License.                                           |
 +--------------------------------------------------------------------------*/
 
-package edu.tum.cs.cadmos.commons;
+package edu.tum.cs.cadmos.commons.core;
 
-import static edu.tum.cs.cadmos.commons.Assert.assertNotNull;
+import static edu.tum.cs.cadmos.commons.core.Assert.assertNotNull;
 
 /**
  * Abstract base class for objects that are identified by a unique <i>id</i>.

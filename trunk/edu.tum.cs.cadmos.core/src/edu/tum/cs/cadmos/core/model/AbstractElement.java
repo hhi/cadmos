@@ -1,6 +1,6 @@
 package edu.tum.cs.cadmos.core.model;
 
-import edu.tum.cs.cadmos.commons.AbstractIdentifiable;
+import edu.tum.cs.cadmos.commons.core.AbstractIdentifiable;
 
 public abstract class AbstractElement extends AbstractIdentifiable implements
 		IElement {

@@ -1,7 +1,7 @@
 package edu.tum.cs.cadmos.core.types;
 
-import static edu.tum.cs.cadmos.commons.Assert.assertNotNull;
-import edu.tum.cs.cadmos.commons.AbstractIdentifiable;
+import static edu.tum.cs.cadmos.commons.core.Assert.assertNotNull;
+import edu.tum.cs.cadmos.commons.core.AbstractIdentifiable;
 
 public class RecordMember extends AbstractIdentifiable {
 

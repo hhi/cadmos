@@ -1,8 +1,8 @@
 package edu.tum.cs.cadmos.core.model;
 
-import static edu.tum.cs.cadmos.commons.Assert.assertTrue;
-import edu.tum.cs.cadmos.commons.IListSet;
-import edu.tum.cs.cadmos.commons.ListSet;
+import static edu.tum.cs.cadmos.commons.core.Assert.assertTrue;
+import edu.tum.cs.cadmos.commons.core.IListSet;
+import edu.tum.cs.cadmos.commons.core.ListSet;
 
 public abstract class AbstractComponent extends AbstractElement implements
 		IComponent {

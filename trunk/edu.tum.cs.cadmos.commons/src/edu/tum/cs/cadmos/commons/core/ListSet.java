@@ -1,4 +1,4 @@
-package edu.tum.cs.cadmos.commons;
+package edu.tum.cs.cadmos.commons.core;
 
 import java.util.Collection;
 import java.util.HashMap;

@@ -1,6 +1,6 @@
 package edu.tum.cs.cadmos.core.expressions;
 
-import static edu.tum.cs.cadmos.commons.Assert.assertTrue;
+import static edu.tum.cs.cadmos.commons.core.Assert.assertTrue;
 import static edu.tum.cs.cadmos.core.expressions.EOperator.DEC;
 import static edu.tum.cs.cadmos.core.expressions.EOperator.INC;
 import static edu.tum.cs.cadmos.core.expressions.EOperator.NEG;
