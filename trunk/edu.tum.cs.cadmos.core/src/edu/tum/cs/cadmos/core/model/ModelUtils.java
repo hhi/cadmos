@@ -63,6 +63,8 @@ public class ModelUtils {
 	 * <i>parent</i>, equal to the given <i>channel</i> or <code>null</code> if
 	 * no such outbound channel exists.
 	 * <p>
+	 * A channel is <i>outbound</i> if its destination is <code>null</code>.
+	 * <p>
 	 * For the returned channel <code>c</code> either
 	 * <code>(c.getDst() == null) && c.equals(channel) && (c.getSrc().getParent() == parent)</code>
 	 * holds or <code>c == null</code>.
@@ -72,6 +74,28 @@ public class ModelUtils {
 		for (final IComponent child : parent.getChildren()) {
 			final IChannel candidate = child.getOutgoing().get(channel);
 			if (candidate != null && candidate.getDst() == null) {
+				return candidate;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns an inbound channel of any of the children of the given
+	 * <i>parent</i>, equal to the given <i>channel</i> or <code>null</code> if
+	 * no such inbound channel exists.
+	 * <p>
+	 * A channel is <i>inbound</i> if its source is <code>null</code>.
+	 * <p>
+	 * For the returned channel <code>c</code> either
+	 * <code>(c.getSrc() == null) && c.equals(channel) && (c.getDst().getParent() == parent)</code>
+	 * holds or <code>c == null</code>.
+	 */
+	public static IChannel getInboundChildChannel(ICompositeComponent parent,
+			IChannel channel) {
+		for (final IComponent child : parent.getChildren()) {
+			final IChannel candidate = child.getIncoming().get(channel);
+			if (candidate != null && candidate.getSrc() == null) {
 				return candidate;
 			}
 		}
@@ -89,23 +113,23 @@ public class ModelUtils {
 	 * <i>channel</i> as last element.
 	 * 
 	 * @throws AssertionError
-	 *             if the component model is no well-formed and, hence, no
-	 *             source component can be reached within the system boundary.
+	 *             if the component model is no well-formed and, hence, the
+	 *             transitive source component is not within the system
+	 *             boundary.
 	 */
-	public static Deque<IChannel> getPathToTransitiveSrc(IChannel channel,
+	public static Deque<IChannel> getSrcPath(IChannel channel,
 			ICompositeComponent systemBoundary) {
 		final IComponent src = channel.getSrc();
 		if (src instanceof IAtomicComponent) {
 			return new LinkedList<>(asList(channel));
 		}
 		if (src instanceof ICompositeComponent) {
-			final IChannel srcOutboundChannel = getOutboundChildChannel(
-					(ICompositeComponent) src, channel);
-			assertNotNull(srcOutboundChannel, "srcOutboundChannel");
-			final Deque<IChannel> pathToTransitiveSrc = getPathToTransitiveSrc(
-					srcOutboundChannel, systemBoundary);
-			pathToTransitiveSrc.addLast(channel);
-			return pathToTransitiveSrc;
+			final ICompositeComponent compSrc = (ICompositeComponent) src;
+			final IChannel outbound = getOutboundChildChannel(compSrc, channel);
+			assertNotNull(outbound, "outbound");
+			final Deque<IChannel> path = getSrcPath(outbound, systemBoundary);
+			path.addLast(channel);
+			return path;
 		}
 		final IComponent dst = channel.getDst();
 		assertNotNull(dst, "dst");
@@ -114,19 +138,64 @@ public class ModelUtils {
 			return new LinkedList<>(asList(channel));
 		}
 		if (src == null && parent != systemBoundary) {
-			final IChannel parentIncomingChannel = parent.getIncoming().get(
-					channel);
-			assertNotNull(parentIncomingChannel, "parentIncomingChannel");
-			final Deque<IChannel> pathToTransitiveSrc = getPathToTransitiveSrc(
-					parentIncomingChannel, systemBoundary);
-			pathToTransitiveSrc.addLast(channel);
-			return pathToTransitiveSrc;
+			final IChannel incoming = parent.getIncoming().get(channel);
+			assertNotNull(incoming, "incoming");
+			final Deque<IChannel> path = getSrcPath(incoming, systemBoundary);
+			path.addLast(channel);
+			return path;
 		}
-		throw new AssertionError("Cannot find transitive source for channel '"
-				+ channel + "' and system boundary '" + systemBoundary + "'");
+		throw new AssertionError("Cannot find path to transitive source for '"
+				+ channel + "' within system boundary '" + systemBoundary + "'");
 	}
 
-	public static IListSet<IComponent> analyzeFlatAtomicComponentNetwork(
+	/**
+	 * Returns the path of channels to the atomic destination component of the
+	 * given <i>channel</i> that is transitively reachable within the given
+	 * <i>systemBoundary</i> or throws an {@link AssertionError} if no such
+	 * source exists.
+	 * <p>
+	 * The path is returned as a {@link Deque} of {@link IChannel}s with the
+	 * given <i>channel</i> as first element and the channel incoming to the
+	 * transitive destination as last element.
+	 * 
+	 * @throws AssertionError
+	 *             if the component model is no well-formed and, hence, the
+	 *             transitive destination component is not within the system
+	 *             boundary.
+	 */
+	public static Deque<IChannel> getDstPath(IChannel channel,
+			ICompositeComponent systemBoundary) {
+		final IComponent dst = channel.getDst();
+		if (dst instanceof IAtomicComponent) {
+			return new LinkedList<>(asList(channel));
+		}
+		if (dst instanceof ICompositeComponent) {
+			final ICompositeComponent compDst = (ICompositeComponent) dst;
+			final IChannel inbound = getInboundChildChannel(compDst, channel);
+			assertNotNull(inbound, "inbound");
+			final Deque<IChannel> path = getDstPath(inbound, systemBoundary);
+			path.addFirst(channel);
+			return path;
+		}
+		final IComponent src = channel.getSrc();
+		assertNotNull(src, "src");
+		final ICompositeComponent parent = src.getParent();
+		if (dst == null && (parent == systemBoundary || parent == null)) {
+			return new LinkedList<>(asList(channel));
+		}
+		if (dst == null && parent != systemBoundary) {
+			final IChannel outgoing = parent.getOutgoing().get(channel);
+			assertNotNull(outgoing, "outgoing");
+			final Deque<IChannel> path = getDstPath(outgoing, systemBoundary);
+			path.addFirst(channel);
+			return path;
+		}
+		throw new AssertionError(
+				"Cannot find path to transitive destination for '" + channel
+						+ "' within system boundary '" + systemBoundary + "'");
+	}
+
+	public static IListSet<IComponent> transformAtomicComponentNetwork(
 			ICompositeComponent systemBoundary) {
 		/* Clone the network of children components. */
 		final IListSet<IComponent> network = new ListSet<>();
