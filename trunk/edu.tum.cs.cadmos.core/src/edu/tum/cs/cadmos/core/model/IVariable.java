@@ -17,6 +17,8 @@
 
 package edu.tum.cs.cadmos.core.model;
 
+import edu.tum.cs.cadmos.core.expressions.IExpression;
+
 /**
  * A typed variable with id and name that exists within the scope of an
  * {@link IAtomicComponent}.
@@ -34,6 +36,9 @@ public interface IVariable extends ITypedElement {
 
 	/** Returns the component scope in which this variable exists. */
 	IAtomicComponent getScope();
+
+	/** Returns the initial message. */
+	IExpression getInitialMessage();
 
 	/** Returns a clone of this variable within the given <i>newScope</i>. */
 	IVariable clone(IAtomicComponent newScope);
