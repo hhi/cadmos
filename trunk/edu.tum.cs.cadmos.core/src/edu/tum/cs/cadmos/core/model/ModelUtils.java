@@ -32,8 +32,11 @@ import edu.tum.cs.cadmos.commons.ListSet;
  * style="font-variant:small-caps">Cadmos</span> core model package.
  * 
  * @author wolfgang.schwitzer
- * @author $Author$
+ * @author nvpopa@gmail.com
+ * @author dominik.chessa@gmail.com
  * @version $Rev$
+ * @version $Author$
+ * @version $Date$
  * @ConQAT.Rating RED Hash:
  */
 public class ModelUtils {

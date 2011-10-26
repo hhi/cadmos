@@ -32,8 +32,9 @@ import edu.tum.cs.cadmos.core.types.IType;
  * Tests for clone(...) methods of the model elements.
  * 
  * @author wolfgang.schwitzer
- * @author $Author$
  * @version $Rev$
+ * @version $Author$
+ * @version $Date$
  * @ConQAT.Rating RED Hash:
  */
 public class TestModelCloning {

@@ -25,8 +25,9 @@ package edu.tum.cs.cadmos.core.model;
  * {@link #clone(IAtomicComponent)}.
  * 
  * @author wolfgang.schwitzer
- * @author $Author$
  * @version $Rev$
+ * @version $Author$
+ * @version $Date$
  * @ConQAT.Rating RED Hash:
  */
 public interface IVariable extends ITypedElement {

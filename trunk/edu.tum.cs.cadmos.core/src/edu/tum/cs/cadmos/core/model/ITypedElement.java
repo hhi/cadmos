@@ -23,8 +23,9 @@ import edu.tum.cs.cadmos.core.types.IType;
  * An element that has a data type.
  * 
  * @author wolfgang.schwitzer
- * @author $Author$
  * @version $Rev$
+ * @version $Author$
+ * @version $Date$
  * @ConQAT.Rating RED Hash:
  */
 public interface ITypedElement extends IElement {

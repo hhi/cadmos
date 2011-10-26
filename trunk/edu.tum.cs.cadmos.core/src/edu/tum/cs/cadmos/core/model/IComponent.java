@@ -40,8 +40,9 @@ import edu.tum.cs.cadmos.commons.IListSet;
  * @see IChannel
  * 
  * @author wolfgang.schwitzer
- * @author $Author$
  * @version $Rev$
+ * @version $Author$
+ * @version $Date$
  * @ConQAT.Rating GREEN Hash: 873587029FE8D954E7681BC406120A6D
  */
 public interface IComponent extends IElement {
