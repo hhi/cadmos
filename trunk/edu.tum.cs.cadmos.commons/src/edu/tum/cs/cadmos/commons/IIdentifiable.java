@@ -32,9 +32,10 @@ package edu.tum.cs.cadmos.commons;
  * @see AbstractIdentifiable
  * 
  * @author wolfgang.schwitzer
- * @author $Author$
  * @version $Rev$
- * @ConQAT.Rating GREEN Hash: 02F6400DE690FE84BC156BD1707F67AB
+ * @version $Author$
+ * @version $Date$
+ * @ConQAT.Rating GREEN Hash: AE806F11DBD60EB7F8D0B98BE5FC8C41
  */
 public interface IIdentifiable {
 

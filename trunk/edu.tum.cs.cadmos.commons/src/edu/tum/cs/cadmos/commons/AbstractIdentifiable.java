@@ -25,9 +25,10 @@ import static edu.tum.cs.cadmos.commons.Assert.assertNotNull;
  * @see IIdentifiable
  * 
  * @author wolfgang.schwitzer
- * @author $Author$
  * @version $Rev$
- * @ConQAT.Rating GREEN Hash: DF1296E24D6CFD65A5903E23A4CD4886
+ * @version $Author$
+ * @version $Date$
+ * @ConQAT.Rating GREEN Hash: AE5E679CB3EE4F4B494AC916D94B369A
  */
 public abstract class AbstractIdentifiable implements IIdentifiable {
 

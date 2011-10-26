@@ -30,9 +30,10 @@ import java.util.Collection;
  * message-construction, although the condition may be <code>true</code>.
  * 
  * @author wolfgang.schwitzer
- * @author $Author$
  * @version $Rev$
- * @ConQAT.Rating GREEN Hash: 59235AA77262706E1E9B5BAE81DB5296
+ * @version $Author$
+ * @version $Date$
+ * @ConQAT.Rating GREEN Hash: 1F24469E8417259D44D423834A539D5B
  */
 public class Assert {
 
