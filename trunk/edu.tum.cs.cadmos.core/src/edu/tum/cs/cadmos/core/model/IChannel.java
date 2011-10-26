@@ -17,14 +17,17 @@
 
 package edu.tum.cs.cadmos.core.model;
 
+import java.util.List;
+
+import edu.tum.cs.cadmos.core.expressions.IExpression;
+
 /**
  * A channel is a typed element that connects a source and a destination
  * component.
  * 
- * @author wolfgang.schwitzer
- * @author $Author$
- * @version $Rev$
- * @ConQAT.Rating RED Hash:
+ * @author wolfgang.schwitzer, nvpopa@gmail.com, dominik.chessa@gmail.com
+ * @version $Rev$, $Author$, $Date$
+ * @ConQAT.Rating RED Hash: 97D9F2695446A55214210CF0F1598058
  */
 public interface IChannel extends ITypedElement {
 
@@ -33,6 +36,8 @@ public interface IChannel extends ITypedElement {
 	IComponent getDst();
 
 	int getDelay();
+
+	List<IExpression> getInitialMessages();
 
 	int getSrcRate();
 

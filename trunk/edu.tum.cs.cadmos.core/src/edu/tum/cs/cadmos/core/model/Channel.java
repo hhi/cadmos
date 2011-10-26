@@ -1,9 +1,17 @@
 package edu.tum.cs.cadmos.core.model;
 
 import static edu.tum.cs.cadmos.commons.Assert.assertNotContainedIn;
+import static edu.tum.cs.cadmos.commons.Assert.assertNotNull;
 import static edu.tum.cs.cadmos.commons.Assert.assertTrue;
+import static edu.tum.cs.cadmos.core.expressions.ConstantExpression.EMPTY_MESSAGE;
+import static edu.tum.cs.cadmos.core.types.VoidType.VOID;
+import static java.util.Collections.nCopies;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.tum.cs.cadmos.core.expressions.IExpression;
 import edu.tum.cs.cadmos.core.types.IType;
-import edu.tum.cs.cadmos.core.types.VoidType;
 
 public class Channel extends AbstractTypedElement implements IChannel {
 
@@ -11,14 +19,15 @@ public class Channel extends AbstractTypedElement implements IChannel {
 
 	private final IComponent dst;
 
-	private final int delay;
+	private final List<IExpression> initialMessages = new ArrayList<>();
 
 	private final int srcRate;
 
 	private final int dstRate;
 
 	public Channel(String id, String name, IType type, IComponent src,
-			IComponent dst, int delay, int srcRate, int dstRate) {
+			IComponent dst, List<IExpression> initialMessages, int srcRate,
+			int dstRate) {
 		super(id, name, type);
 		assertTrue(src != null || dst != null,
 				"Expected 'src' and 'dst' to be not null at the same time");
@@ -28,15 +37,16 @@ public class Channel extends AbstractTypedElement implements IChannel {
 					"Expected same parent of 'src' and 'dst', but was '%s' and '%s'",
 					src.getParent(), dst.getParent());
 		}
-		assertTrue(delay >= 0, "Expected 'delay' to be >= 0, but was '%s'",
-				delay);
+		for (final IExpression initialMessage : initialMessages) {
+			assertNotNull(initialMessage, "initialMessage");
+		}
 		assertTrue(srcRate > 0, "Expected 'srcRate' to be > 0, but was '%s'",
 				srcRate);
 		assertTrue(dstRate > 0, "Expected 'dstRate' to be > 0, but was '%s'",
 				dstRate);
 		this.src = src;
 		this.dst = dst;
-		this.delay = delay;
+		this.initialMessages.addAll(initialMessages);
 		this.srcRate = srcRate;
 		this.dstRate = dstRate;
 		if (src != null) {
@@ -62,7 +72,7 @@ public class Channel extends AbstractTypedElement implements IChannel {
 	}
 
 	public Channel(String id, IComponent src, IComponent dst, int delay) {
-		this(id, null, new VoidType(), src, dst, delay, 1, 1);
+		this(id, null, VOID, src, dst, nCopies(delay, EMPTY_MESSAGE), 1, 1);
 	}
 
 	@Override
@@ -77,7 +87,13 @@ public class Channel extends AbstractTypedElement implements IChannel {
 
 	@Override
 	public int getDelay() {
-		return delay;
+		return initialMessages.size();
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public List<IExpression> getInitialMessages() {
+		return initialMessages;
 	}
 
 	@Override
@@ -94,7 +110,7 @@ public class Channel extends AbstractTypedElement implements IChannel {
 	@Override
 	public IChannel clone(IComponent newSrc, IComponent newDst) {
 		return new Channel(getId(), getName(), getType(), newSrc, newDst,
-				getDelay(), getSrcRate(), getDstRate());
+				getInitialMessages(), getSrcRate(), getDstRate());
 	}
 
 }

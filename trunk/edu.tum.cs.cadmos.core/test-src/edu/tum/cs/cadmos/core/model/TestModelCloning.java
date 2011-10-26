@@ -17,6 +17,8 @@
 
 package edu.tum.cs.cadmos.core.model;
 
+import static edu.tum.cs.cadmos.core.expressions.ConstantExpression.EMPTY_MESSAGE;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -57,7 +59,8 @@ public class TestModelCloning {
 		final IAtomicComponent c3 = new AtomicComponent("c3", null);
 		final IAtomicComponent c4 = new AtomicComponent("c4", null);
 		final IType t = new BooleanType();
-		final IChannel c = new Channel("x", null, t, c1, c2, 1, 2, 3);
+		final IChannel c = new Channel("x", null, t, c1, c2,
+				asList(EMPTY_MESSAGE), 2, 3);
 		final IChannel clone = c.clone(c3, c4);
 		assertNotSame(c, clone);
 		assertEquals("x", clone.getId());
