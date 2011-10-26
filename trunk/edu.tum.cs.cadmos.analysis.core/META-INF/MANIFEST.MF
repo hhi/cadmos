@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Cadmos Core Analysis Functions
+Bundle-SymbolicName: edu.tum.cs.cadmos.analysis.core
+Bundle-Version: 1.0.0.M4
+Bundle-Vendor: http://www4.in.tum.de/
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: edu.tum.cs.cadmos.core;bundle-version="1.0.0.M4";visibility:=reexport
