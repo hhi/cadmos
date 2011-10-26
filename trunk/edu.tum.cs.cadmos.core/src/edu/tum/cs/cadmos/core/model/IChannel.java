@@ -25,9 +25,13 @@ import edu.tum.cs.cadmos.core.expressions.IExpression;
  * A channel is a typed element that connects a source and a destination
  * component.
  * 
- * @author wolfgang.schwitzer, nvpopa@gmail.com, dominik.chessa@gmail.com
- * @version $Rev$, $Author$, $Date$
- * @ConQAT.Rating RED Hash: 97D9F2695446A55214210CF0F1598058
+ * @author wolfgang.schwitzer
+ * @author nvpopa@gmail.com
+ * @author dominik.chessa@gmail.com
+ * @version $Rev$
+ * @version $Author$
+ * @version $Date$
+ * @ConQAT.Rating GREEN Hash: 918F24F813D187B494D5ED1A3F260CC4
  */
 public interface IChannel extends ITypedElement {
 
