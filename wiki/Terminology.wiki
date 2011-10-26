@@ -58,9 +58,15 @@ See also:*
 
 == Type ==
 A type is basically defined by a set of all possible values that instances of that type can take.
+Cadmos uses typed _channels_ and typed _variables_. 
 We distinguish between _elementary types_ and _composite types_.
 Elementary types are _Boolean_ = {*false*, *true*}, subsets of _Integer_ numbers defined by {_min_, _min_+1, ..., _max_-1, _max_}, ranges in _Real_ numbers defined by {{{[}}}_min_, ..., _max_{{{]}}} and _Enumeration_ types defined by {_lit_,,1,,, ..., _lit,,n,,_}.
-Composite types
+Composite types are _Record_ types defined by the set of all tuples {((_type_,,1,,, _lit_,,1,,), ..., (_type,,n,,_, _lit,,n,,_))}.
+
+See also:*
+[Terminology#Channel Channel],
+[Terminology#Variable Variable]
+*
 
 == Stream ==
 
@@ -69,5 +75,7 @@ Composite types
 == Buffer ==
 
 == Rate ==
+
+== Variable ==
 
 == Atomic Component Network ==
