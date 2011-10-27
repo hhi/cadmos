@@ -14,7 +14,7 @@ This page describes the steps to set up a working development environment:
  # Source Check-out
 
 = Prerequisites =
-Cadmos is developed using new Java 7 language features like inferred type parameters (e.g {{{Set<String> names = new HashSet<>();}}}), so you need a Java 7 runtime or SDK on the development machine, e.g. available at [http://www.oracle.com/technetwork/java/javase/downloads/index.html] .
+||Cadmos is developed using new Java 7 language features like inferred type parameters (e.g {{{Set<String> names = new HashSet<>();}}}), so you need a Java 7 runtime or SDK on the development machine, e.g. available at [http://www.oracle.com/technetwork/java/javase/downloads/index.html] .||<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">http://www.oracle.com/ocom/groups/public/@otn/documents/webcontent/347320.gif</a>||
 
 = Install Eclipse Indigo 3.7.1 =
 Cadmos has a _"pure Java"_ *core* part and an eclipse based *ui* part.
