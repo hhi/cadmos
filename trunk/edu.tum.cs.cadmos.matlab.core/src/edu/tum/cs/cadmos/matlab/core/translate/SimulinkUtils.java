@@ -30,9 +30,9 @@ import edu.tum.cs.simulink.model.SimulinkModel;
  * A SimulinkUtils.
  * 
  * @author
- * @version $Rev: $
- * @version $Author: $
- * @version $Date: $
+ * @version $Rev$
+ * @version $Author$
+ * @version $Date$
  * @ConQAT.Rating RED Hash:
  */
 public class SimulinkUtils {
