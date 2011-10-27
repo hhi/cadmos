@@ -16,7 +16,7 @@ Find a list of all wiki pages at: http://code.google.com/p/cadmos/w/list
 <td valign="top" width="50%">
 <h2>For Developers</h2>
  * DevelopmentEnvironmentSetup
- * WokspaceProjectsOverview
+ * WorkspaceProjectsOverview
  * QualityDashboard
  * DevelopmentConventions
 </td>
