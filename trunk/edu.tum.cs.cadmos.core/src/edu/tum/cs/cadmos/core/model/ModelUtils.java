@@ -37,7 +37,7 @@ import edu.tum.cs.cadmos.commons.core.ListSet;
  * @version $Rev$
  * @version $Author$
  * @version $Date$
- * @ConQAT.Rating RED Hash:
+ * @ConQAT.Rating RED Hash: 25C6DC14D5E2667733012506A11748EC
  */
 public class ModelUtils {
 

@@ -6,9 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 
@@ -28,12 +26,12 @@ public class TestListSet {
 	@Test
 	public void testHashCode() {
 		final ListSet<Element> ls = new ListSet<>();
-		final Set<Element> set = new HashSet<>();
+		final List<Element> list = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
 			ls.add(new Element(String.valueOf(i)));
-			set.add(new Element(String.valueOf(i)));
+			list.add(new Element(String.valueOf(i)));
 		}
-		assertEquals(set.hashCode(), ls.hashCode());
+		assertEquals(list.hashCode(), ls.hashCode());
 	}
 
 	@Test

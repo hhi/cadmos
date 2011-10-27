@@ -132,4 +132,17 @@ public abstract class AbstractListCollection<E extends IIdentifiable, R>
 		return new ArrayList<>(list);
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object other) {
+		return other instanceof AbstractListCollection<?, ?>
+				&& ((AbstractListCollection<?, ?>) other).list.equals(list);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode() {
+		return list.hashCode();
+	}
+
 }
