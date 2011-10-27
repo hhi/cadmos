@@ -29,13 +29,17 @@ Eclipse has build-in full Java 7 support starting from version 3.7.1, which can 
 
 = Setup Eclipse Workspace =
 Start eclipse and choose a workspace to work with.
-In the menu, choose _Window ... Preferences ... General ... Workspace_ and select *UTF-8* as _Text file encoding_. 
+In the menu, choose _Window ... Preferences ... General ... Workspace_ and select *UTF-8* as _Text file encoding_.
+
+http://www4.in.tum.de/~schwitze/cadmos/utf8.png 
 
 = Install Subclipse =
 Cadmos uses SVN for version control, which is supported by several client integrations for eclipse.
 We use a eclipse SVN client called *subclipse*.
 
 You can use this eclipse update manager url to install subclipse 1.8.x: [http://subclipse.tigris.org/update_1.8.x]
+
+<a href="http://subclipse.tigris.org/">http://subclipse.tigris.org/branding/images/logo.gif</a>
 
 = Install ConQAT Rating Support =
 Cadmos uses a review based quality rating (*RED*, *YELLOW* or *GREEN*) for each file:
@@ -46,10 +50,14 @@ This quality rating is tool-supported for eclipse by the *ConQAT rating support*
 
 For our purposes, it is sufficient to select solely the plug-in *"ConQAT Development Tools"* in the eclipse update manager.
 
+<a href="http://conqat.cs.tum.edu/index.php/ConQAT">http://conqat.informatik.tu-muenchen.de/images/2/28/Conqat_logo_wide_tum.jpg</a>
+
 = Install SWT Designer =
 Most developers also work on user interface related code, which is developed in Cadmos using the SWT Designer.
 Use the eclipse update manager, go to the pre-installed _Indigo_ update site and open the node _General Purpose Tools_.
-Select _SWT Designer_ and _SWT Designer Core_ here and proceed with download and installation. 
+Select _SWT Designer_ and _SWT Designer Core_ here and proceed with download and installation.
+
+http://code.google.com/javadevtools/wbpro/preferences/images/flyout_palette1.png
 
 
 = Enable SVN Auto-Properties =
