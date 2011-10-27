@@ -23,11 +23,3 @@ Find a list of all wiki pages at: http://code.google.com/p/cadmos/w/list
 </tr>
 </table>
 
-
-<table width="100%">
-<tr>
-<td align="center">
-http://www4.in.tum.de/~schwitze/cadmos/cadmos-lens-reflections.png
-</td>
-</tr>
-</table>
