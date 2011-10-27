@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Cadmos MATLAB/Simulink Translation Core Functionality
+Bundle-SymbolicName: edu.tum.cs.cadmos.matlab.core
+Bundle-Version: 1.0.0.M4
+Bundle-ClassPath: core.jar,
+ lib/ccsm-commons.jar,
+ lib/cup-runtime.jar,
+ lib/simulink.jar
+Export-Package: edu.tum.cs.cadmos.matlab.core.translate
+Bundle-Vendor: http://www4.in.tum.de
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: edu.tum.cs.cadmos.core;bundle-version="1.0.0.M4"
