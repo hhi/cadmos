@@ -1,14 +1,33 @@
-#summary Main site of the Cadmos wiki.
-#labels Featured,Phase-Requirements,Phase-Design,Phase-Implementation,Phase-QA
+#summary Main page of the Cadmos wiki.
+#labels Featured
 
-= Introduction =
+= Cadmos Wiki =
 
-Add your content here.
+This is the main wiki page of the Cadmos project.
+
+Find a list of all wiki pages at: http://code.google.com/p/cadmos/w/list
+
+<table width="100%">
+<tr>
+<td valign="top" width="50%">
+<h2>For Users</h2>
+ * [Terminology]
+</td>
+<td valign="top" width="50%">
+<h2>For Developers</h2>
+ * DevelopmentEnvironmentSetup
+ * WokspaceProjectsOverview
+ * QualityDashboard
+ * DevelopmentConventions
+</td>
+</tr>
+</table>
 
 
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+<table width="100%">
+<tr>
+<td align="center">
+http://www4.in.tum.de/~schwitze/cadmos/cadmos-lens-reflections.png
+</td>
+</tr>
+</table>
