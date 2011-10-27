@@ -17,9 +17,8 @@ Find a list of all wiki pages at: http://code.google.com/p/cadmos/w/list
 <h2>For Developers</h2>
  * DevelopmentEnvironmentSetup
  * WorkspaceProjectsOverview
- * QualityDashboard
+ * [http://www4.in.tum.de/~schwitze/cadmos/html/index.html QualityDashboard]
  * DevelopmentConventions
 </td>
 </tr>
 </table>
-
