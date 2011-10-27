@@ -9,7 +9,8 @@ This page describes the steps to set up a working development environment:
  # Workspace
  # Subclipse
  # Quality Rating
- # SVN Auto-Properties <wiki:comment> # Additional e4 Tooling </wiki:comment>
+ # SWT Designer
+ # SVN Auto-Properties
  # Source Check-out
 
 = Prerequisites =
@@ -38,6 +39,12 @@ This quality rating is tool-supported for eclipse by the *ConQAT rating support*
 
 For our purposes, it is sufficient to select solely the plug-in *"ConQAT Development Tools"* in the eclipse update manager.
 
+= Install SWT Designer =
+Most developers also work on user interface related code, which is developed in Cadmos using the SWT Designer.
+Use the eclipse update manager, go to the pre-installed _Indigo_ update site and open the node _General Purpose Tools_.
+Select _SWT Designer_ and _SWT Designer Core_ here and proceed with download and installation. 
+
+
 = Enable SVN Auto-Properties =
 In your system's SVN *config* file, some SVN-properties need to be added in the {{{[auto-props]}}} section:
 
@@ -52,14 +59,6 @@ This automatically adds the SVN-properties (mime-type, eol-style, keywords) to n
 By convention we use the keywords $Author: $ and $Rev: $ in header comments of Cadmos java-files, to automatically include the latest author and revision of a java-file on commit.
 
 On Windows systems, the SVN config file is typically found in a path similar to {{{*...\<user>\AppData\Roaming\Subversion*}}}.
-
-<wiki:comment>
-= Install Eclipse e4 Tooling =
-For e4 user interface development, additional eclipse e4 tooling is downloaded and installed using the included e4 update site in the eclipse update manager.
-
-See [http://www.vogella.de/articles/EclipseE4/article.html#installation] 
-for details.
-</wiki:comment>
 
 = Check-out the Workspace Projects =
  * Follow the guidelines on [http://code.google.com/p/cadmos/source/checkout] to get read-only or write access to the source.
