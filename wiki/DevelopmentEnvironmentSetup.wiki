@@ -5,7 +5,7 @@
 The target audience of this page are developers that extend and maintain the Cadmos code base.
 This page describes the steps to set up a working development environment:
  # Prerequisites
- # Eclipse e4
+ # Eclipse
  # Subclipse
  # Quality Rating
  # SVN Auto-Properties <wiki:comment> # Additional e4 Tooling </wiki:comment>
@@ -14,9 +14,9 @@ This page describes the steps to set up a working development environment:
 = Prerequisites =
 Cadmos is developed using new Java 7 language features like inferred type parameters (e.g {{{Set<String> names = new HashSet<>();}}}), so you need a Java 7 runtime or SDK on the development machine, e.g. available at [http://www.oracle.com/technetwork/java/javase/downloads/index.html] .
 
-= Install Eclipse e4 =
-Cadmos has a _"pure Java"_ *core* part and an eclipse e4 based *ui* part.
-Eclipse e4 has build-in full Java 7 support starting from version 4.1.1, which can be downloaded and installed for many platforms and operating systems from [http://download.eclipse.org/eclipse/downloads/] . 
+= Install Eclipse Indigo 3.7.1 =
+Cadmos has a _"pure Java"_ *core* part and an eclipse based *ui* part.
+Eclipse has build-in full Java 7 support starting from version 3.7.1, which can be downloaded and installed for many platforms and operating systems from [http://www.eclipse.org/downloads/packages/eclipse-classic-371/indigosr1] . 
 
 = Install Subclipse =
 Cadmos uses SVN for version control, which is supported by several client integrations for eclipse.
