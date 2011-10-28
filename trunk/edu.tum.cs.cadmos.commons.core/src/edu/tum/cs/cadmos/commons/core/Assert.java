@@ -33,7 +33,7 @@ import java.util.Collection;
  * @version $Rev$
  * @version $Author$
  * @version $Date$
- * @ConQAT.Rating GREEN Hash: 1F24469E8417259D44D423834A539D5B
+ * @ConQAT.Rating GREEN Hash: B0B463F08FFF65A45B119BD5942586F7
  */
 public class Assert {
 
@@ -128,4 +128,25 @@ public class Assert {
 		}
 	}
 
+	/**
+	 * Asserts that the given <i>instance</i> is an instance of the given
+	 * <i>superClass</i>, that is "
+	 * <code><i>instance</i> <b>instanceof</b> <i>superClass</i></code>" holds,
+	 * and throws an {@link AssertionError} otherwise.
+	 * 
+	 * @throws AssertionError
+	 *             if the given <i>instance</i> is not an instance of the given
+	 *             <i>superClass</i>.
+	 */
+	public static void assertInstanceOf(Object instance, Class<?> superClass,
+			String instanceName) {
+		if (instance == null
+				|| !superClass.isAssignableFrom(instance.getClass())) {
+			throw new AssertionError(
+					String.format(
+							"Expected '%s'(%s) to be an instance of '%s', but was '%s'",
+							instanceName, instance, superClass,
+							instance == null ? "null" : instance.getClass()));
+		}
+	}
 }
