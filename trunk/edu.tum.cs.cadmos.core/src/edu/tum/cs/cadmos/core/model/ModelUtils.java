@@ -122,8 +122,9 @@ public class ModelUtils {
 	 * source exists.
 	 * <p>
 	 * The path is returned as a {@link Deque} of {@link IChannel}s with the
-	 * channel going out of the transitive source as first element and the given
-	 * <i>channel</i> as last element: <code>[srcOutgoing, ..., channel]</code>.
+	 * channel going out of the transitive source (e.g. <i>srcOutgoing</i>) as
+	 * first element and the given <i>channel</i> as last element:
+	 * <code>[<i>srcOutgoing</i>, ..., <i>channel</i>]</code>.
 	 * 
 	 * @throws AssertionError
 	 *             if the component model is no well-formed and, hence, the
@@ -134,31 +135,46 @@ public class ModelUtils {
 			ICompositeComponent systemBoundary) {
 		final IComponent src = channel.getSrc();
 		if (src instanceof IAtomicComponent) {
-			return new LinkedList<>(asList(channel));
+			return createPath(channel);
 		}
 		if (src instanceof ICompositeComponent) {
 			final ICompositeComponent compSrc = (ICompositeComponent) src;
 			final IChannel outbound = getOutboundChildChannel(compSrc, channel);
-			assertNotNull(outbound, "outbound");
-			final Deque<IChannel> path = getSrcPath(outbound, systemBoundary);
-			path.addLast(channel);
-			return path;
+			return extendSrcPath(outbound, systemBoundary, channel);
 		}
 		final IComponent dst = channel.getDst();
 		assertNotNull(dst, "dst");
 		final ICompositeComponent parent = dst.getParent();
 		if (src == null && (parent == systemBoundary || parent == null)) {
-			return new LinkedList<>(asList(channel));
+			return createPath(channel);
 		}
 		if (src == null && parent != systemBoundary) {
 			final IChannel incoming = parent.getIncoming().get(channel);
-			assertNotNull(incoming, "incoming");
-			final Deque<IChannel> path = getSrcPath(incoming, systemBoundary);
-			path.addLast(channel);
-			return path;
+			return extendSrcPath(incoming, systemBoundary, channel);
 		}
 		throw new AssertionError("Cannot find path to transitive source for '"
 				+ channel + "' within system boundary '" + systemBoundary + "'");
+	}
+
+	/**
+	 * Returns a path initialized with the given <i>channel</i> as single
+	 * element.
+	 */
+	private static Deque<IChannel> createPath(IChannel channel) {
+		return new LinkedList<>(asList(channel));
+	}
+
+	/**
+	 * Returns the result of {@link #getSrcPath(IChannel, ICompositeComponent)}
+	 * for the given <i>nextChannel</i> extended by the given <i>channel</i> as
+	 * last element.
+	 */
+	private static Deque<IChannel> extendSrcPath(final IChannel nextChannel,
+			ICompositeComponent systemBoundary, IChannel channel) {
+		assertNotNull(nextChannel, "nextChannel");
+		final Deque<IChannel> path = getSrcPath(nextChannel, systemBoundary);
+		path.addLast(channel);
+		return path;
 	}
 
 	/**
@@ -169,8 +185,13 @@ public class ModelUtils {
 	 * <p>
 	 * Each of the paths is returned as a {@link Deque} of {@link IChannel}s
 	 * with the given <i>channel</i> as first element and the channel incoming
-	 * to a transitive destination as last element:
-	 * <code>[channel, ..., dstIncoming]</code>.
+	 * to a transitive destination (e.g. <i>dstIncoming</i>) as last element:
+	 * <code>[<i>channel</i>, ..., <i>dstIncoming</i>]</code>.
+	 * <p>
+	 * The result is a list of all such paths leading from the given
+	 * <i>channel</i> to different destinations (e.g.
+	 * <i>dstIncoming<sub>1</sub></i>, ..., <i>dstIncoming<sub>n</sub></i>):
+	 * <code>[[<i>channel</i>, ..., <i>dstIncoming<sub>1</sub></i>], ..., [<i>channel</i>, ..., <i>dstIncoming<sub>n</sub></i>]]</code>.
 	 * 
 	 * @throws AssertionError
 	 *             if the component model is no well-formed and, hence, a
@@ -181,55 +202,60 @@ public class ModelUtils {
 			ICompositeComponent systemBoundary) {
 		final IComponent dst = channel.getDst();
 		if (dst instanceof IAtomicComponent) {
-			final List<Deque<IChannel>> result = new LinkedList<>();
-			result.add(new LinkedList<>(asList(channel)));
-			return result;
+			return createPaths(channel);
 		}
 		if (dst instanceof ICompositeComponent) {
 			final ICompositeComponent compDst = (ICompositeComponent) dst;
-			final List<IChannel> inboundChannels = getInboundChildChannels(
-					compDst, channel);
-			assertTrue(inboundChannels.size() > 0,
-					"Expected 'inboundChannels' to be at least 1 element, but was 0");
-			final List<Deque<IChannel>> result = new LinkedList<>();
-			for (final IChannel inbound : inboundChannels) {
-				final List<Deque<IChannel>> paths = getDstPaths(inbound,
-						systemBoundary);
-				for (final Deque<IChannel> path : paths) {
-					path.addFirst(channel);
-					result.add(path);
-				}
-			}
-			return result;
+			final List<IChannel> inbound = getInboundChildChannels(compDst,
+					channel);
+			return extendDstPaths(inbound, systemBoundary, channel);
 		}
 		assertTrue(dst == null, "Expected 'dst' to be null, but was '%s'", dst);
 		final IComponent src = channel.getSrc();
 		assertNotNull(src, "src");
 		final ICompositeComponent parent = src.getParent();
 		if (dst == null && (parent == systemBoundary || parent == null)) {
-			final List<Deque<IChannel>> result = new LinkedList<>();
-			result.add(new LinkedList<>(asList(channel)));
-			return result;
+			return createPaths(channel);
 		}
 		if (dst == null && parent != systemBoundary) {
-			final List<IChannel> outgoingChannels = parent.getOutgoing().get(
-					channel);
-			assertTrue(outgoingChannels.size() > 0,
-					"Expected 'outgoingChannels' to be at least 1 element, but was 0");
-			final List<Deque<IChannel>> result = new LinkedList<>();
-			for (final IChannel outgoing : outgoingChannels) {
-				final List<Deque<IChannel>> paths = getDstPaths(outgoing,
-						systemBoundary);
-				for (final Deque<IChannel> path : paths) {
-					path.addFirst(channel);
-					result.add(path);
-				}
-			}
-			return result;
+			final List<IChannel> outgoing = parent.getOutgoing().get(channel);
+			return extendDstPaths(outgoing, systemBoundary, channel);
 		}
 		throw new AssertionError(
 				"Cannot find path to transitive destination for '" + channel
 						+ "' within system boundary '" + systemBoundary + "'");
+	}
+
+	/**
+	 * Returns the result of {@link #getDstPaths(IChannel, ICompositeComponent)}
+	 * for all given <i>nextChannels</i>, each extended by the given
+	 * <i>channel</i> as first element.
+	 */
+	private static List<Deque<IChannel>> extendDstPaths(
+			final List<IChannel> nextChannels,
+			ICompositeComponent systemBoundary, IChannel channel) {
+		assertTrue(nextChannels.size() > 0,
+				"Expected 'nextChannels' to have at least 1 element, but was 0");
+		final List<Deque<IChannel>> result = new LinkedList<>();
+		for (final IChannel inbound : nextChannels) {
+			final List<Deque<IChannel>> paths = getDstPaths(inbound,
+					systemBoundary);
+			for (final Deque<IChannel> path : paths) {
+				path.addFirst(channel);
+				result.add(path);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns a list of paths initialized with one path having the given
+	 * <i>channel</i> as single element.
+	 */
+	private static List<Deque<IChannel>> createPaths(IChannel channel) {
+		final List<Deque<IChannel>> result = new LinkedList<>();
+		result.add(createPath(channel));
+		return result;
 	}
 
 	public static IListSet<IComponent> transformAtomicComponentNetwork(
