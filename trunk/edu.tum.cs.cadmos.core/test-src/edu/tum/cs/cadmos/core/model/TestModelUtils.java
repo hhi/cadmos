@@ -103,6 +103,25 @@ public class TestModelUtils {
 	}
 
 	@Test
+	public void test_getDstPaths() {
+		final ICompositeComponent root = new CompositeComponent("root", null);
+		final ICompositeComponent comp1 = new CompositeComponent("comp1", root);
+		final ICompositeComponent comp2 = new CompositeComponent("comp2", root);
+		final IAtomicComponent a1 = new AtomicComponent("a1", comp1);
+		final IAtomicComponent a2 = new AtomicComponent("a2", comp2);
+		final IAtomicComponent a3 = new AtomicComponent("a3", comp2);
+		final IChannel a_a1 = new Channel("a", a1, null, 0);
+		final IChannel a_comp1_comp2 = new Channel("a", comp1, comp2, 0);
+		final IChannel a_a2 = new Channel("a", null, a2, 0);
+		final IChannel a_a3 = new Channel("a", null, a3, 0);
+
+		final List<Deque<IChannel>> paths = ModelUtils.getDstPaths(a_a1, root);
+		assertEquals(2, paths.size());
+		assertEquals(asList(a_a1, a_comp1_comp2, a_a2), paths.get(0));
+		assertEquals(asList(a_a1, a_comp1_comp2, a_a3), paths.get(1));
+	}
+
+	@Test
 	public void test_transformAtomicComponentNetwork() {
 		// final ICompositeComponent p = new CompositeComponent("p", null);
 		// final IComponent c1 = new AtomicComponent("c1", p);
