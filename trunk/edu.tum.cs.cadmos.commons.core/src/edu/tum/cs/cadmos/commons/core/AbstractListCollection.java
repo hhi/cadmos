@@ -50,10 +50,25 @@ public abstract class AbstractListCollection<E extends IIdentifiable, R>
 
 	protected final Map<String, R> map = new HashMap<>();
 
+	private final IConsistencyVerifier consistencyVerifier;
+
+	/**
+	 * Creates a new AbstractListCollection.
+	 */
+	protected AbstractListCollection(IConsistencyVerifier consistencyVerifier) {
+		this.consistencyVerifier = consistencyVerifier;
+	}
+
 	/** {@inheritDoc} */
 	@Override
 	public Iterator<E> iterator() {
 		return list.iterator();
+	}
+
+	protected void verifyConsistentAdd(E element) {
+		if (consistencyVerifier != null) {
+			consistencyVerifier.verifyConsistentAdd(this, element);
+		}
 	}
 
 	/** {@inheritDoc} */
@@ -88,12 +103,6 @@ public abstract class AbstractListCollection<E extends IIdentifiable, R>
 	@Override
 	public R get(E element) {
 		return get(element.getId());
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public R get(String id) {
-		return map.get(id);
 	}
 
 	/** {@inheritDoc} */

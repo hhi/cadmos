@@ -1,5 +1,6 @@
 package edu.tum.cs.cadmos.core.model;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -64,33 +65,35 @@ public class TestModelElements {
 	}
 
 	@SuppressWarnings("unused")
-	@Test(expected = AssertionError.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void test_Add_Components_Same_Ids_ERR() {
 		final ICompositeComponent p = new CompositeComponent("Parent", null);
 		new AtomicComponent("C", p);
 		new AtomicComponent("C", p);
 		throw new Error(
-				"Expected AssertionError when adding two components with equal id to same parent");
+				"Expected IllegalArgumentException when adding two components with equal id to same parent");
 	}
 
 	@SuppressWarnings("unused")
-	@Test(expected = AssertionError.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void test_Add_Channels_Incoming_Same_Ids_ERR() {
 		final IComponent c = new AtomicComponent("C", null);
 		new Channel("x", null, c, 0);
 		new Channel("x", null, c, 0);
 		throw new Error(
-				"Expected AssertionError when adding two incoming channels with equal id to same component");
+				"Expected IllegalArgumentException when adding two incoming channels with equal id to same component");
 	}
 
-	@SuppressWarnings("unused")
-	@Test(expected = AssertionError.class)
-	public void test_Add_Channels_Outgoing_Same_Ids_ERR() {
+	@Test
+	public void test_Add_Channels_Outgoing_Same_Ids_OK() {
 		final IComponent c = new AtomicComponent("C", null);
-		new Channel("x", c, null, 0);
-		new Channel("x", c, null, 0);
-		throw new Error(
-				"Expected AssertionError when adding two outgoing channels with equal id to same component");
+		final IChannel x1 = new Channel("x", c, null, 0);
+		final IChannel x2 = new Channel("x", c, null, 0);
+		final IChannel y1 = new Channel("y", c, null, 0);
+		final IChannel y2 = new Channel("y", c, null, 0);
+		assertEquals(asList(x1, x2), c.getOutgoing().get("x"));
+		assertEquals(asList(y1, y2), c.getOutgoing().get("y"));
+		assertEquals(0, c.getOutgoing().get("z").size());
 	}
 
 	@SuppressWarnings("unused")
@@ -112,13 +115,13 @@ public class TestModelElements {
 	}
 
 	@SuppressWarnings("unused")
-	@Test(expected = AssertionError.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void test_Add_Variables_Same_Id_To_Component_ERR() {
 		final IAtomicComponent c = new AtomicComponent("C", null);
 		new Variable("x", c);
 		new Variable("x", c);
 		throw new Error(
-				"Expected AssertionError when adding variables with equal ids to same component");
+				"Expected IllegalArgumentException when adding variables with equal ids to same component");
 	}
 
 	@SuppressWarnings("unused")

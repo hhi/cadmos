@@ -1,10 +1,12 @@
 package edu.tum.cs.cadmos.core.model;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Deque;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -43,17 +45,19 @@ public class TestModelUtils {
 	}
 
 	@Test
-	public void test_getInboundChildChannel() {
+	public void test_getInboundChildChannels() {
 		final ICompositeComponent parent = new CompositeComponent("parent",
 				null);
 		final IAtomicComponent c1 = new AtomicComponent("c1", parent);
 		final IAtomicComponent c2 = new AtomicComponent("c2", parent);
+		final IAtomicComponent c3 = new AtomicComponent("c3", parent);
 		@SuppressWarnings("unused")
 		final IChannel x_internal = new Channel("x", c1, c2, 0);
-		final IChannel x_inbound = new Channel("x", null, c1, 0);
-		final IChannel result = ModelUtils.getInboundChildChannel(parent,
-				x_inbound);
-		assertSame(x_inbound, result);
+		final IChannel x_inbound1 = new Channel("x", null, c1, 0);
+		final IChannel x_inbound3 = new Channel("x", null, c3, 0);
+		final List<IChannel> result = ModelUtils.getInboundChildChannels(
+				parent, x_inbound1);
+		assertEquals(asList(x_inbound1, x_inbound3), result);
 	}
 
 	@Test

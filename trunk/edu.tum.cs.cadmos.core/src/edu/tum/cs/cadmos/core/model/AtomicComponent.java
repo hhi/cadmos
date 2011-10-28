@@ -1,5 +1,8 @@
 package edu.tum.cs.cadmos.core.model;
 
+import static edu.tum.cs.cadmos.commons.core.Assert.assertNotContainedIn;
+import edu.tum.cs.cadmos.commons.core.IIdentifiable;
+import edu.tum.cs.cadmos.commons.core.IListCollection;
 import edu.tum.cs.cadmos.commons.core.IListSet;
 import edu.tum.cs.cadmos.commons.core.ListSet;
 import edu.tum.cs.cadmos.core.machines.IMachine;
@@ -7,7 +10,7 @@ import edu.tum.cs.cadmos.core.machines.IMachine;
 public class AtomicComponent extends AbstractComponent implements
 		IAtomicComponent {
 
-	private final IListSet<IVariable> variables = new ListSet<>();
+	private final IListSet<IVariable> variables = new ListSet<>(this);
 
 	private final IMachine machine;
 
@@ -40,6 +43,18 @@ public class AtomicComponent extends AbstractComponent implements
 			variable.clone(clone);
 		}
 		return clone;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public void verifyConsistentAdd(IListCollection<?, ?> collection,
+			IIdentifiable element) throws AssertionError {
+		if (collection == incoming || collection == outgoing) {
+			assertNotContainedIn(element, variables, "channel", "variables");
+		} else if (collection == variables) {
+			assertNotContainedIn(element, incoming, "variable", "incoming");
+			assertNotContainedIn(element, outgoing, "variable", "outgoing");
+		}
 	}
 
 }

@@ -103,27 +103,28 @@ public class Assert {
 
 	/**
 	 * Asserts that the given <i>element</i> is not contained in the given
-	 * <i>set</i> and throws an {@link AssertionError} otherwise.
+	 * <i>collection</i> and throws an {@link AssertionError} otherwise.
 	 * <p>
 	 * The message will be formatted with the given <i>elementName</i> and
-	 * <i>setName</i> if the <i>element</i> is contained in the <i>set</i>.
+	 * <i>collectionName</i> if the <i>element</i> is contained in the
+	 * <i>collection</i>.
 	 * <p>
 	 * Example: <code>assertNotContainedIn(e, s, "e", "s");</code> throws an
 	 * assertion error with message
-	 * "Element 'e' (e) is already present in set 's' ([..., e, ...])".
+	 * "Element 'e' (e) is already present in 's' ([..., e, ...])".
 	 * 
 	 * @param <E>
 	 * 
 	 * @throws AssertionError
-	 *             if the <i>element</i> is contained in the <i>set</i>.
+	 *             if the <i>element</i> is contained in the <i>collection</i>.
 	 */
 	public static <E extends IIdentifiable> void assertNotContainedIn(
-			IIdentifiable element, IListSet<E> set, String elementName,
-			String setName) {
-		if (set.contains(element.getId())) {
+			IIdentifiable element, IListCollection<E, ?> collection,
+			String elementName, String collectionName) {
+		if (collection.contains(element.getId())) {
 			throw new AssertionError(String.format(
-					"Element '%s' (%s) is already present in set '%s' (%s)",
-					elementName, element, setName, set));
+					"Element '%s' (%s) is already present in '%s' (%s)",
+					elementName, element, collectionName, collection));
 		}
 	}
 

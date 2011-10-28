@@ -21,9 +21,12 @@ import static edu.tum.cs.cadmos.commons.core.Assert.assertNotNull;
 import static edu.tum.cs.cadmos.commons.core.Assert.assertTrue;
 import static java.util.Arrays.asList;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 
+import edu.tum.cs.cadmos.commons.core.Assert;
 import edu.tum.cs.cadmos.commons.core.IListSet;
 import edu.tum.cs.cadmos.commons.core.ListSet;
 
@@ -62,47 +65,54 @@ public class ModelUtils {
 	}
 
 	/**
-	 * Returns an outbound channel of any of the children of the given
+	 * Returns the outbound channel of any of the children of the given
 	 * <i>parent</i>, equal to the given <i>channel</i> or <code>null</code> if
-	 * no such outbound channel exists.
+	 * no such outbound channels exist.
 	 * <p>
-	 * A channel is <i>outbound</i> if its destination is <code>null</code>.
-	 * <p>
-	 * For the returned channel <code>c</code> either
-	 * <code>(c.getDst() == null) && c.equals(channel) && (c.getSrc().getParent() == parent)</code>
-	 * holds or <code>c == null</code>.
+	 * Note that a channel is <i>outbound</i> if its destination is
+	 * <code>null</code>.
+	 * 
+	 * @throws AssertionError
+	 *             if more than 1 outbound channel has an equal id to the given
+	 *             <i>channel</i>.
 	 */
 	public static IChannel getOutboundChildChannel(ICompositeComponent parent,
 			IChannel channel) {
+		final List<IChannel> result = new ArrayList<>();
 		for (final IComponent child : parent.getChildren()) {
-			final IChannel candidate = child.getOutgoing().get(channel);
-			if (candidate != null && candidate.getDst() == null) {
-				return candidate;
+			for (final IChannel candidate : child.getOutgoing().get(channel)) {
+				if (candidate.getDst() == null) {
+					result.add(candidate);
+				}
 			}
 		}
-		return null;
+		Assert.assertTrue(
+				result.size() <= 1,
+				"Expected exactly 0 or 1 outbound channel with id '%s' in parent '%s', but found %s",
+				channel.getId(), parent, result);
+		if (result.size() == 0) {
+			return null;
+		}
+		return result.get(0);
 	}
 
 	/**
-	 * Returns an inbound channel of any of the children of the given
-	 * <i>parent</i>, equal to the given <i>channel</i> or <code>null</code> if
-	 * no such inbound channel exists.
+	 * Returns the inbound channels of any of the children of the given
+	 * <i>parent</i>, equal to the given <i>channel</i> or an empty list if no
+	 * such inbound channels exist.
 	 * <p>
-	 * A channel is <i>inbound</i> if its source is <code>null</code>.
-	 * <p>
-	 * For the returned channel <code>c</code> either
-	 * <code>(c.getSrc() == null) && c.equals(channel) && (c.getDst().getParent() == parent)</code>
-	 * holds or <code>c == null</code>.
+	 * Note that a channel is <i>inbound</i> if its source is <code>null</code>.
 	 */
-	public static IChannel getInboundChildChannel(ICompositeComponent parent,
-			IChannel channel) {
+	public static List<IChannel> getInboundChildChannels(
+			ICompositeComponent parent, IChannel channel) {
+		final List<IChannel> result = new ArrayList<>();
 		for (final IComponent child : parent.getChildren()) {
 			final IChannel candidate = child.getIncoming().get(channel);
 			if (candidate != null && candidate.getSrc() == null) {
-				return candidate;
+				result.add(candidate);
 			}
 		}
-		return null;
+		return result;
 	}
 
 	/**
@@ -113,7 +123,7 @@ public class ModelUtils {
 	 * <p>
 	 * The path is returned as a {@link Deque} of {@link IChannel}s with the
 	 * channel going out of the transitive source as first element and the given
-	 * <i>channel</i> as last element.
+	 * <i>channel</i> as last element: <code>[srcOutgoing, ..., channel]</code>.
 	 * 
 	 * @throws AssertionError
 	 *             if the component model is no well-formed and, hence, the
@@ -152,46 +162,70 @@ public class ModelUtils {
 	}
 
 	/**
-	 * Returns the path of channels to the atomic destination component of the
-	 * given <i>channel</i> that is transitively reachable within the given
-	 * <i>systemBoundary</i> or throws an {@link AssertionError} if no such
-	 * source exists.
+	 * Returns a list of paths of channels to the atomic destination components
+	 * of the given <i>channel</i> that are transitively reachable within the
+	 * given <i>systemBoundary</i> or throws an {@link AssertionError} if no
+	 * such destination exists.
 	 * <p>
-	 * The path is returned as a {@link Deque} of {@link IChannel}s with the
-	 * given <i>channel</i> as first element and the channel incoming to the
-	 * transitive destination as last element.
+	 * Each of the paths is returned as a {@link Deque} of {@link IChannel}s
+	 * with the given <i>channel</i> as first element and the channel incoming
+	 * to a transitive destination as last element:
+	 * <code>[channel, ..., dstIncoming]</code>.
 	 * 
 	 * @throws AssertionError
-	 *             if the component model is no well-formed and, hence, the
+	 *             if the component model is no well-formed and, hence, a
 	 *             transitive destination component is not within the system
 	 *             boundary.
 	 */
-	public static Deque<IChannel> getDstPath(IChannel channel,
+	public static List<Deque<IChannel>> getDstPaths(IChannel channel,
 			ICompositeComponent systemBoundary) {
 		final IComponent dst = channel.getDst();
 		if (dst instanceof IAtomicComponent) {
-			return new LinkedList<>(asList(channel));
+			final List<Deque<IChannel>> result = new LinkedList<>();
+			result.add(new LinkedList<>(asList(channel)));
+			return result;
 		}
 		if (dst instanceof ICompositeComponent) {
 			final ICompositeComponent compDst = (ICompositeComponent) dst;
-			final IChannel inbound = getInboundChildChannel(compDst, channel);
-			assertNotNull(inbound, "inbound");
-			final Deque<IChannel> path = getDstPath(inbound, systemBoundary);
-			path.addFirst(channel);
-			return path;
+			final List<IChannel> inboundChannels = getInboundChildChannels(
+					compDst, channel);
+			assertTrue(inboundChannels.size() > 0,
+					"Expected 'inboundChannels' to be at least 1 element, but was 0");
+			final List<Deque<IChannel>> result = new LinkedList<>();
+			for (final IChannel inbound : inboundChannels) {
+				final List<Deque<IChannel>> paths = getDstPaths(inbound,
+						systemBoundary);
+				for (final Deque<IChannel> path : paths) {
+					path.addFirst(channel);
+					result.add(path);
+				}
+			}
+			return result;
 		}
+		assertTrue(dst == null, "Expected 'dst' to be null, but was '%s'", dst);
 		final IComponent src = channel.getSrc();
 		assertNotNull(src, "src");
 		final ICompositeComponent parent = src.getParent();
 		if (dst == null && (parent == systemBoundary || parent == null)) {
-			return new LinkedList<>(asList(channel));
+			final List<Deque<IChannel>> result = new LinkedList<>();
+			result.add(new LinkedList<>(asList(channel)));
+			return result;
 		}
 		if (dst == null && parent != systemBoundary) {
-			final IChannel outgoing = parent.getOutgoing().get(channel);
-			assertNotNull(outgoing, "outgoing");
-			final Deque<IChannel> path = getDstPath(outgoing, systemBoundary);
-			path.addFirst(channel);
-			return path;
+			final List<IChannel> outgoingChannels = parent.getOutgoing().get(
+					channel);
+			assertTrue(outgoingChannels.size() > 0,
+					"Expected 'outgoingChannels' to be at least 1 element, but was 0");
+			final List<Deque<IChannel>> result = new LinkedList<>();
+			for (final IChannel outgoing : outgoingChannels) {
+				final List<Deque<IChannel>> paths = getDstPaths(outgoing,
+						systemBoundary);
+				for (final Deque<IChannel> path : paths) {
+					path.addFirst(channel);
+					result.add(path);
+				}
+			}
+			return result;
 		}
 		throw new AssertionError(
 				"Cannot find path to transitive destination for '" + channel

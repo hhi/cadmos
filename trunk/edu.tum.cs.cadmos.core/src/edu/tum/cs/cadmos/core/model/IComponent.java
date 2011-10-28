@@ -17,6 +17,7 @@
 
 package edu.tum.cs.cadmos.core.model;
 
+import edu.tum.cs.cadmos.commons.core.IListMultiSet;
 import edu.tum.cs.cadmos.commons.core.IListSet;
 
 /**
@@ -63,7 +64,7 @@ public interface IComponent extends IElement {
 	 * Returns the set of outgoing channels, that is, for each channel
 	 * <code>c</code> in outgoing <code>c.getSrc().equals(this)</code> holds.
 	 */
-	IListSet<IChannel> getOutgoing();
+	IListMultiSet<IChannel> getOutgoing();
 
 	/**
 	 * Returns a clone of this component within the given <i>newParent</i>.

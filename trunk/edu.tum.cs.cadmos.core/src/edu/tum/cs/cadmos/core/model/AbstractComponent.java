@@ -1,25 +1,26 @@
 package edu.tum.cs.cadmos.core.model;
 
-import static edu.tum.cs.cadmos.commons.core.Assert.assertTrue;
+import edu.tum.cs.cadmos.commons.core.IConsistencyVerifier;
+import edu.tum.cs.cadmos.commons.core.IIdentifiable;
+import edu.tum.cs.cadmos.commons.core.IListCollection;
+import edu.tum.cs.cadmos.commons.core.IListMultiSet;
 import edu.tum.cs.cadmos.commons.core.IListSet;
+import edu.tum.cs.cadmos.commons.core.ListMultiSet;
 import edu.tum.cs.cadmos.commons.core.ListSet;
 
 public abstract class AbstractComponent extends AbstractElement implements
-		IComponent {
+		IComponent, IConsistencyVerifier {
 
 	private final ICompositeComponent parent;
 
-	private final IListSet<IChannel> incoming = new ListSet<>();
+	protected final IListSet<IChannel> incoming = new ListSet<>(this);
 
-	private final IListSet<IChannel> outgoing = new ListSet<>();
+	protected final IListMultiSet<IChannel> outgoing = new ListMultiSet<>(this);
 
 	public AbstractComponent(String id, String name, ICompositeComponent parent) {
 		super(id, name);
 		this.parent = parent;
 		if (parent != null) {
-			assertTrue(!parent.getChildren().contains(getId()),
-					"Component with id '%s' is present in parent '%s' already",
-					getId(), parent);
 			parent.getChildren().add(this);
 		}
 	}
@@ -35,8 +36,20 @@ public abstract class AbstractComponent extends AbstractElement implements
 	}
 
 	@Override
-	public IListSet<IChannel> getOutgoing() {
+	public IListMultiSet<IChannel> getOutgoing() {
 		return outgoing;
+	}
+
+	/**
+	 * {@inheritDoc}.
+	 * <p>
+	 * The default implementation does not perform any consistency checks,
+	 * hence, subclasses should override.
+	 */
+	@Override
+	public void verifyConsistentAdd(IListCollection<?, ?> collection,
+			IIdentifiable element) throws AssertionError {
+		/* Default implementation does not perform any checks. */
 	}
 
 }

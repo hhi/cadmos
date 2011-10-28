@@ -1,6 +1,5 @@
 package edu.tum.cs.cadmos.core.model;
 
-import static edu.tum.cs.cadmos.commons.core.Assert.assertNotContainedIn;
 import static edu.tum.cs.cadmos.commons.core.Assert.assertNotNull;
 import static edu.tum.cs.cadmos.commons.core.Assert.assertTrue;
 import static edu.tum.cs.cadmos.core.expressions.ConstantExpression.EMPTY_MESSAGE;
@@ -74,23 +73,9 @@ public class Channel extends AbstractTypedElement implements IChannel {
 		this.srcRate = srcRate;
 		this.dstRate = dstRate;
 		if (src != null) {
-			assertNotContainedIn(this, src.getOutgoing(), "this",
-					"src.getOutgoing()");
-			if (src instanceof IAtomicComponent) {
-				assertNotContainedIn(this,
-						((IAtomicComponent) src).getVariables(), "this",
-						"src.getVariables()");
-			}
 			src.getOutgoing().add(this);
 		}
 		if (dst != null) {
-			assertNotContainedIn(this, dst.getIncoming(), "this",
-					"dst.getIncoming()");
-			if (dst instanceof IAtomicComponent) {
-				assertNotContainedIn(this,
-						((IAtomicComponent) dst).getVariables(), "this",
-						"dst.getVariables()");
-			}
 			dst.getIncoming().add(this);
 		}
 	}
