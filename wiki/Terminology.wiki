@@ -24,7 +24,7 @@ See also:*
 *
 
 == Channel ==
-A channel represents a _stream_ of _typed messages_ transmitted from a source component to a destination component.
+A channel transmits a _stream_ of _typed messages_ from a source component to a destination component.
 We say, a channel is _outgoing_ from its source component and _incoming_ to its destination component.
 A channel is _outbound_ to the _system boundary_ if its destination component is undefined.
 A channel is _inbound_ from the _system boundary_ if its source component is undefined.
@@ -69,6 +69,10 @@ See also:*
 *
 
 == Stream ==
+A stream _s_ is a sequence of typed _messages_ denoted as _s_ = (_m_,,1,,, ..., _m,,n,,_).
+We say that _s_ has a length of _n_, denoted as #_s_ = _n_. 
+If _n_ is a finite number, the stream _s_ is a _finite stream_.
+In Cadmos, we often analyze _reactive_ systems and we use the concept of _infinite streams_ to express, that reactive systems are typically designed to run (potentially) for ever. 
 
 == System Boundary ==
 
