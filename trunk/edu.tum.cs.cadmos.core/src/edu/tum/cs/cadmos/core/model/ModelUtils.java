@@ -17,22 +17,28 @@
 
 package edu.tum.cs.cadmos.core.model;
 
+import static edu.tum.cs.cadmos.commons.core.Assert.assertInstanceOf;
 import static edu.tum.cs.cadmos.commons.core.Assert.assertNotNull;
 import static edu.tum.cs.cadmos.commons.core.Assert.assertTrue;
+import static edu.tum.cs.cadmos.core.model.ModelPackage.createChannel;
 import static java.util.Arrays.asList;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import edu.tum.cs.cadmos.commons.core.Assert;
 import edu.tum.cs.cadmos.commons.core.IListSet;
 import edu.tum.cs.cadmos.commons.core.ListSet;
+import edu.tum.cs.cadmos.core.expressions.IExpression;
 
 /**
  * A set of utility methods for operations on classes in the <span
- * style="font-variant:small-caps">Cadmos</span> core model package.
+ * style="font-variant:small-caps">Cadmos</span> <code>core.model</code>
+ * package.
  * 
  * @author wolfgang.schwitzer
  * @author nvpopa@gmail.com
@@ -54,8 +60,7 @@ public class ModelUtils {
 		if (component instanceof IAtomicComponent) {
 			return new ListSet<>((IAtomicComponent) component);
 		}
-		assertTrue(component instanceof ICompositeComponent,
-				"Expected ICompositeComponent, but was '%s'", component);
+		assertInstanceOf(component, ICompositeComponent.class, "component");
 		final ListSet<IAtomicComponent> result = new ListSet<>();
 		for (final IComponent child : ((ICompositeComponent) component)
 				.getChildren()) {
@@ -132,7 +137,7 @@ public class ModelUtils {
 	 *             boundary.
 	 */
 	public static Deque<IChannel> getSrcPath(IChannel channel,
-			ICompositeComponent systemBoundary) {
+			IComponent systemBoundary) {
 		final IComponent src = channel.getSrc();
 		if (src instanceof IAtomicComponent) {
 			return createPath(channel);
@@ -165,12 +170,12 @@ public class ModelUtils {
 	}
 
 	/**
-	 * Returns the result of {@link #getSrcPath(IChannel, ICompositeComponent)}
-	 * for the given <i>nextChannel</i> extended by the given <i>channel</i> as
-	 * last element.
+	 * Returns the result of {@link #getSrcPath(IChannel, IComponent)} for the
+	 * given <i>nextChannel</i> extended by the given <i>channel</i> as last
+	 * element.
 	 */
 	private static Deque<IChannel> extendSrcPath(final IChannel nextChannel,
-			ICompositeComponent systemBoundary, IChannel channel) {
+			IComponent systemBoundary, IChannel channel) {
 		assertNotNull(nextChannel, "nextChannel");
 		final Deque<IChannel> path = getSrcPath(nextChannel, systemBoundary);
 		path.addLast(channel);
@@ -199,7 +204,7 @@ public class ModelUtils {
 	 *             boundary.
 	 */
 	public static List<Deque<IChannel>> getDstPaths(IChannel channel,
-			ICompositeComponent systemBoundary) {
+			IComponent systemBoundary) {
 		final IComponent dst = channel.getDst();
 		if (dst instanceof IAtomicComponent) {
 			return createPaths(channel);
@@ -227,13 +232,13 @@ public class ModelUtils {
 	}
 
 	/**
-	 * Returns the result of {@link #getDstPaths(IChannel, ICompositeComponent)}
-	 * for all given <i>nextChannels</i>, each extended by the given
-	 * <i>channel</i> as first element.
+	 * Returns the result of {@link #getDstPaths(IChannel, IComponent)} for all
+	 * given <i>nextChannels</i>, each extended by the given <i>channel</i> as
+	 * first element.
 	 */
 	private static List<Deque<IChannel>> extendDstPaths(
-			final List<IChannel> nextChannels,
-			ICompositeComponent systemBoundary, IChannel channel) {
+			final List<IChannel> nextChannels, IComponent systemBoundary,
+			IChannel channel) {
 		assertTrue(nextChannels.size() > 0,
 				"Expected 'nextChannels' to have at least 1 element, but was 0");
 		final List<Deque<IChannel>> result = new LinkedList<>();
@@ -258,40 +263,121 @@ public class ModelUtils {
 		return result;
 	}
 
-	public static IListSet<IComponent> transformAtomicComponentNetwork(
-			ICompositeComponent systemBoundary) {
-		/* Clone the network of children components. */
-		final IListSet<IComponent> network = new ListSet<>();
-		for (final IComponent child : systemBoundary.getChildren()) {
-			network.add(child.clone(null));
+	public static IListSet<IAtomicComponent> transformAtomicComponentNetwork(
+			IComponent systemBoundary) {
+		/* Find the atomic components within the system boundary. */
+		final IListSet<IAtomicComponent> atomicComponents = getAtomicComponents(systemBoundary);
+		/* Clone the atomic components. */
+		final IListSet<IAtomicComponent> clones = new ListSet<>();
+		for (final IAtomicComponent atomicComponent : atomicComponents) {
+			clones.add((IAtomicComponent) atomicComponent.clone(null));
 		}
-		/* Rewire. */
+		/* Rewire the incoming paths. */
+		for (final IChannel channel : systemBoundary.getIncoming()) {
+			final List<Deque<IChannel>> dstPaths = getDstPaths(channel,
+					systemBoundary);
+			for (final Deque<IChannel> path : dstPaths) {
+				final IComponent candidate = path.getLast().getDst();
+				assertInstanceOf(candidate, IAtomicComponent.class, "dst");
+				final IComponent dst = clones.get((IAtomicComponent) candidate);
+				final List<IExpression> initialMessages = getPathInitialMessages(path);
+				final SrcDstRate rate = getPathSrcDstRate(path);
+				createChannel(path.getLast().getId(), path.getLast().getName(),
+						path.getLast().getType(), null, dst, initialMessages,
+						rate.srcRate, rate.dstRate);
+			}
+		}
+		/* Rewire the outgoing paths. */
+		for (final IChannel channel : systemBoundary.getOutgoing()) {
+			final Deque<IChannel> path = getSrcPath(channel, systemBoundary);
+			final IComponent candidate = path.getFirst().getSrc();
+			assertInstanceOf(candidate, IAtomicComponent.class, "src");
+			final IAtomicComponent src = clones
+					.get((IAtomicComponent) candidate);
+			final List<IExpression> initialMessages = getPathInitialMessages(path);
+			final SrcDstRate rate = getPathSrcDstRate(path);
+			createChannel(path.getLast().getId(), path.getLast().getName(),
+					path.getLast().getType(), src, null, initialMessages,
+					rate.srcRate, rate.dstRate);
+		}
+		/* Rewire the internal paths. */
+		for (final IAtomicComponent atomicComponent : atomicComponents) {
+			final IAtomicComponent src = clones.get(atomicComponent);
+			for (final IChannel channel : atomicComponent.getOutgoing()) {
+				assertInstanceOf(channel.getDst(), IAtomicComponent.class,
+						"dst");
+				final IAtomicComponent dst = clones
+						.get((IAtomicComponent) channel.getDst());
+				channel.clone(src, dst);
+			}
+		}
+		return clones;
+	}
 
-		// /* Rewire the channels connected to the children components. */
-		// for (final IComponent child : network) {
-		// for (final IChannel c : child.getIncoming()) {
-		// if (c.getSrc() == null) {
-		// assertNotNull(c.getDst(), "c.getDst()");
-		// final IComponent newDst = network.get(c.getDst());
-		// assertNotNull(newDst, "newDst");
-		// final IChannel link = component.getIncoming().get(c);
-		// assertNotNull(link, "link");
-		// c.clone(newSrc, newDst);
-		// }
-		// }
-		// for (final IChannel c : child.getOutgoing()) {
-		// final IComponent newSrc = cloneChildren.get(c.getSrc());
-		// final IComponent newDst;
-		// if (c.getDst() == null) {
-		// newDst = null;
-		// } else {
-		// newDst = cloneChildren.get(c.getDst());
-		// }
-		// c.clone(newSrc, newDst);
-		// }
-		// }
+	private static class SrcDstRate {
 
-		return network;
+		public final int srcRate;
+
+		public final int dstRate;
+
+		/**
+		 * Creates an immutable ModelUtils.SrcDstRate.
+		 */
+		public SrcDstRate(int srcRate, int dstRate) {
+			this.srcRate = srcRate;
+			this.dstRate = dstRate;
+		}
+
+	}
+
+	/**
+	 * Returns the total source and destination rate of a path. Both rates are
+	 * normalized according to their greatest common divisor.
+	 */
+	private static SrcDstRate getPathSrcDstRate(Deque<IChannel> path) {
+		final BigInteger srcRate = getPathSrcRate(path);
+		final BigInteger dstRate = getPathDstRate(path);
+		final BigInteger gcd = srcRate.gcd(dstRate);
+		return new SrcDstRate(srcRate.divide(gcd).intValue(), dstRate.divide(
+				gcd).intValue());
+	}
+
+	/**
+	 * Returns the initial messages on all channels of the given <i>path</i> in
+	 * the order as they are received by the last channel's destination
+	 * component.
+	 */
+	public static List<IExpression> getPathInitialMessages(Deque<IChannel> path) {
+		final List<IExpression> result = new ArrayList<>();
+		final Iterator<IChannel> it = path.descendingIterator();
+		while (it.hasNext()) {
+			result.addAll(it.next().getInitialMessages());
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the product of all source rates on the given <i>path</i>.
+	 */
+	public static BigInteger getPathSrcRate(Deque<IChannel> path) {
+		assertTrue(!path.isEmpty(), "Expected path to be not empty");
+		BigInteger result = BigInteger.ONE;
+		for (final IChannel channel : path) {
+			result = result.multiply(BigInteger.valueOf(channel.getSrcRate()));
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the product of all destination rates on the given <i>path</i>.
+	 */
+	public static BigInteger getPathDstRate(Deque<IChannel> path) {
+		assertTrue(!path.isEmpty(), "Expected path to be not empty");
+		BigInteger result = BigInteger.ONE;
+		for (final IChannel channel : path) {
+			result = result.multiply(BigInteger.valueOf(channel.getDstRate()));
+		}
+		return result;
 	}
 
 }
