@@ -69,10 +69,13 @@ See also:*
 *
 
 == Stream ==
-A stream _s_ is a sequence of typed _messages_ denoted as _s_ = (_m_,,1,,, ..., _m,,n,,_).
+A stream _s_ is a sequence of typed _messages_ denoted as _s_ = (_m_,,0,,, ..., _m,,n-1,,_).
 We say that _s_ has a length of _n_, denoted as #_s_ = _n_. 
 If _n_ is a finite number, the stream _s_ is a _finite stream_.
-In Cadmos, we often analyze _reactive_ systems and we use the concept of _infinite streams_ to express, that reactive systems are typically designed to run (potentially) for ever. 
+In Cadmos, we often analyze _reactive_ systems and we use the concept of _infinite streams_ to express, that reactive systems are typically designed to run (potentially) for ever.
+We access a message at a given index _i_ by _s_(_i_).
+In addition, we allow _empty messages_ in streams.
+For example, _s_ = (_a_, , , _b_) has the properties #_s_ = 4, _s_(0) = _a_, _s_(3) = _b_ and _s_(1) = _s_(2) = {{{<empty>}}}.
 
 == System Boundary ==
 
