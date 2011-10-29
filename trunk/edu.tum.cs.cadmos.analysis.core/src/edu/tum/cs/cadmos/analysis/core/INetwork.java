@@ -31,7 +31,7 @@ import edu.tum.cs.cadmos.core.model.IComponent;
  * @version $Rev$
  * @version $Author$
  * @version $Date$
- * @ConQAT.Rating RED Hash:
+ * @ConQAT.Rating RED Hash: 5AE6E5EDDABB33969CE765FB18B5F72E
  */
 public interface INetwork {
 
