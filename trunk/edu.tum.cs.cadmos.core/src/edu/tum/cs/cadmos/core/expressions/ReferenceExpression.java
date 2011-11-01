@@ -1,16 +1,9 @@
 package edu.tum.cs.cadmos.core.expressions;
 
-public class ReferenceExpression extends AbstractExpression {
+public class ReferenceExpression extends AbstractTerminalExpression<String> {
 
-	private final String id;
-
-	public ReferenceExpression(String id) {
-		super(EOperator.REFERENCE);
-		this.id = id;
-	}
-
-	public String getId() {
-		return id;
+	public ReferenceExpression(String value) {
+		super(EOperator.REFERENCE, value);
 	}
 
 }
