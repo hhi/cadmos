@@ -1,5 +1,5 @@
 #summary Nightly updated quality assurance information.
 #labels Phase-QA,Phase-Implementation
 
-
-[http://www4.in.tum.de/~schwitze/cadmos/html/index.html Dashboard]
+=Quality Dashboard=
+<wiki:gadget url="http://www4.informatik.tu-muenchen.de/~schwitze/cadmos/qa.xml" width="1000" height="800" border="1" />
