@@ -3,4 +3,4 @@
 
 =Quality Dashboard=
 [http://www4.informatik.tu-muenchen.de/~schwitze/cadmos/html/index.html Open external URL]
-<wiki:gadget url="http://www4.informatik.tu-muenchen.de/~schwitze/cadmos/qa.xml" width="1280" height="1024" border="1" />
+<wiki:gadget url="http://www4.informatik.tu-muenchen.de/~schwitze/cadmos/qa.xml" width="1280" height="900" border="1" />
