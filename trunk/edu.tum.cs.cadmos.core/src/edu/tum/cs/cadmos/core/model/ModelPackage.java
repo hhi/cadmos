@@ -32,10 +32,16 @@ import edu.tum.cs.cadmos.core.types.IType;
  * @version $Rev$
  * @version $Author$
  * @version $Date$
- * @ConQAT.Rating RED Hash:
+ * @ConQAT.Rating GREEN Hash: F60FB15D69F86DFC1315720E91566A91
  */
 public class ModelPackage {
 
+	/**
+	 * Creates a new channel with the given parameters.
+	 * 
+	 * @see Channel#Channel(String, String, IType, IComponent, IComponent, List,
+	 *      int, int)
+	 */
 	public static IChannel createChannel(String id, String name, IType type,
 			IComponent src, IComponent dst, List<IExpression> initialMessages,
 			int srcRate, int dstRate) {
@@ -43,16 +49,34 @@ public class ModelPackage {
 				dstRate);
 	}
 
+	/**
+	 * Creates a new atomic component with the given parameters.
+	 * 
+	 * @see AtomicComponent#AtomicComponent(String, String, ICompositeComponent,
+	 *      IMachine)
+	 */
 	public static IAtomicComponent createAtomicComponent(String id,
 			String name, ICompositeComponent parent, IMachine machine) {
 		return new AtomicComponent(id, name, parent, machine);
 	}
 
+	/**
+	 * Creates a new composite component with the given parameters.
+	 * 
+	 * @see CompositeComponent#CompositeComponent(String, String,
+	 *      ICompositeComponent)
+	 */
 	public static ICompositeComponent createCompositeComponent(String id,
 			String name, ICompositeComponent parent) {
 		return new CompositeComponent(id, name, parent);
 	}
 
+	/**
+	 * Creates a new variable with the given parameters.
+	 * 
+	 * @see Variable#Variable(String, String, IType, IAtomicComponent,
+	 *      IExpression)
+	 */
 	public static IVariable createVariable(String id, String name, IType type,
 			IAtomicComponent scope, IExpression initialMessage) {
 		return new Variable(id, name, type, scope, initialMessage);
