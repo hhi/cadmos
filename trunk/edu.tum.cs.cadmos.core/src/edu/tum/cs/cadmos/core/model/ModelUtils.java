@@ -309,15 +309,24 @@ public class ModelUtils {
 			final IAtomicComponent src = clones.get(atomicComponent);
 			assertNotNull(src, "src");
 			for (final IChannel channel : atomicComponent.getOutgoing()) {
-				if (channel.getDst() == null) {
-					/* Do not process outbound channels. */
-					continue;
+				final List<Deque<IChannel>> dstPaths = getDstPaths(channel,
+						systemBoundary);
+				for (final Deque<IChannel> path : dstPaths) {
+					assertTrue(path.size() > 0, "Expected path to be non-empty");
+					final IComponent candidate = path.getLast().getDst();
+					if (candidate == null) {
+						/* Skip channels that go out of the system boundary. */
+						continue;
+					}
+					assertInstanceOf(candidate, IAtomicComponent.class, "dst");
+					final IComponent dst = clones
+							.get((IAtomicComponent) candidate);
+					final List<IExpression> initialMessages = getPathInitialMessages(path);
+					final SrcDstRate rate = getPathSrcDstRate(path);
+					createChannel(path.getLast().getId(), path.getLast()
+							.getName(), path.getLast().getType(), src, dst,
+							initialMessages, rate.srcRate, rate.dstRate);
 				}
-				assertInstanceOf(channel.getDst(), IAtomicComponent.class,
-						"dst");
-				final IAtomicComponent dst = clones
-						.get((IAtomicComponent) channel.getDst());
-				channel.clone(src, dst);
 			}
 		}
 		return clones;
