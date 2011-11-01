@@ -277,9 +277,11 @@ public class ModelUtils {
 			final List<Deque<IChannel>> dstPaths = getDstPaths(channel,
 					systemBoundary);
 			for (final Deque<IChannel> path : dstPaths) {
+				assertTrue(path.size() > 0, "Expected path to be non-empty");
 				final IComponent candidate = path.getLast().getDst();
 				assertInstanceOf(candidate, IAtomicComponent.class, "dst");
 				final IComponent dst = clones.get((IAtomicComponent) candidate);
+				assertNotNull(dst, "dst");
 				final List<IExpression> initialMessages = getPathInitialMessages(path);
 				final SrcDstRate rate = getPathSrcDstRate(path);
 				createChannel(path.getLast().getId(), path.getLast().getName(),
@@ -290,10 +292,12 @@ public class ModelUtils {
 		/* Rewire the outgoing paths. */
 		for (final IChannel channel : systemBoundary.getOutgoing()) {
 			final Deque<IChannel> path = getSrcPath(channel, systemBoundary);
+			assertTrue(path.size() > 0, "Expected path to be non-empty");
 			final IComponent candidate = path.getFirst().getSrc();
 			assertInstanceOf(candidate, IAtomicComponent.class, "src");
 			final IAtomicComponent src = clones
 					.get((IAtomicComponent) candidate);
+			assertNotNull(src, "src");
 			final List<IExpression> initialMessages = getPathInitialMessages(path);
 			final SrcDstRate rate = getPathSrcDstRate(path);
 			createChannel(path.getLast().getId(), path.getLast().getName(),
@@ -303,7 +307,12 @@ public class ModelUtils {
 		/* Rewire the internal paths. */
 		for (final IAtomicComponent atomicComponent : atomicComponents) {
 			final IAtomicComponent src = clones.get(atomicComponent);
+			assertNotNull(src, "src");
 			for (final IChannel channel : atomicComponent.getOutgoing()) {
+				if (channel.getDst() == null) {
+					/* Do not process outbound channels. */
+					continue;
+				}
 				assertInstanceOf(channel.getDst(), IAtomicComponent.class,
 						"dst");
 				final IAtomicComponent dst = clones
