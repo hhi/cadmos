@@ -139,4 +139,12 @@ public class Channel extends AbstractTypedElement implements IChannel {
 				getInitialMessages(), getSrcRate(), getDstRate());
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "(" + getId() + ", " + getSrc()
+				+ "->" + getDst() + ")";
+
+	}
+
 }
