@@ -2,4 +2,5 @@
 #labels Phase-QA,Phase-Implementation
 
 =Quality Dashboard=
-<wiki:gadget url="http://www4.informatik.tu-muenchen.de/~schwitze/cadmos/qa.xml" width="1000" height="800" border="1" />
+[http://www4.informatik.tu-muenchen.de/~schwitze/cadmos/html/index.html Open external URL]
+<wiki:gadget url="http://www4.informatik.tu-muenchen.de/~schwitze/cadmos/qa.xml" width="1280" height="1024" border="1" />
