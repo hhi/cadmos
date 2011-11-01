@@ -19,6 +19,7 @@ package edu.tum.cs.cadmos.analysis.core;
 
 import java.util.List;
 
+import edu.tum.cs.cadmos.commons.core.IListSet;
 import edu.tum.cs.cadmos.core.model.IAtomicComponent;
 import edu.tum.cs.cadmos.core.model.IChannel;
 import edu.tum.cs.cadmos.core.model.IComponent;
@@ -57,11 +58,11 @@ public interface INetwork {
 	 * Returns a list of all {@link IAtomicComponent} which are contained in
 	 * this {@link INetwork}.
 	 */
-	public List<IAtomicComponent> getAllComponents();
+	public IListSet<IAtomicComponent> getAllComponents();
 
 	/**
 	 * Returns a list of all {@link IChannel} which are contained in this
 	 * {@link INetwork}.
 	 */
-	public List<IAtomicComponent> getAllChannels();
+	public IListSet<IChannel> getAllChannels();
 }
