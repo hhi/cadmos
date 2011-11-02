@@ -33,7 +33,7 @@ import java.util.Collection;
  * @version $Rev$
  * @version $Author$
  * @version $Date$
- * @ConQAT.Rating GREEN Hash: B0B463F08FFF65A45B119BD5942586F7
+ * @ConQAT.Rating GREEN Hash: 61F57380B1D6C7050CE3FB6F9F8498FC
  */
 public class Assert {
 
@@ -147,6 +147,23 @@ public class Assert {
 							"Expected '%s'(%s) to be an instance of '%s', but was '%s'",
 							instanceName, instance, superClass,
 							instance == null ? "null" : instance.getClass()));
+		}
+	}
+
+	/**
+	 * Asserts that the given <i>value</i> is within the range given by
+	 * [<i>min</i>..<i>max</i>] and throws an {@link AssertionError} otherwise.
+	 * 
+	 * @throws AssertionError
+	 *             if <i>value</i> is less than <i>min</i> or greater than
+	 *             <i>max</i>.
+	 */
+	public static void assertWithinRange(double value, double min, double max,
+			String valueName) {
+		if (value < min || value > max) {
+			throw new AssertionError(String.format(
+					"Expected '%s' to be within [%s..%s], but was %s",
+					valueName, min, max, value));
 		}
 	}
 }
