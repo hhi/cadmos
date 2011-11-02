@@ -1,19 +1,30 @@
 #summary Main page of the Cadmos wiki.
 #labels Featured
 
+<table width="100%">
+<tr>
+<td valign="top" width="50%">
+<h1>Cadmos Wiki</h1>
+_*Concurrent Architectures Design and Modeling Support*_
+</td>
+<td valign="top" align="right" width="50%">
 http://www4.in.tum.de/~schwitze/cadmos/cadmos-lens-reflections.png
-(..._the wiki_)
+</td>
+</tr>
+</table>
 
 This is the main wiki page of the Cadmos project.
+Here users and developers find documentation and interesting facts about this project.
 
 Find a list of all wiki pages at: http://code.google.com/p/cadmos/w/list
+
 
 == Some Interesting Entry Points ==
 <table width="100%">
 <tr>
 <td valign="top" width="50%">
 <h3>What users might find interesting...</h3>
- * [Terminology]
+ * [Terminology Concepts and Terminology]
 </td>
 <td valign="top" width="50%">
 <h3>What developers might find interesting...</h3>
@@ -27,4 +38,16 @@ Find a list of all wiki pages at: http://code.google.com/p/cadmos/w/list
 
 
 == Some Interesting Development Facts ==
-||<wiki:gadget url="http://www.ohloh.net/p/585579/widgets/project_basic_stats.xml" width="340" height="220" border="0" />||<wiki:gadget url="http://www.ohloh.net/p/585579/widgets/project_languages.xml" width="340" height="220" border="0"/>||<wiki:gadget url="http://www.ohloh.net/p/585579/widgets/project_factoids.xml" width="340" height="220" border="0"/>||
+<table>
+<tr>
+<td>
+<wiki:gadget url="http://www.ohloh.net/p/585579/widgets/project_basic_stats.xml" width="360" height="220" border="0" />
+</td>
+<td>
+<wiki:gadget url="http://www.ohloh.net/p/585579/widgets/project_languages.xml" width="360" height="220" border="0"/>
+</td>
+<td>
+<wiki:gadget url="http://www.ohloh.net/p/585579/widgets/project_factoids.xml" width="360" height="220" border="0"/>
+</td>
+</tr>
+</table>
