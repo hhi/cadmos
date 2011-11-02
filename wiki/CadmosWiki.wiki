@@ -1,13 +1,14 @@
 #summary Main page of the Cadmos wiki.
 #labels Featured
 
-= Cadmos Wiki =
+http://www4.in.tum.de/~schwitze/cadmos/cadmos-lens-reflections.png
+(..._the wiki_)
 
 This is the main wiki page of the Cadmos project.
 
 Find a list of all wiki pages at: http://code.google.com/p/cadmos/w/list
 
-== Some Interesting Entry Points==
+== Some Interesting Entry Points ==
 <table width="100%">
 <tr>
 <td valign="top" width="50%">
@@ -25,4 +26,5 @@ Find a list of all wiki pages at: http://code.google.com/p/cadmos/w/list
 </table>
 
 
-||<wiki:gadget url="http://www.ohloh.net/p/585579/widgets/project_basic_stats.xml" height="220" border="0" />||<wiki:gadget url="http://www.ohloh.net/p/585579/widgets/project_languages.xml" width="340" height="200" border="0"/>||
+== Some Interesting Development Facts ==
+||<wiki:gadget url="http://www.ohloh.net/p/585579/widgets/project_basic_stats.xml" width="340" height="220" border="0" />||<wiki:gadget url="http://www.ohloh.net/p/585579/widgets/project_languages.xml" width="340" height="220" border="0"/>||<wiki:gadget url="http://www.ohloh.net/p/585579/widgets/project_factoids.xml" width="340" height="220" border="0"/>||
