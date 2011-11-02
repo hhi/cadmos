@@ -29,7 +29,7 @@ package edu.tum.cs.cadmos.commons.core;
  * @version $Rev$
  * @version $Author$
  * @version $Date$
- * @ConQAT.Rating RED Hash:
+ * @ConQAT.Rating GREEN Hash: 215E25E4A95BE897EDDCC487720F0D3E
  */
 public interface IElement extends IIdentifiable {
 
