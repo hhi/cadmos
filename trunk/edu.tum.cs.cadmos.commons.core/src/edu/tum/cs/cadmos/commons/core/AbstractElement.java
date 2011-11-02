@@ -15,23 +15,41 @@
 | limitations under the License.                                           |
 +--------------------------------------------------------------------------*/
 
-package edu.tum.cs.cadmos.core.model;
-
-import edu.tum.cs.cadmos.commons.core.IElement;
-import edu.tum.cs.cadmos.core.types.IType;
+package edu.tum.cs.cadmos.commons.core;
 
 /**
- * An element that has a data type.
+ * An element is identified by a unique <i>id</i> and has an optionally
+ * non-unique display <i>name</i>.
+ * <p>
+ * This is an abstract base class to be used by implementors of the
+ * {@link IElement} interface.
  * 
  * @author wolfgang.schwitzer
  * @version $Rev$
  * @version $Author$
  * @version $Date$
- * @ConQAT.Rating RED Hash:
+ * @ConQAT.Rating GREEN Hash: 7DE079202965390C7181C83A92866849
  */
-public interface ITypedElement extends IElement {
+public abstract class AbstractElement extends AbstractIdentifiable implements
+		IElement {
 
-	/** Returns the data type of this element. */
-	IType getType();
+	/** The display name. */
+	private final String name;
+
+	/**
+	 * Creates a new abstract element with the given <i>id</i> and <i>name</i>.
+	 * <p>
+	 * If <code>name == null</code> the name is set to the given <i>id</i>.
+	 */
+	public AbstractElement(String id, String name) {
+		super(id);
+		this.name = (name == null) ? getId() : name;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public String getName() {
+		return name;
+	}
 
 }

@@ -1,5 +1,6 @@
 package edu.tum.cs.cadmos.core.model;
 
+import edu.tum.cs.cadmos.commons.core.AbstractElement;
 import edu.tum.cs.cadmos.commons.core.IConsistencyVerifier;
 import edu.tum.cs.cadmos.commons.core.IIdentifiable;
 import edu.tum.cs.cadmos.commons.core.IListCollection;

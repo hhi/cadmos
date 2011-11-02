@@ -17,6 +17,7 @@
 
 package edu.tum.cs.cadmos.core.model;
 
+import edu.tum.cs.cadmos.commons.core.IElement;
 import edu.tum.cs.cadmos.commons.core.IListMultiSet;
 import edu.tum.cs.cadmos.commons.core.IListSet;
 

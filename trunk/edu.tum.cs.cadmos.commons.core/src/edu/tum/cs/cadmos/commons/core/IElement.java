@@ -15,13 +15,15 @@
 | limitations under the License.                                           |
 +--------------------------------------------------------------------------*/
 
-package edu.tum.cs.cadmos.core.model;
-
-import edu.tum.cs.cadmos.commons.core.IElement;
-import edu.tum.cs.cadmos.core.types.IType;
+package edu.tum.cs.cadmos.commons.core;
 
 /**
- * An element that has a data type.
+ * An element is identified by a unique <i>id</i> and has an optionally
+ * non-unique display <i>name</i>.
+ * <p>
+ * Implementations must follow the convention to return the <i>id</i> as
+ * <i>name</i> if no explicit display name has been given by (e.g.
+ * <code>name == null</code>).
  * 
  * @author wolfgang.schwitzer
  * @version $Rev$
@@ -29,9 +31,13 @@ import edu.tum.cs.cadmos.core.types.IType;
  * @version $Date$
  * @ConQAT.Rating RED Hash:
  */
-public interface ITypedElement extends IElement {
+public interface IElement extends IIdentifiable {
 
-	/** Returns the data type of this element. */
-	IType getType();
+	/**
+	 * Returns the display name of this element. If no explicit name has been
+	 * given to this element, the same value as obtained by {@link #getId()} is
+	 * returned.
+	 */
+	String getName();
 
 }
