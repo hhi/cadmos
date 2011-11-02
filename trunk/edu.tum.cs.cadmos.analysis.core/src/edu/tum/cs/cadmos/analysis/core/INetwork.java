@@ -64,5 +64,7 @@ public interface INetwork {
 	 * Returns a list of all {@link IChannel} which are contained in this
 	 * {@link INetwork}.
 	 */
+	// TODO(WS):Use IListMultiSet instead. Channels with equal id can
+	// deliberately appear multiplse times within a network.
 	public IListSet<IChannel> getAllChannels();
 }
