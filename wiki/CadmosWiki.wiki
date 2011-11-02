@@ -1,6 +1,5 @@
 #summary Main page of the Cadmos wiki.
 #labels Featured
-#sidebar IssueUpdates
 
 <table width="100%">
 <tr>
