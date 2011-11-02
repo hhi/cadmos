@@ -1,0 +1,4 @@
+#summary Current issue updates.
+#labels Phase-Implementation
+
+<wiki:gadget url="http://google-code-project-hosting-gadgets.googlecode.com/svn/build/prod/issueupdates/gcIssueUpdates.xml" up_projectName="cadmos" border="0"/>
