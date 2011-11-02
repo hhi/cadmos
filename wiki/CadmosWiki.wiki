@@ -7,14 +7,15 @@ This is the main wiki page of the Cadmos project.
 
 Find a list of all wiki pages at: http://code.google.com/p/cadmos/w/list
 
+== Some Interesting Entry Points==
 <table width="100%">
 <tr>
 <td valign="top" width="50%">
-<h2>For Users</h2>
+<h3>What users might find interesting...</h3>
  * [Terminology]
 </td>
 <td valign="top" width="50%">
-<h2>For Developers</h2>
+<h3>What developers might find interesting...</h3>
  * DevelopmentEnvironmentSetup
  * WorkspaceProjectsOverview
  * QualityDashboard
@@ -22,3 +23,6 @@ Find a list of all wiki pages at: http://code.google.com/p/cadmos/w/list
 </td>
 </tr>
 </table>
+
+
+||<wiki:gadget url="http://www.ohloh.net/p/585579/widgets/project_basic_stats.xml" height="220" border="0" />||<wiki:gadget url="http://www.ohloh.net/p/585579/widgets/project_languages.xml" width="340" height="200" border="0"/>||
