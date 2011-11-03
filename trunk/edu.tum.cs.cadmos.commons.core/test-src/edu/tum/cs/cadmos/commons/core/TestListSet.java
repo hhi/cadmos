@@ -1,4 +1,4 @@
-package edu.tum.cs.cadmos.commons;
+package edu.tum.cs.cadmos.commons.core;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertSame;
