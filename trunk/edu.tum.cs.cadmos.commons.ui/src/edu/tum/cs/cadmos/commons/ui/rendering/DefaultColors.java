@@ -30,85 +30,85 @@ import org.eclipse.swt.graphics.RGB;
  */
 public class DefaultColors {
 
-	/** █<font color=#000000>████████</font>█ */
+	/** &#x2588;<font color=#000000>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB BLACK = new RGB(0, 0, 0);
 
-	/** █<font color=#ffffff>████████</font>█ */
+	/** &#x2588;<font color=#ffffff>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB WHITE = new RGB(255, 255, 255);
 
-	/** █<font color=#404040>████████</font>█ */
+	/** &#x2588;<font color=#404040>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB DARK_GRAY = new RGB(64, 64, 64);
 
-	/** █<font color=#808080>████████</font>█ */
+	/** &#x2588;<font color=#808080>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB GRAY = new RGB(128, 128, 128);
 
-	/** █<font color=#d9d9d9>████████</font>█ */
+	/** &#x2588;<font color=#d9d9d9>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB LIGHT_GRAY = new RGB(217, 217, 217);
 
-	/** █<font color=#00b0f0>████████</font>█ */
+	/** &#x2588;<font color=#00b0f0>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB SIGNAL_BLUE = new RGB(0, 176, 240);
 
-	/** █<font color=#ff3300>████████</font>█ */
+	/** &#x2588;<font color=#ff3300>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB SIGNAL_RED = new RGB(255, 51, 0);
 
-	/** █<font color=#00b050>████████</font>█ */
+	/** &#x2588;<font color=#00b050>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB SIGNAL_GREEN = new RGB(0, 176, 80);
 
-	/** █<font color=#ffc000>████████</font>█ */
+	/** &#x2588;<font color=#ffc000>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB SIGNAL_ORANGE = new RGB(255, 192, 0);
 
-	/** █<font color=#244061>████████</font>█ */
+	/** &#x2588;<font color=#244061>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB VERY_DARK_BLUE = new RGB(36, 64, 97);
 
-	/** █<font color=#365f91>████████</font>█ */
+	/** &#x2588;<font color=#365f91>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB DARK_BLUE = new RGB(54, 95, 145);
 
-	/** █<font color=#95b3d7>████████</font>█ */
+	/** &#x2588;<font color=#95b3d7>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB BLUE = new RGB(149, 179, 215);
 
-	/** █<font color=#b8cce4>████████</font>█ */
+	/** &#x2588;<font color=#b8cce4>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB LIGHT_BLUE = new RGB(184, 204, 228);
 
-	/** █<font color=#dbe5f1>████████</font>█ */
+	/** &#x2588;<font color=#dbe5f1>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB VERY_LIGHT_BLUE = new RGB(219, 229, 241);
 
-	/** █<font color=#632423>████████</font>█ */
+	/** &#x2588;<font color=#632423>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB VERY_DARK_RED = new RGB(99, 36, 35);
 
-	/** █<font color=#943634>████████</font>█ */
+	/** &#x2588;<font color=#943634>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB DARK_RED = new RGB(148, 54, 52);
 
-	/** █<font color=#d99594>████████</font>█ */
+	/** &#x2588;<font color=#d99594>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB RED = new RGB(217, 149, 148);
 
-	/** █<font color=#e5b8b7>████████</font>█ */
+	/** &#x2588;<font color=#e5b8b7>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB LIGHT_RED = new RGB(229, 184, 183);
 
-	/** █<font color=#f2dbdb>████████</font>█ */
+	/** &#x2588;<font color=#f2dbdb>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB VERY_LIGHT_RED = new RGB(242, 219, 219);
 
-	/** █<font color=#4f6228>████████</font>█ */
+	/** &#x2588;<font color=#4f6228>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB VERY_DARK_GREEN = new RGB(79, 98, 40);
 
-	/** █<font color=#76923c>████████</font>█ */
+	/** &#x2588;<font color=#76923c>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB DARK_GREEN = new RGB(118, 146, 60);
 
-	/** █<font color=#c2d69b>████████</font>█ */
+	/** &#x2588;<font color=#c2d69b>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB GREEN = new RGB(194, 214, 155);
 
-	/** █<font color=#d6e3bc>████████</font>█ */
+	/** &#x2588;<font color=#d6e3bc>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB LIGHT_GREEN = new RGB(214, 227, 188);
 
-	/** █<font color=#eaf1dd>████████</font>█ */
+	/** &#x2588;<font color=#eaf1dd>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB VERY_LIGHT_GREEN = new RGB(234, 241, 221);
 
-	/** █<font color=#5f497a>████████</font>█ */
+	/** &#x2588;<font color=#5f497a>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB DARK_LAVENDER = new RGB(95, 73, 122);
 
-	/** █<font color=#b2a1c7>████████</font>█ */
+	/** &#x2588;<font color=#b2a1c7>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB LAVENDER = new RGB(178, 161, 199);
 
-	/** █<font color=#ccc0d9>████████</font>█ */
+	/** &#x2588;<font color=#ccc0d9>&#x2588;&#x2588;</font>&#x2588; */
 	public static final RGB LIGHT_LAVENDER = new RGB(204, 192, 217);
 
 }
