@@ -21,15 +21,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.tum.cs.cadmos.commons.core.Assert;
+import edu.tum.cs.cadmos.commons.core.IListMultiSet;
 import edu.tum.cs.cadmos.commons.core.IListSet;
-import edu.tum.cs.cadmos.commons.core.ListSet;
+import edu.tum.cs.cadmos.commons.core.ListMultiSet;
 import edu.tum.cs.cadmos.core.model.IAtomicComponent;
 import edu.tum.cs.cadmos.core.model.IChannel;
 import edu.tum.cs.cadmos.core.model.IComponent;
 import edu.tum.cs.cadmos.core.model.ModelUtils;
 
 /**
- * A implementation of a {@link INetwork}.
+ * A implementation of a {@link INetwork} used in the methods of
+ * {@link NetworkAnalysis}.
  * 
  * @author nvpopa@gmail.com
  * @version $Rev$
@@ -104,17 +106,15 @@ public class Network implements INetwork {
 
 	/** {@inheritDoc} */
 	@Override
-	public IListSet<IChannel> getAllChannels() {
-		final IListSet<IChannel> channels = new ListSet<>();
+	public IListMultiSet<IChannel> getAllChannels() {
+		final IListMultiSet<IChannel> channels = new ListMultiSet<>();
 
 		for (final IAtomicComponent component : network) {
 			for (final IChannel och : component.getOutgoing()) {
-				if (!channels.contains(och)) {
-					channels.add(och);
-				}
+				channels.add(och);
 			}
 			for (final IChannel ich : component.getIncoming()) {
-				if (!channels.contains(ich)) {
+				if (ich.getSrc() == null) {
 					channels.add(ich);
 				}
 			}

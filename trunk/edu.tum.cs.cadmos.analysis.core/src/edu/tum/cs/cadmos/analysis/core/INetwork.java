@@ -19,6 +19,7 @@ package edu.tum.cs.cadmos.analysis.core;
 
 import java.util.List;
 
+import edu.tum.cs.cadmos.commons.core.IListMultiSet;
 import edu.tum.cs.cadmos.commons.core.IListSet;
 import edu.tum.cs.cadmos.core.model.IAtomicComponent;
 import edu.tum.cs.cadmos.core.model.IChannel;
@@ -64,7 +65,5 @@ public interface INetwork {
 	 * Returns a list of all {@link IChannel} which are contained in this
 	 * {@link INetwork}.
 	 */
-	// TODO(WS):Use IListMultiSet instead. Channels with equal id can
-	// deliberately appear multiplse times within a network.
-	public IListSet<IChannel> getAllChannels();
+	public IListMultiSet<IChannel> getAllChannels();
 }
