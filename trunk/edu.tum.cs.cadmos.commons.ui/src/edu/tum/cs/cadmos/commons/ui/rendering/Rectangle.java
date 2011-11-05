@@ -70,6 +70,16 @@ public class Rectangle {
 		return new Rectangle(scalex * x1, scaley * y1, scalex * x2, scaley * y2);
 	}
 
+	public Rectangle scaleToTarget(Rectangle target, Rectangle cover, float scale) {
+		final float deltax = .5f * (target.width() - scale * cover.width());
+		final float deltay = .5f * (target.height() - scale * cover.height());
+		final float rx1 = deltax + scale * (x1 - cover.x1);
+		final float rx2 = deltax + scale * (x2 - cover.x1);
+		final float ry1 = deltay + scale * (y1 - cover.y1);
+		final float ry2 = deltay + scale * (y2 - cover.y1);
+		return new Rectangle(rx1, ry1, rx2, ry2);
+	}
+
 	public Rectangle leftLine() {
 		return new Rectangle(x1, y1, x1, y2);
 	}
@@ -102,7 +112,7 @@ public class Rectangle {
 		return .5f * (y1 + y2);
 	}
 
-	public static Rectangle hull(Collection<Rectangle> rectangles) {
+	public static Rectangle cover(Collection<Rectangle> rectangles) {
 		assertTrue(!rectangles.isEmpty(),
 				"Expected 'rectangles' to be not empty");
 		float x1 = Float.MAX_VALUE;
