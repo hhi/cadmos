@@ -99,13 +99,13 @@ public final class Command {
 	 * The draw and fill area of lines, connectors, text, rectangles and
 	 * ellipses.
 	 */
-	public Rectangle area;
+	public Rect area;
 
 	/** The area covered by the source of a connector. */
-	public Rectangle srcArea;
+	public Rect srcArea;
 
 	/** The area covered by the destination of a connector. */
-	public Rectangle dstArea;
+	public Rect dstArea;
 
 	/** The corner radius in x-direction of rounded rectangles. */
 	public float cornerRadiusX;
@@ -127,15 +127,15 @@ public final class Command {
 		this.element = element;
 	}
 
-	public void scaleToTarget(Rectangle target, Rectangle cover, float scale) {
+	public void scale(float scale, Rect src, Rect dst) {
 		if (area != null) {
-			area = area.scaleToTarget(target, cover, scale);
+			area = area.scale(scale, src, dst);
 		}
 		if (srcArea != null) {
-			srcArea = srcArea.scaleToTarget(target, cover, scale);
+			srcArea = srcArea.scale(scale, src, dst);
 		}
 		if (dstArea != null) {
-			dstArea = dstArea.scaleToTarget(target, cover, scale);
+			dstArea = dstArea.scale(scale, src, dst);
 		}
 		cornerRadiusX *= scale;
 		cornerRadiusY *= scale;

@@ -57,24 +57,27 @@ public class RenderingContext {
 		return commands;
 	}
 
-	public void scaleToTarget(Rectangle target) {
-		final Rectangle cover = getCover();
-		final float scaleX = target.width() / cover.width();
-		final float scaleY = target.height() / cover.height();
+	public void scale(Rect dst) {
+		scale(getCover(), dst);
+	}
+
+	public void scale(Rect src, Rect dst) {
+		final float scaleX = dst.width() / src.width();
+		final float scaleY = dst.height() / src.height();
 		final float scale = min(scaleX, scaleY);
 		for (final Command command : commands) {
-			command.scaleToTarget(target, cover, scale);
+			command.scale(scale, src, dst);
 		}
 	}
 
-	public Rectangle getCover() {
-		final List<Rectangle> rectangles = new ArrayList<>(commands.size());
+	public Rect getCover() {
+		final List<Rect> rects = new ArrayList<>(commands.size());
 		for (final Command command : commands) {
 			if (command.area != null) {
-				rectangles.add(command.area);
+				rects.add(command.area);
 			}
 		}
-		return Rectangle.cover(rectangles);
+		return Rect.cover(rects);
 	}
 
 	/** Sets the draw color. */
@@ -155,8 +158,7 @@ public class RenderingContext {
 	}
 
 	/** Draws text centered and clipped in the area. */
-	public RenderingContext drawText(IElement element, String text,
-			Rectangle area) {
+	public RenderingContext drawText(IElement element, String text, Rect area) {
 		assertNotNull(text, "text");
 		assertNotNull(area, "area");
 		final Command command = new Command(TEXT, element);
@@ -167,12 +169,12 @@ public class RenderingContext {
 	}
 
 	/** Draws text centered and clipped in the area. */
-	public RenderingContext drawText(String text, Rectangle area) {
+	public RenderingContext drawText(String text, Rect area) {
 		return drawText(null, text, area);
 	}
 
 	/** Draws a line inside the area from (x1, y1) to (x2, y2). */
-	public RenderingContext drawLine(IElement element, Rectangle area) {
+	public RenderingContext drawLine(IElement element, Rect area) {
 		final Command command = new Command(LINE, element);
 		command.area = area;
 		commands.add(command);
@@ -180,7 +182,7 @@ public class RenderingContext {
 	}
 
 	/** Draws a line inside the area from (x1, y1) to (x2, y2). */
-	public RenderingContext drawLine(Rectangle area) {
+	public RenderingContext drawLine(Rect area) {
 		return drawLine(null, area);
 	}
 
@@ -188,8 +190,8 @@ public class RenderingContext {
 	 * Draws a connector from the area's (x1, y1) to (x2, y2) and respects the
 	 * extent of the source and destination areas.
 	 */
-	public RenderingContext drawConnector(IElement element, Rectangle area,
-			Rectangle srcArea, Rectangle dstArea) {
+	public RenderingContext drawConnector(IElement element, Rect area,
+			Rect srcArea, Rect dstArea) {
 		final Command command = new Command(CONNECTOR, element);
 		command.area = area;
 		command.srcArea = srcArea;
@@ -202,13 +204,12 @@ public class RenderingContext {
 	 * Draws a connector from the area's (x1, y1) to (x2, y2) and respects the
 	 * extent of the source and destination areas.
 	 */
-	public RenderingContext drawConnector(Rectangle area, Rectangle srcArea,
-			Rectangle dstArea) {
+	public RenderingContext drawConnector(Rect area, Rect srcArea, Rect dstArea) {
 		return drawConnector(null, area, srcArea, dstArea);
 	}
 
 	/** Draws and fills a rectangle on the given area. */
-	public RenderingContext paintRectangle(IElement element, Rectangle area) {
+	public RenderingContext paintRectangle(IElement element, Rect area) {
 		final Command command = new Command(RECTANGLE, element);
 		command.area = area;
 		commands.add(command);
@@ -216,13 +217,13 @@ public class RenderingContext {
 	}
 
 	/** Draws and fills a rectangle on the given area. */
-	public RenderingContext paintRectangle(Rectangle area) {
+	public RenderingContext paintRectangle(Rect area) {
 		return paintRectangle(null, area);
 	}
 
 	/** Draws and fills a rounded rectangle on the given area. */
-	public RenderingContext paintRoundedRectangle(IElement element,
-			Rectangle area, float cornerRadiusX, float cornerRadiusY) {
+	public RenderingContext paintRoundedRectangle(IElement element, Rect area,
+			float cornerRadiusX, float cornerRadiusY) {
 		final Command command = new Command(ROUNDED_RECTANGLE, element);
 		command.area = area;
 		command.cornerRadiusX = cornerRadiusX;
@@ -232,13 +233,13 @@ public class RenderingContext {
 	}
 
 	/** Draws and fills a rounded rectangle on the given area. */
-	public RenderingContext paintRoundedRectangle(Rectangle area,
+	public RenderingContext paintRoundedRectangle(Rect area,
 			float cornerRadiusX, float cornerRadiusY) {
 		return paintRoundedRectangle(null, area, cornerRadiusX, cornerRadiusY);
 	}
 
 	/** Draws and fills an ellipse inside the given area. */
-	public RenderingContext paintEllipse(IElement element, Rectangle area) {
+	public RenderingContext paintEllipse(IElement element, Rect area) {
 		final Command command = new Command(ELLIPSE, element);
 		command.area = area;
 		commands.add(command);
@@ -246,7 +247,7 @@ public class RenderingContext {
 	}
 
 	/** Draws and fills an ellipse inside the given area. */
-	public RenderingContext paintEllipse(Rectangle area) {
+	public RenderingContext paintEllipse(Rect area) {
 		return paintEllipse(null, area);
 	}
 }
