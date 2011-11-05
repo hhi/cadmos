@@ -127,8 +127,7 @@ public final class Command {
 		this.element = element;
 	}
 
-	public void scaleToTarget(Rectangle target, Rectangle cover,
-			float scale) {
+	public void scaleToTarget(Rectangle target, Rectangle cover, float scale) {
 		if (area != null) {
 			area = area.scaleToTarget(target, cover, scale);
 		}
@@ -138,6 +137,8 @@ public final class Command {
 		if (dstArea != null) {
 			dstArea = dstArea.scaleToTarget(target, cover, scale);
 		}
+		cornerRadiusX *= scale;
+		cornerRadiusY *= scale;
 	}
 
 }
