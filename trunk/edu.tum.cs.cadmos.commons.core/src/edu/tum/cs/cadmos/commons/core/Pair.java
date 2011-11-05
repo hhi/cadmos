@@ -27,8 +27,8 @@ import java.util.HashSet;
  * {@link #equals(Object)}-method is overridden to return equality if the two
  * first and the two second elements are equal
  * 
- * @author wolfgang.schwitzer
  * @author nvpopa@gmail.com
+ * @author wolfgang.schwitzer
  * @version $Rev$
  * @version $Author$
  * @version $Date$
@@ -63,16 +63,15 @@ public class Pair<F, S> {
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * Returns <code>true</code> if the other object is a
-	 * {@link edu.uci.ics.jung.graph.util.Pair} and the two first elements as
-	 * well as the two second elements are equal.
+	 * Returns <code>true</code> if the other object is a {@link Pair} and the
+	 * two first elements as well as the two second elements are equal.
 	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Pair)) {
 			return false;
 		}
-		final Pair other = (Pair) obj;
+		final Pair<?, ?> other = (Pair<?, ?>) obj;
 		return first.equals(other.first) && second.equals(other.second);
 	}
 
