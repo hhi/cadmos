@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import edu.tum.cs.cadmos.analysis.core.Network;
+import edu.tum.cs.cadmos.analysis.core.INetwork;
 import edu.tum.cs.cadmos.core.model.IAtomicComponent;
 import edu.tum.cs.cadmos.core.model.IChannel;
 
@@ -55,7 +55,7 @@ public class NetworkUtils {
 	 * Returns an arbitrary component from the given <i>network</i> or
 	 * <code>null</code> if the given <i>network</i> has no components.
 	 */
-	public static IAtomicComponent getAnyComponent(Network network) {
+	public static IAtomicComponent getAnyComponent(INetwork network) {
 		for (final IAtomicComponent comp : network.getAllComponents()) {
 			return comp;
 		}
@@ -101,7 +101,7 @@ public class NetworkUtils {
 	 * @throws IllegalArgumentException
 	 *             if id is <code>null</code>.
 	 */
-	public static IAtomicComponent getComponent(Network network, Object id) {
+	public static IAtomicComponent getComponent(INetwork network, Object id) {
 		if (id == null) {
 			throw new IllegalArgumentException("Expected id to be not null");
 		}
@@ -120,7 +120,7 @@ public class NetworkUtils {
 	 * @throws IllegalArgumentException
 	 *             if id is <code>null</code>.
 	 */
-	public static IChannel getEdge(Network network, Object id) {
+	public static IChannel getEdge(INetwork network, Object id) {
 		if (id == null) {
 			throw new IllegalArgumentException("Expected id to be not null");
 		}
@@ -133,7 +133,7 @@ public class NetworkUtils {
 	}
 
 	/** Returns the given <i>network</i> as formatted string. */
-	public static String toString(Network network) {
+	public static String toString(INetwork network) {
 		final StringBuilder s = new StringBuilder();
 		for (final IAtomicComponent component : network.getAllComponents()) {
 			s.append(component.toString());
