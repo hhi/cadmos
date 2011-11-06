@@ -66,4 +66,8 @@ public interface INetwork {
 	 * {@link INetwork}.
 	 */
 	public IListMultiSet<IChannel> getAllChannels();
+
+	/** Adds a {@link IAtomicComponent} in this {@link INetwork}. */
+	public void addComponent(IAtomicComponent component);
+
 }

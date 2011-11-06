@@ -24,6 +24,7 @@ import edu.tum.cs.cadmos.commons.core.Assert;
 import edu.tum.cs.cadmos.commons.core.IListMultiSet;
 import edu.tum.cs.cadmos.commons.core.IListSet;
 import edu.tum.cs.cadmos.commons.core.ListMultiSet;
+import edu.tum.cs.cadmos.commons.core.ListSet;
 import edu.tum.cs.cadmos.core.model.IAtomicComponent;
 import edu.tum.cs.cadmos.core.model.IChannel;
 import edu.tum.cs.cadmos.core.model.IComponent;
@@ -43,6 +44,11 @@ public class Network implements INetwork {
 
 	/** The network of {@link IAtomicComponent}'s which is analyzed. */
 	private final IListSet<IAtomicComponent> network;
+
+	/** Creates a empty new Network. */
+	public Network() {
+		network = new ListSet<>();
+	}
 
 	/**
 	 * Creates a new Network given its system boundary as a {@link IComponent}.
@@ -122,4 +128,11 @@ public class Network implements INetwork {
 
 		return channels;
 	}
+
+	/** {@inheritDoc} */
+	@Override
+	public void addComponent(IAtomicComponent component) {
+		network.add(component);
+	}
+
 }
