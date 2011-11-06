@@ -55,6 +55,8 @@ public class ModelUtils {
 	 * <i>component</i> in DFS order or the <i>component</i> itself if it is
 	 * already an atomic component.
 	 */
+	// TODO(VP): ensure that component is not null and return null or assertion
+	// error otherwise.
 	public static IListSet<IAtomicComponent> getAtomicComponents(
 			IComponent component) {
 		if (component instanceof IAtomicComponent) {
