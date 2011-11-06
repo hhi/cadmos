@@ -55,7 +55,7 @@ public class NetworkAnalysis {
 	public static final int MAX_CYCLES = 100;
 
 	/**
-	 * Returns all vertices in the given network that are member of a strongly
+	 * Returns all components in the given network that are member of a strongly
 	 * connected component (SCC) and therefore belong to a system state.
 	 */
 	public static Collection<IAtomicComponent> analyzeStatefulVertices(
@@ -70,13 +70,13 @@ public class NetworkAnalysis {
 	/**
 	 * Returns all cycles in the given <i>network</i>. Each cycle
 	 * <i>C<sub>i</sub></i> is returned as a path described by a list of
-	 * vertices. <br>
+	 * components. <br>
 	 * Note, that in general <i>C<sub>i</sub></i> and <i>C<sub>k</sub></i>
-	 * (<i>i</i> &#8800; <i>k</i>) need not to be disjoint vertex sets.
+	 * (<i>i</i> &#8800; <i>k</i>) need not to be disjoint component sets.
 	 * <p>
 	 * Example: G={V, E} with V={X, Y, Z} and E={XY, YZ, ZX} then
 	 * analyzeCycles(G) == {C}, where C = [X, Y, Z] or [Y, Z, X] or [Z, X, Y],
-	 * depending on the internal ordering of vertices and edges in G.
+	 * depending on the internal ordering of components and channels in G.
 	 */
 	public static Collection<List<IAtomicComponent>> analyzeCycles(
 			INetwork network) {
@@ -95,29 +95,29 @@ public class NetworkAnalysis {
 	}
 
 	/**
-	 * Adds all cycles reachable from vertex <i>v</i> to the <i>result</i>
+	 * Adds all cycles reachable from component <i>c</i> to the <i>result</i>
 	 * collection. Used internally by {@link #analyzeCycles(Graph)}.
 	 * 
 	 * @param c
-	 *            the vertex from which cycle detection is started.
+	 *            the component from which cycle detection is started.
 	 * @param result
 	 *            the collection to which all cycles are added that are
-	 *            reachable from v. Each cycle is returned as a list of vertices
-	 *            that contains each vertex at most once.
+	 *            reachable from c. Each cycle is returned as a list of
+	 *            components that contains each component at most once.
 	 * @param equivalentCycles
 	 *            a set of all equivalent cycles that have been detected, so
 	 *            far. If a cycle is detected that is present in this set
 	 *            already, that cycle is not added to the result.
 	 * @param stack
-	 *            a list of all vertices that have been visited in the current
+	 *            a list of all components that have been visited in the current
 	 *            path of DFS-recursion, so far. In order to execute this method
 	 *            efficiently, this list must implement the {@link RandomAccess}
 	 *            interface (e.g. {@link ArrayList}).
 	 * @param stackSet
-	 *            a set of all vertices that have been visited in the current
+	 *            a set of all components that have been visited in the current
 	 *            path of DFS-recursion, so far. In order to execute this method
 	 *            efficiently, the stack-set is used to determine whether a
-	 *            vertex is on the stack in constant time (<i>O</i>(1)).
+	 *            component is on the stack in constant time (<i>O</i>(1)).
 	 */
 	private static void internal_analyzeCycles(INetwork network,
 			IAtomicComponent c, Collection<List<IAtomicComponent>> result,
@@ -194,14 +194,14 @@ public class NetworkAnalysis {
 	}
 
 	/**
-	 * Analyzes the precedence order of all vertices in the given
+	 * Analyzes the precedence order of all components in the given
 	 * <i>network</i>. This method returns a {@link HashMap} containing for each
-	 * vertex its precedence order.
+	 * component its precedence order.
 	 * <p>
-	 * Note that this method only works for directed acyclic networks (DAGs).
+	 * Note that this method only works for directed acyclic networks.
 	 * <p>
 	 * For example, the method
-	 * {@link DataFlowTransformation#transformAcyclicIntraIterationPrecedenceGraph(Graph)}
+	 * {@link NetworkTransformation#transformAcyclicIntraIterationPrecedenceGraph(Graph)}
 	 * can be used to make a cyclic network acyclic.
 	 * 
 	 * @throws IllegalArgumentException
@@ -216,7 +216,8 @@ public class NetworkAnalysis {
 			int order = -1;
 			for (final IAtomicComponent pred : network.getPredecessors(c)) {
 				final int predOrder = precedenceOrder.get(pred);
-				// If the vertices are correctly sorted, this assertion will be
+				// If the components are correctly sorted, this assertion will
+				// be
 				// true.
 				Assert.assertNotNull(predOrder, "predOrder" + "");
 				order = max(order, predOrder);
@@ -228,8 +229,8 @@ public class NetworkAnalysis {
 	}
 
 	/**
-	 * Analyzes the guaranteed causal delays of all edges in the given
-	 * <i>network</i>. It returns a {@link Map} containing for each edge its
+	 * Analyzes the guaranteed causal delays of all channels in the given
+	 * <i>network</i>. It returns a {@link Map} containing for each channel its
 	 * minimum output delay.
 	 */
 	public static Map<IChannel, Integer> analyzeGuaranteedDelays(
@@ -249,8 +250,8 @@ public class NetworkAnalysis {
 	}
 
 	/**
-	 * Performs a dfs search updating the guaranteed delays on each edge and
-	 * vertex.
+	 * Performs a dfs search updating the guaranteed delays on each channel and
+	 * component.
 	 */
 	private static void getOutgoingDelays(INetwork network,
 			IAtomicComponent component,
@@ -273,12 +274,13 @@ public class NetworkAnalysis {
 	}
 
 	/**
-	 * Returns the list of topological sorted vertices in given <i>network</i>.
+	 * Returns the list of topological sorted components in the given
+	 * <i>network</i>.
 	 * <p>
-	 * Note that this method only works for directed acyclic networks (DAGs).
+	 * Note that this method only works for directed acyclic networks.
 	 * <p>
 	 * For example, the method
-	 * {@link DataFlowTransformation#transformAcyclicIntraIterationPrecedenceGraph(Graph)}
+	 * {@link NetworkTransformation#transformAcyclicIntraIterationPrecedenceGraph(Graph)}
 	 * can be used to make a cyclic network acyclic.
 	 * 
 	 * @throws IllegalArgumentException
@@ -344,43 +346,43 @@ public class NetworkAnalysis {
 	}
 
 	/**
-	 * Adds the strongly connected component to which the given vertex <i>v</i>
-	 * belongs to the given <i>sccs</i> collection.
+	 * Adds the strongly connected component to which the given component
+	 * <i>comp</i> belongs to the given <i>sccs</i> collection.
 	 */
 	private static int analyzeStronglyConnectedComponent(INetwork network,
-			IAtomicComponent component, int index,
+			IAtomicComponent comp, int index,
 			Collection<Collection<IAtomicComponent>> sccs,
 			List<IAtomicComponent> stack, Set<IAtomicComponent> stackSet,
 			Map<IAtomicComponent, Integer> indexMap,
 			Map<IAtomicComponent, Integer> lowlinkMap) {
 		int localIndex = index;
-		stackSet.add(component);
-		indexMap.put(component, localIndex);
-		lowlinkMap.put(component, localIndex);
+		stackSet.add(comp);
+		indexMap.put(comp, localIndex);
+		lowlinkMap.put(comp, localIndex);
 		localIndex++;
-		stack.add(component);
+		stack.add(comp);
 		final Collection<IAtomicComponent> successors = network
-				.getSuccessors(component);
+				.getSuccessors(comp);
 		for (final IAtomicComponent s : successors) {
 			if (indexMap.get(s) == null) {
 				localIndex = analyzeStronglyConnectedComponent(network, s,
 						localIndex, sccs, stack, stackSet, indexMap, lowlinkMap);
-				lowlinkMap.put(component,
-						min(lowlinkMap.get(component), lowlinkMap.get(s)));
+				lowlinkMap.put(comp,
+						min(lowlinkMap.get(comp), lowlinkMap.get(s)));
 			} else if (stackSet.contains(s)) {
-				lowlinkMap.put(component,
-						min(lowlinkMap.get(component), lowlinkMap.get(s)));
+				lowlinkMap.put(comp,
+						min(lowlinkMap.get(comp), lowlinkMap.get(s)));
 			}
 		}
-		if (lowlinkMap.get(component).equals(indexMap.get(component))) {
+		if (lowlinkMap.get(comp).equals(indexMap.get(comp))) {
 			final Collection<IAtomicComponent> scc = new LinkedHashSet<>();
 			IAtomicComponent member;
 			do {
 				scc.add(member = stack.remove(stack.size() - 1));
 				stackSet.remove(member);
-			} while (member != component);
+			} while (member != comp);
 			assertTrue(!scc.isEmpty(), "Expected scc to be non-empty");
-			if (scc.size() > 1 || successors.contains(component)) {
+			if (scc.size() > 1 || successors.contains(comp)) {
 				sccs.add(scc);
 			}
 		}
@@ -388,9 +390,9 @@ public class NetworkAnalysis {
 	}
 
 	/**
-	 * Returns the causality of the given component <i>component</i>. The
-	 * causality &#x3b3; of a function <i>F</i> is determined by the minimum
-	 * outgoing edge delay as follows
+	 * Returns the causality of the given component <i>comp</i>. The causality
+	 * &#x3b3; of a function <i>F</i> is determined by the minimum outgoing
+	 * channel delay as follows
 	 * <p>
 	 * <center>&#x3b3;(<i>F</i>) = <i>min</i>{&#x3b4;(<i>e</i>) : <i>e</i>
 	 * &#x2208; <i>outgoing</i>(<i>F</i>)}</center>.
@@ -404,10 +406,10 @@ public class NetworkAnalysis {
 	 * </ul>
 	 * Note that outputs to the environment are strongly causal by definition.
 	 */
-	public static int analyzeCausality(IAtomicComponent component) {
+	public static int analyzeCausality(IAtomicComponent comp) {
 		boolean initialized = false;
 		int result = 0;
-		for (final IChannel ch : component.getOutgoing()) {
+		for (final IChannel ch : comp.getOutgoing()) {
 			if (initialized) {
 				result = min(result, ch.getDelay());
 			} else {
@@ -431,9 +433,10 @@ public class NetworkAnalysis {
 	// }
 
 	/**
-	 * Returns an histogram of the given network's edges summarized by delay.
+	 * Returns an histogram of the given network's channels summarized by delay.
 	 * Each key in the returned map represents a delay value and the
-	 * corresponding value is a collection of all edges that have equal delay.
+	 * corresponding value is a collection of all channels that have equal
+	 * delay.
 	 * <p>
 	 * If a delay value is not present in the network, the map does not contain
 	 * a key for it and consequently returns <code>null</code>.
@@ -499,7 +502,7 @@ public class NetworkAnalysis {
 	// }
 
 	/**
-	 * Returns all the transitive successors from vertex in the given
+	 * Returns all the transitive successors from component in the given
 	 * {@link Graph}.
 	 */
 	public static Set<IAtomicComponent> analyzeTransitiveSuccessors(
@@ -508,7 +511,7 @@ public class NetworkAnalysis {
 	}
 
 	/**
-	 * Returns all the transitive predecessors from vertex in the given
+	 * Returns all the transitive predecessors from component in the given
 	 * {@link Graph}.
 	 */
 	public static Set<IAtomicComponent> analyzeTransitivePredecessors(
@@ -517,10 +520,10 @@ public class NetworkAnalysis {
 	}
 
 	/**
-	 * Returns all the transitive successors or predecessors from vertex in the
-	 * given {@link Graph}. If <i>findSuccessors</i> is <code>true</code> then
-	 * the transitive successors are returned, otherwise the transitive
-	 * predecessors are returned.
+	 * Returns all the transitive successors or predecessors from
+	 * <i>component</i> in the given {@link Graph}. If <i>findSuccessors</i> is
+	 * <code>true</code> then the transitive successors are returned, otherwise
+	 * the transitive predecessors are returned.
 	 */
 	public static Set<IAtomicComponent> internal_analyzeTransitiveNeighbors(
 			INetwork network, IAtomicComponent component, boolean findSuccessors) {
