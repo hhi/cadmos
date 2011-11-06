@@ -88,12 +88,27 @@ public class RenderingContext {
 		return this;
 	}
 
+	/** Sets the draw color. */
+	public RenderingContext setDrawColor(int r, int g, int b) {
+		return setDrawColor(new RGB(r, g, b));
+	}
+
 	/** Sets the draw style. */
 	public RenderingContext setDrawStyle(EDrawStyle style) {
 		final Command command = new Command(SET_DRAW, null);
 		command.drawStyle = style;
 		commands.add(command);
 		return this;
+	}
+
+	/** Sets the draw style to {@link EDrawStyle#NONE}. */
+	public RenderingContext setNoDraw() {
+		return setDrawStyle(EDrawStyle.NONE);
+	}
+
+	/** Sets the draw style to {@link EDrawStyle#SOLID}. */
+	public RenderingContext setSolidDraw() {
+		return setDrawStyle(EDrawStyle.SOLID);
 	}
 
 	/** Sets the draw color and style. */
@@ -113,16 +128,31 @@ public class RenderingContext {
 		return this;
 	}
 
+	/** Sets the fill color. */
+	public RenderingContext setFillColor(int r, int g, int b) {
+		return setFillColor(new RGB(r, g, b));
+	}
+
 	/** Sets the fill style. */
-	public RenderingContext setDrawStyle(EFillStyle style) {
+	public RenderingContext setFillStyle(EFillStyle style) {
 		final Command command = new Command(SET_FILL, null);
 		command.fillStyle = style;
 		commands.add(command);
 		return this;
 	}
 
+	/** Sets the fill style to {@link EFillStyle#NONE}. */
+	public RenderingContext setNoFill() {
+		return setFillStyle(EFillStyle.NONE);
+	}
+
+	/** Sets the fill style to {@link EFillStyle#SOLID}. */
+	public RenderingContext setSolidFill() {
+		return setFillStyle(EFillStyle.SOLID);
+	}
+
 	/** Sets the fill color and style. */
-	public RenderingContext setDraw(RGB color, EFillStyle style) {
+	public RenderingContext setFill(RGB color, EFillStyle style) {
 		final Command command = new Command(SET_FILL, null);
 		command.fillColor = color;
 		command.fillStyle = style;
@@ -130,9 +160,9 @@ public class RenderingContext {
 		return this;
 	}
 
-	/** Sets the opacity of draw and fill operations: [0..255]. */
-	public RenderingContext setOpacity(int opacity) {
-		assertWithinRange(opacity, 0, 255, "opacity");
+	/** Sets the opacity of draw and fill operations: [0.0..1.0]. */
+	public RenderingContext setOpacity(float opacity) {
+		assertWithinRange(opacity, 0f, 1f, "opacity");
 		final Command command = new Command(SET_OPACITY, null);
 		command.opacity = opacity;
 		commands.add(command);
@@ -168,57 +198,44 @@ public class RenderingContext {
 		return this;
 	}
 
-	/** Draws text centered and clipped in the area. */
-	public RenderingContext drawText(String text, Rect area) {
-		return drawText(null, text, area);
-	}
-
 	/** Draws a line inside the area from (x1, y1) to (x2, y2). */
 	public RenderingContext drawLine(IElement element, Rect area) {
+		assertNotNull(area, "area");
 		final Command command = new Command(LINE, element);
 		command.area = area;
 		commands.add(command);
 		return this;
 	}
 
-	/** Draws a line inside the area from (x1, y1) to (x2, y2). */
-	public RenderingContext drawLine(Rect area) {
-		return drawLine(null, area);
-	}
-
 	/**
-	 * Draws a connector from the area's (x1, y1) to (x2, y2) and respects the
-	 * extent of the source and destination areas.
+	 * Draws a connector from the area's (x1, y1) to (x2, y2) labeled with the
+	 * optionally given text, respecting the extent of the source and
+	 * destination areas.
 	 */
 	public RenderingContext drawConnector(IElement element, Rect area,
-			Rect srcArea, Rect dstArea) {
+			float srcRadiusX, float srcRadiusY, float dstRadiusX,
+			float dstRadiusY, String text, float bend) {
+		assertNotNull(area, "area");
 		final Command command = new Command(CONNECTOR, element);
 		command.area = area;
-		command.srcArea = srcArea;
-		command.dstArea = dstArea;
+		command.srcRadiusX = srcRadiusX;
+		command.srcRadiusY = srcRadiusY;
+		command.dstRadiusX = dstRadiusX;
+		command.dstRadiusY = dstRadiusY;
+		command.text = text;
+		command.bend = bend;
 		commands.add(command);
 		return this;
 	}
 
 	/**
-	 * Draws a connector from the area's (x1, y1) to (x2, y2) and respects the
-	 * extent of the source and destination areas.
+	 * /** Draws and fills a rectangle on the given area.
 	 */
-	public RenderingContext drawConnector(Rect area, Rect srcArea, Rect dstArea) {
-		return drawConnector(null, area, srcArea, dstArea);
-	}
-
-	/** Draws and fills a rectangle on the given area. */
 	public RenderingContext paintRectangle(IElement element, Rect area) {
 		final Command command = new Command(RECTANGLE, element);
 		command.area = area;
 		commands.add(command);
 		return this;
-	}
-
-	/** Draws and fills a rectangle on the given area. */
-	public RenderingContext paintRectangle(Rect area) {
-		return paintRectangle(null, area);
 	}
 
 	/** Draws and fills a rounded rectangle on the given area. */
@@ -232,12 +249,6 @@ public class RenderingContext {
 		return this;
 	}
 
-	/** Draws and fills a rounded rectangle on the given area. */
-	public RenderingContext paintRoundedRectangle(Rect area,
-			float cornerRadiusX, float cornerRadiusY) {
-		return paintRoundedRectangle(null, area, cornerRadiusX, cornerRadiusY);
-	}
-
 	/** Draws and fills an ellipse inside the given area. */
 	public RenderingContext paintEllipse(IElement element, Rect area) {
 		final Command command = new Command(ELLIPSE, element);
@@ -246,8 +257,4 @@ public class RenderingContext {
 		return this;
 	}
 
-	/** Draws and fills an ellipse inside the given area. */
-	public RenderingContext paintEllipse(Rect area) {
-		return paintEllipse(null, area);
-	}
 }

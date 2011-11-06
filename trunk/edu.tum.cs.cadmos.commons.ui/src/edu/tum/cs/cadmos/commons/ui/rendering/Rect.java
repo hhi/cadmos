@@ -18,11 +18,13 @@
 package edu.tum.cs.cadmos.commons.ui.rendering;
 
 import static edu.tum.cs.cadmos.commons.core.Assert.assertTrue;
-import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.lang.Math.round;
 
 import java.util.Collection;
+
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * A rectangular area defined by two points (x1, y1) and (x2, y2).
@@ -97,11 +99,11 @@ public class Rect {
 	}
 
 	public float width() {
-		return abs(x2 - x1);
+		return x2 - x1;
 	}
 
 	public float height() {
-		return abs(y2 - y1);
+		return y2 - y1;
 	}
 
 	public float centerX() {
@@ -110,6 +112,15 @@ public class Rect {
 
 	public float centerY() {
 		return .5f * (y1 + y2);
+	}
+
+	public Rectangle toRectangle() {
+		return new Rectangle(round(x1), round(y1), round(width()),
+				round(height()));
+	}
+
+	public static Rect fromRectangle(Rectangle r) {
+		return new Rect(r.x, r.y, r.x + r.width, r.y + r.height);
 	}
 
 	public static Rect cover(Collection<Rect> rects) {

@@ -67,10 +67,10 @@ public final class Command {
 
 	/**
 	 * The opacity to use for shapes that are drawn and filled by subsequent
-	 * commands, where 0 is fully transparent and 255 is fully opaque. Remains
+	 * commands, where 0.0 is fully transparent and 1.0 is fully opaque. Remains
 	 * unchanged if value is <code>null</code>.
 	 */
-	public Integer opacity;
+	public Float opacity;
 
 	/**
 	 * The relative font size to use for text that is rendered by subsequent
@@ -101,17 +101,26 @@ public final class Command {
 	 */
 	public Rect area;
 
-	/** The area covered by the source of a connector. */
-	public Rect srcArea;
+	/** The radius in x-direction covered by the source of a connector. */
+	public float srcRadiusX;
 
-	/** The area covered by the destination of a connector. */
-	public Rect dstArea;
+	/** The radius in y-direction covered by the source of a connector. */
+	public float srcRadiusY;
+
+	/** The radius in x-direction covered by the destination of a connector. */
+	public float dstRadiusX;
+
+	/** The radius in y-direction covered by the destination of a connector. */
+	public float dstRadiusY;
 
 	/** The corner radius in x-direction of rounded rectangles. */
 	public float cornerRadiusX;
 
 	/** The corner radius in y-direction of rounded rectangles. */
 	public float cornerRadiusY;
+
+	/** The additional bend of a connector that has multiple siblings. */
+	public float bend;
 
 	/**
 	 * Creates a new rendering command with the given <i>type</i> and associated
@@ -131,14 +140,13 @@ public final class Command {
 		if (area != null) {
 			area = area.scale(scale, src, dst);
 		}
-		if (srcArea != null) {
-			srcArea = srcArea.scale(scale, src, dst);
-		}
-		if (dstArea != null) {
-			dstArea = dstArea.scale(scale, src, dst);
-		}
+		srcRadiusX *= scale;
+		srcRadiusY *= scale;
+		dstRadiusX *= scale;
+		dstRadiusY *= scale;
 		cornerRadiusX *= scale;
 		cornerRadiusY *= scale;
+		bend *= scale;
 	}
 
 }
