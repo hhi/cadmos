@@ -31,10 +31,6 @@ import edu.tum.cs.cadmos.core.machines.IMachine;
  * <p>
  * This is the reference implementation of the {@link IAtomicComponent}
  * interface.
- * <p>
- * External API users should use
- * {@link ModelPackage#createAtomicComponent(String, String, ICompositeComponent, IMachine)}
- * rather than directly creating an instance.
  * 
  * @author wolfgang.schwitzer
  * @author nvpopa@gmail.com
@@ -44,7 +40,7 @@ import edu.tum.cs.cadmos.core.machines.IMachine;
  * @version $Date$
  * @ConQAT.Rating RED Hash:
  */
-/* package */class AtomicComponent extends AbstractComponent implements
+public class AtomicComponent extends AbstractComponent implements
 		IAtomicComponent {
 
 	private final IListSet<IVariable> variables = new ListSet<>(this);

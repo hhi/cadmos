@@ -36,10 +36,6 @@ import edu.tum.cs.cadmos.core.types.VoidType;
  * component.
  * <p>
  * This is the reference implementation of the {@link IChannel} interface.
- * <p>
- * External API users should use
- * {@link ModelPackage#createChannel(String, String, IType, IComponent, IComponent, List, int, int)}
- * rather than directly creating an instance.
  * 
  * @author wolfgang.schwitzer
  * @author nvpopa@gmail.com
@@ -49,7 +45,7 @@ import edu.tum.cs.cadmos.core.types.VoidType;
  * @version $Date$
  * @ConQAT.Rating RED Hash:
  */
-/* package */class Channel extends AbstractTypedElement implements IChannel {
+public class Channel extends AbstractTypedElement implements IChannel {
 
 	private final IComponent src;
 

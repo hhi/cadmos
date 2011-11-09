@@ -17,12 +17,11 @@
 
 package edu.tum.cs.cadmos.matlab.core.translate;
 
-import static edu.tum.cs.cadmos.core.model.ModelPackage.createCompositeComponent;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import edu.tum.cs.cadmos.commons.core.Assert;
+import edu.tum.cs.cadmos.core.model.CompositeComponent;
 import edu.tum.cs.cadmos.core.model.IComponent;
 import edu.tum.cs.cadmos.core.model.ICompositeComponent;
 import edu.tum.cs.simulink.model.SimulinkBlock;
@@ -48,9 +47,8 @@ public class MatlabSimulinkTranslation {
 					candidate instanceof ICompositeComponent,
 					"The SimulinkBlock's parent was supposed to be a CompositeComponent but was '%s'",
 					candidate);
-			map.put(b,
-					createCompositeComponent(b.getId(), b.getName(),
-							(ICompositeComponent) candidate));
+			map.put(b, new CompositeComponent(b.getId(), b.getName(),
+					(ICompositeComponent) candidate));
 		}
 
 		return null;

@@ -20,7 +20,6 @@ package edu.tum.cs.cadmos.core.model;
 import static edu.tum.cs.cadmos.commons.core.Assert.assertInstanceOf;
 import static edu.tum.cs.cadmos.commons.core.Assert.assertNotNull;
 import static edu.tum.cs.cadmos.commons.core.Assert.assertTrue;
-import static edu.tum.cs.cadmos.core.model.ModelPackage.createChannel;
 import static java.util.Arrays.asList;
 
 import java.math.BigInteger;
@@ -286,7 +285,7 @@ public class ModelUtils {
 				assertNotNull(dst, "dst");
 				final List<IExpression> initialMessages = getPathInitialMessages(path);
 				final SrcDstRate rate = getPathSrcDstRate(path);
-				createChannel(path.getLast().getId(), path.getLast().getName(),
+				new Channel(path.getLast().getId(), path.getLast().getName(),
 						path.getLast().getType(), null, dst, initialMessages,
 						rate.srcRate, rate.dstRate);
 			}
@@ -302,8 +301,8 @@ public class ModelUtils {
 			assertNotNull(src, "src");
 			final List<IExpression> initialMessages = getPathInitialMessages(path);
 			final SrcDstRate rate = getPathSrcDstRate(path);
-			createChannel(path.getLast().getId(), path.getLast().getName(),
-					path.getLast().getType(), src, null, initialMessages,
+			new Channel(path.getLast().getId(), path.getLast().getName(), path
+					.getLast().getType(), src, null, initialMessages,
 					rate.srcRate, rate.dstRate);
 		}
 		/* Rewire the internal paths. */
@@ -325,7 +324,7 @@ public class ModelUtils {
 							.get((IAtomicComponent) candidate);
 					final List<IExpression> initialMessages = getPathInitialMessages(path);
 					final SrcDstRate rate = getPathSrcDstRate(path);
-					createChannel(path.getLast().getId(), path.getLast()
+					new Channel(path.getLast().getId(), path.getLast()
 							.getName(), path.getLast().getType(), src, dst,
 							initialMessages, rate.srcRate, rate.dstRate);
 				}

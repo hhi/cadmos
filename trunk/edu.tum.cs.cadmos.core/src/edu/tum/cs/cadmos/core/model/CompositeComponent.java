@@ -28,10 +28,6 @@ import edu.tum.cs.cadmos.commons.core.ListSet;
  * <p>
  * This is the reference implementation of the {@link ICompositeComponent}
  * interface.
- * <p>
- * External API users should use
- * {@link ModelPackage#createCompositeComponent(String, String, ICompositeComponent)}
- * rather than directly creating an instance.
  * 
  * @author wolfgang.schwitzer
  * @author nvpopa@gmail.com
@@ -41,7 +37,7 @@ import edu.tum.cs.cadmos.commons.core.ListSet;
  * @version $Date$
  * @ConQAT.Rating RED Hash:
  */
-/* package */class CompositeComponent extends AbstractComponent implements
+public class CompositeComponent extends AbstractComponent implements
 		ICompositeComponent {
 
 	private final IListSet<IComponent> children = new ListSet<>();

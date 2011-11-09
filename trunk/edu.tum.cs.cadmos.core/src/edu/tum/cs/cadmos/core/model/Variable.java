@@ -27,10 +27,6 @@ import edu.tum.cs.cadmos.core.types.IType;
  * A variable has a name, a type and an initial message.
  * <p>
  * This is the reference implementation of the {@link IVariable} interface.
- * <p>
- * External API users should use
- * {@link ModelPackage#createVariable(String, String, IType, IAtomicComponent, IExpression)}
- * rather than directly creating an instance.
  * 
  * @author wolfgang.schwitzer
  * @author nvpopa@gmail.com
@@ -40,7 +36,7 @@ import edu.tum.cs.cadmos.core.types.IType;
  * @version $Date$
  * @ConQAT.Rating RED Hash:
  */
-/* package */class Variable extends AbstractTypedElement implements IVariable {
+public class Variable extends AbstractTypedElement implements IVariable {
 
 	private final IAtomicComponent scope;
 
