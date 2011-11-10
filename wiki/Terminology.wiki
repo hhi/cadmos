@@ -29,14 +29,13 @@ See also:*
 == Channel ==
 A channel transmits a _stream_ of _typed messages_ from a source component to a destination component.
 We say, a channel is _outgoing_ from its source component and _incoming_ to its destination component.
-A channel is _outbound_ to the _system boundary_ if its destination component is undefined.
-A channel is _inbound_ from the _system boundary_ if its source component is undefined.
-If a channel is neither outbound nor inbound, it can only _connect_ two components that belong to the same parent component.
+A channel is not directly connected to _components_, rather it is connected to the _inbound_ and _outbound_ _ports_ of _components_.
 Furthermore, a channel can _buffer_ messages by a certain _delay_, so a message sent by the source component at step _i_ will be received by the destination component at step _i + delay_.
 A channel with a given buffer length of _d_ also requires _d_ initial messages.
 
 See also:*
 [Terminology#Component Component],
+[Terminology#Port Port],
 [Terminology#Message Message],
 [Terminology#Type Type],
 [Terminology#Stream Stream],
