@@ -18,6 +18,7 @@
 package edu.tum.cs.cadmos.commons.ui.rendering;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
@@ -81,6 +82,10 @@ public class TestSWTRenderer {
 
 	@Test
 	public void testCommands() throws Exception {
+		final Image image = new Image(display, 100, 100);
+		final int pixel = image.getImageData().getPixel(0, 0);
+		image.getImageData().palette.getRGB(pixel);
+
 		final RenderingContext ctx = new RenderingContext();
 		final Rect union = new Rect(0, 0, 2, 2);
 		final Rect box = new Rect(1, 1, 8, 8);
