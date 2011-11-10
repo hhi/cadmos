@@ -45,7 +45,7 @@ See also:*
 *
 
 == Port ==
-A port belongs to a _component_ and represents the _typed_ source- or destination connection point of _channels_.
+A port belongs to a _component_ and represents the _typed_ source- or destination connection point of a _channel_.
 A port can either be inbound or outbound.
 If a port is inbound, it is the destination of one incoming channel. If a port is outbound, it is the source of one or more outgoing channels.
 
