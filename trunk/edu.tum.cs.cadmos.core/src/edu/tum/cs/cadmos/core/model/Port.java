@@ -36,16 +36,21 @@ import edu.tum.cs.cadmos.core.types.IType;
  */
 public class Port extends AbstractTypedElement implements IPort {
 
+	/** The component that owns this port. */
 	private final IComponent component;
 
+	/** The single incoming channel. */
 	private IChannel incoming;
 
+	/** The outgoing channels. */
 	private final ListSet<IChannel> outgoing = new ListSet<>();
 
+	/** The direction of this port. */
 	private final EPortDirection direction;
 
 	/**
-	 * Creates a new port.
+	 * Creates a new port and adds it to the inbound or outbound ports of the
+	 * given <i>component</i> depending on the given <i>direction</i>.
 	 */
 	public Port(String id, String name, IType type, IComponent component,
 			EPortDirection direction) {
@@ -54,14 +59,7 @@ public class Port extends AbstractTypedElement implements IPort {
 		assertNotNull(direction, "direction");
 		this.component = component;
 		this.direction = direction;
-		switch (direction) {
-		case INBOUND:
-			component.getInbound().add(this);
-			break;
-		case OUTBOUND:
-			component.getOutbound().add(this);
-			break;
-		}
+		component.getPorts(direction).add(this);
 	}
 
 	/** {@inheritDoc} */

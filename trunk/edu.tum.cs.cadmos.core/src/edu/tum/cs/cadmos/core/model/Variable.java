@@ -38,10 +38,18 @@ import edu.tum.cs.cadmos.core.types.IType;
  */
 public class Variable extends AbstractTypedElement implements IVariable {
 
+	/** The scope of this variable. */
 	private final IAtomicComponent scope;
 
+	/** The initial message (value) of this variable. */
 	private final IExpression initialMessage;
 
+	/**
+	 * Creates a new Variable.
+	 * 
+	 * @see Variable#Variable(String, IType, IAtomicComponent)
+	 * @see Variable#Variable(String, IAtomicComponent)
+	 */
 	public Variable(String id, String name, IType type, IAtomicComponent scope,
 			IExpression initialMessage) {
 		super(id, name, type);
@@ -52,10 +60,28 @@ public class Variable extends AbstractTypedElement implements IVariable {
 		scope.getVariables().add(this);
 	}
 
+	/**
+	 * Creates a new Variable.
+	 * <p>
+	 * This constructor is useful for testing purposes.
+	 * 
+	 * @see Variable#Variable(String, String, IType, IAtomicComponent,
+	 *      IExpression)
+	 * @see Variable#Variable(String, IAtomicComponent)
+	 */
 	public Variable(String id, IType type, IAtomicComponent scope) {
 		this(id, null, type, scope, EMPTY_MESSAGE);
 	}
 
+	/**
+	 * Creates a new Variable.
+	 * <p>
+	 * This constructor is useful for testing purposes.
+	 * 
+	 * @see Variable#Variable(String, String, IType, IAtomicComponent,
+	 *      IExpression)
+	 * @see Variable#Variable(String, IType, IAtomicComponent)
+	 */
 	public Variable(String id, IAtomicComponent scope) {
 		this(id, null, VOID, scope, EMPTY_MESSAGE);
 	}

@@ -44,24 +44,53 @@ import edu.tum.cs.cadmos.commons.core.IListSet;
  */
 public interface IPort extends ITypedElement {
 
+	/** Returns the component that owns this port. */
 	IComponent getComponent();
 
+	/** Returns the direction of this port, which is either inbound or outbound. */
 	EPortDirection getDirection();
 
+	/**
+	 * Returns the single incoming channel of this port, which can be
+	 * <code>null</code>.
+	 */
 	IChannel getIncoming();
 
+	/** Sets the single incoming channel of this port. */
 	void setIncoming(IChannel incoming);
 
+	/** Returns the outgoing channels of this port. */
 	IListSet<IChannel> getOutgoing();
 
+	/**
+	 * Returns the opposite port of the incoming channel, which is the source of
+	 * the incoming channel.
+	 */
 	IPort getIncomingOppositePort();
 
+	/**
+	 * Returns the opposite ports of the outgoing channels, which are the
+	 * destinations of the outgoing channels.
+	 */
 	IListMultiSet<IPort> getOutgoingOppositePorts();
 
+	/**
+	 * Returns the component that is on the source side of the incoming channel.
+	 */
 	IComponent getIncomingOppositeComponent();
 
+	/**
+	 * Returns the union of components that are on the destinations sides of the
+	 * outgoing channels.
+	 */
 	IListSet<IComponent> getOutgoingOppositeComponents();
 
+	/**
+	 * Clones this port and adds it to the given <i>new component</i>.
+	 * <p>
+	 * Note that the incoming and outgoing channels are not cloned and need to
+	 * be rewired manually.
+	 */
 	IPort clone(IComponent newComponent);
 
 }

@@ -35,12 +35,22 @@ import edu.tum.cs.cadmos.core.expressions.IExpression;
  */
 public interface IChannel extends IElement {
 
+	/** Returns the source port. */
 	IPort getSrc();
 
+	/** Returns the destination port. */
 	IPort getDst();
 
+	/**
+	 * Returns the source component, which is the component that owns the source
+	 * port.
+	 */
 	IComponent getSrcComponent();
 
+	/**
+	 * Returns the destination component, which is the component that owns the
+	 * destination port.
+	 */
 	IComponent getDstComponent();
 
 	/**
@@ -52,15 +62,17 @@ public interface IChannel extends IElement {
 	int getDelay();
 
 	/**
-	 * Returns the list of initial messages. Messages transmitted over this
-	 * channel are buffered and delayed by the number of initial messages.
+	 * Returns the mutable list of initial messages. Messages transmitted over
+	 * this channel are buffered and delayed by the number of initial messages.
 	 * 
 	 * @see #getDelay()
 	 */
 	List<IExpression> getInitialMessages();
 
+	/** Returns the source's production rate. */
 	int getSrcRate();
 
+	/** Returns the destination's consumption rate. */
 	int getDstRate();
 
 	/**

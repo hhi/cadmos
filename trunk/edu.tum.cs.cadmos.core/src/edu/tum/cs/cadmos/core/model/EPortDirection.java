@@ -28,6 +28,16 @@ package edu.tum.cs.cadmos.core.model;
  */
 public enum EPortDirection {
 
-	INBOUND, OUTBOUND
+	/**
+	 * An inbound port directs messages from the outside of a component to the
+	 * inside.
+	 */
+	INBOUND,
+
+	/**
+	 * An outbound port directs messages from the inside of a component to the
+	 * outside.
+	 */
+	OUTBOUND
 
 }
