@@ -47,14 +47,23 @@ import edu.tum.cs.cadmos.core.expressions.IExpression;
  */
 public class Channel extends AbstractElement implements IChannel {
 
+	/** The source port. */
 	private final IPort src;
 
+	/** The destination port. */
 	private final IPort dst;
 
+	/**
+	 * The list of initial messages in ascending order (starting at index 0).
+	 * The number of initial messages is also returned as {@link #getDelay()} of
+	 * this channel.
+	 */
 	private final List<IExpression> initialMessages = new ArrayList<>();
 
+	/** The source rate. */
 	private final int srcRate;
 
+	/** The destination rate. */
 	private final int dstRate;
 
 	/**
@@ -63,7 +72,7 @@ public class Channel extends AbstractElement implements IChannel {
 	 * 
 	 * @throws AssertionError
 	 *             if <i>src</i> or <i>dst</i> is <code>null</code>.
-	 * @see #Channel(String, IPort, IPort, int)
+	 * @see Channel#Channel(String, IPort, IPort, int)
 	 */
 	public Channel(String id, String name, IPort src, IPort dst,
 			List<IExpression> initialMessages, int srcRate, int dstRate) {
