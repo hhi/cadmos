@@ -10,6 +10,17 @@ import edu.tum.cs.cadmos.commons.core.IListSet;
 import edu.tum.cs.cadmos.commons.core.ListMultiSet;
 import edu.tum.cs.cadmos.commons.core.ListSet;
 
+/**
+ * This is the abstract reference implementation of the {@link IComponent}
+ * interface, which serves as base class for the {@link AtomicComponent} and
+ * {@link CompositeComponent} implementations.
+ * 
+ * @author wolfgang.schwitzer
+ * @version $Rev$
+ * @version $Author$
+ * @version $Date$
+ * @ConQAT.Rating RED Hash:
+ */
 public abstract class AbstractComponent extends AbstractElement implements
 		IComponent, IConsistencyVerifier {
 
