@@ -22,9 +22,10 @@ import edu.tum.cs.cadmos.commons.core.IListSet;
 import edu.tum.cs.cadmos.commons.core.ListSet;
 
 /**
- * A composite component has a behavior defined the combined behavior of some
- * children components. In particular, a composite component does not have any
- * machine specifications or variables like an {@link IAtomicComponent}.
+ * A composite component has a behavior, which is defined by the combined
+ * behavior of all of its children components. In particular, a composite
+ * component does not have any machine specifications or variables like an
+ * {@link IAtomicComponent}.
  * <p>
  * This is the reference implementation of the {@link ICompositeComponent}
  * interface.
@@ -40,22 +41,44 @@ import edu.tum.cs.cadmos.commons.core.ListSet;
 public class CompositeComponent extends AbstractComponent implements
 		ICompositeComponent {
 
+	/** The children components. */
 	private final IListSet<IComponent> children = new ListSet<>();
 
+	/**
+	 * Creates a new CompositeComponent with the given <i>id</i>, <i>name</i>
+	 * and <i>parent</i>.
+	 * 
+	 * @see CompositeComponent#CompositeComponent(String, ICompositeComponent)
+	 */
 	public CompositeComponent(String id, String name, ICompositeComponent parent) {
 		super(id, name, parent);
 	}
 
+	/**
+	 * Creates a new CompositeComponent with the given <i>id</i> and
+	 * <i>parent</i>.
+	 * <p>
+	 * This constructor is mainly intended for testing purposes.
+	 * 
+	 * @see CompositeComponent#CompositeComponent(String, String,
+	 *      ICompositeComponent)
+	 */
 	public CompositeComponent(String id, ICompositeComponent parent) {
 		this(id, null, parent);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public IListSet<IComponent> getChildren() {
 		return children;
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * All children components and the ports- and channels-network between them
+	 * are recursively cloned.
+	 */
 	@Override
 	public IComponent clone(ICompositeComponent newParent) {
 		final ICompositeComponent clone = new CompositeComponent(getId(),
