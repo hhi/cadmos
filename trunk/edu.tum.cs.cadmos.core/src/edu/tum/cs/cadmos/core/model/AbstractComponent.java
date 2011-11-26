@@ -13,12 +13,22 @@ import edu.tum.cs.cadmos.commons.core.ListSet;
 public abstract class AbstractComponent extends AbstractElement implements
 		IComponent, IConsistencyVerifier {
 
+	/** The parent of this component, which can be <code>null</code>. */
 	private final ICompositeComponent parent;
 
+	/** The set of inbound ports. */
 	protected final IListSet<IPort> inbound = new ListSet<>(this);
 
+	/** The set of outbound ports. */
 	protected final IListSet<IPort> outbound = new ListSet<>(this);
 
+	/**
+	 * Creates a new AbstractComponent with the given <i>id</i>, <i>name</i> and
+	 * <i>parent</i>.
+	 * <p>
+	 * If the parent is not <code>null</code>, this component adds itself
+	 * automatically to its parent's set of children.
+	 */
 	public AbstractComponent(String id, String name, ICompositeComponent parent) {
 		super(id, name);
 		this.parent = parent;
@@ -27,16 +37,19 @@ public abstract class AbstractComponent extends AbstractElement implements
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public ICompositeComponent getParent() {
 		return parent;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public IListSet<IPort> getInbound() {
 		return inbound;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public IListSet<IPort> getOutbound() {
 		return outbound;
