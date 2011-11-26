@@ -43,25 +43,45 @@ import edu.tum.cs.cadmos.core.machines.IMachine;
 public class AtomicComponent extends AbstractComponent implements
 		IAtomicComponent {
 
+	/** The variables in scope. */
 	private final IListSet<IVariable> variables = new ListSet<>(this);
 
+	/** The machine, which defines the behavior. */
 	private final IMachine machine;
 
+	/**
+	 * Creates a new AtomicComponent with the given <i>id</i>, <i>name</i>,
+	 * <i>parent</i> and <i>machine</i>.
+	 * 
+	 * @see AtomicComponent#AtomicComponent(String, ICompositeComponent)
+	 */
 	public AtomicComponent(String id, String name, ICompositeComponent parent,
 			IMachine machine) {
 		super(id, name, parent);
 		this.machine = machine;
 	}
 
+	/**
+	 * Creates a new AtomicComponent with the given <i>id</i> and <i>parent</i>,
+	 * while the <i>name</i> is set equal to the <i>id</i> and the
+	 * <i>machine</i> is set to <code>null</code>.
+	 * <p>
+	 * This constructor is mainly intended for testing purposes.
+	 * 
+	 * @see AtomicComponent#AtomicComponent(String, String, ICompositeComponent,
+	 *      IMachine)
+	 */
 	public AtomicComponent(String id, ICompositeComponent parent) {
 		this(id, null, parent, null);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public IListSet<IVariable> getVariables() {
 		return variables;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public IMachine getMachine() {
 		return machine;
@@ -79,7 +99,12 @@ public class AtomicComponent extends AbstractComponent implements
 		return clone;
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * The assertions of this method ensure that an atomic component cannot have
+	 * a variable with the same id as any of the ports.
+	 */
 	@Override
 	public void verifyConsistentAdd(IListCollection<?, ?> collection,
 			IIdentifiable element) throws AssertionError {

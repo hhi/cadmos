@@ -5,10 +5,12 @@ import edu.tum.cs.cadmos.core.machines.IMachine;
 
 /**
  * An atomic component in a hierarchical data-flow network defines its behavior
- * by a machine that operates over a set of variables and ports.
+ * by a machine that operates over a set of variables and ports.In particular,
+ * an atomic component does not have any children components like an
+ * {@link ICompositeComponent}.
  * <p>
- * A reference implementation of this interface is the {@link AtomicComponent}
- * class.
+ * The {@link AtomicComponent} class is a reference implementation of this
+ * interface.
  * 
  * @author wolfgang.schwitzer
  * @version $Rev$
