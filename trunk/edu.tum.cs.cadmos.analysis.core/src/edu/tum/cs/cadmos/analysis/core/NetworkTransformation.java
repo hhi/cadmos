@@ -20,9 +20,7 @@ package edu.tum.cs.cadmos.analysis.core;
 import java.util.Collection;
 
 import edu.tum.cs.cadmos.core.model.AtomicComponent;
-import edu.tum.cs.cadmos.core.model.Channel;
 import edu.tum.cs.cadmos.core.model.IAtomicComponent;
-import edu.tum.cs.cadmos.core.model.IChannel;
 
 /**
  * A NetworkTransformation.
@@ -47,24 +45,24 @@ public class NetworkTransformation {
 					comp.getMachine());
 			subnetwork.addComponent(newComponent);
 		}
-		for (final IAtomicComponent comp : components) {
-			for (final IChannel ch : comp.getOutgoing()) {
-				if (subnetwork.getAllComponents().contains(
-						(IAtomicComponent) ch.getDst())) {
-					new Channel(ch.getId(), ch.getName(), ch.getType(),
-							ch.getSrc(), ch.getDst(), ch.getInitialMessages(),
-							ch.getSrcRate(), ch.getDstRate());
-				}
-			}
-			for (final IChannel ch : comp.getIncoming()) {
-				if (subnetwork.getAllComponents().contains(
-						(IAtomicComponent) ch.getSrc())) {
-					new Channel(ch.getId(), ch.getName(), ch.getType(),
-							ch.getSrc(), ch.getDst(), ch.getInitialMessages(),
-							ch.getSrcRate(), ch.getDstRate());
-				}
-			}
-		}
+		// for (final IAtomicComponent comp : components) {
+		// for (final IChannel ch : comp.getOutbound()) {
+		// if (subnetwork.getAllComponents().contains(
+		// (IAtomicComponent) ch.getDst())) {
+		// new Channel(ch.getId(), ch.getName(), ch.getType(),
+		// ch.getSrc(), ch.getDst(), ch.getInitialMessages(),
+		// ch.getSrcRate(), ch.getDstRate());
+		// }
+		// }
+		// for (final IChannel ch : comp.getInbound()) {
+		// if (subnetwork.getAllComponents().contains(
+		// (IAtomicComponent) ch.getSrc())) {
+		// new Channel(ch.getId(), ch.getName(), ch.getType(),
+		// ch.getSrc(), ch.getDst(), ch.getInitialMessages(),
+		// ch.getSrcRate(), ch.getDstRate());
+		// }
+		// }
+		// }
 		return subnetwork;
 	}
 

@@ -138,13 +138,13 @@ public class NetworkUtils {
 		for (final IAtomicComponent component : network.getAllComponents()) {
 			s.append(component.toString());
 			s.append("\n");
-			for (final IChannel channel : component.getOutgoing()) {
-				s.append("\t");
-				s.append(channel.toString());
-				s.append(" -> ");
-				s.append(channel.getDst().getName());
-				s.append("\n");
-			}
+			// for (final IChannel channel : component.getOutbound()) {
+			// s.append("\t");
+			// s.append(channel.toString());
+			// s.append(" -> ");
+			// s.append(channel.getDst().getName());
+			// s.append("\n");
+			// }
 		}
 		return s.toString();
 	}

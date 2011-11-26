@@ -27,8 +27,6 @@ import edu.tum.cs.cadmos.commons.core.ListMultiSet;
 import edu.tum.cs.cadmos.commons.core.ListSet;
 import edu.tum.cs.cadmos.core.model.IAtomicComponent;
 import edu.tum.cs.cadmos.core.model.IChannel;
-import edu.tum.cs.cadmos.core.model.IComponent;
-import edu.tum.cs.cadmos.core.model.ModelUtils;
 
 /**
  * A implementation of a {@link INetwork} used in the methods of
@@ -53,9 +51,9 @@ public class Network implements INetwork {
 	/**
 	 * Creates a new Network given its system boundary as a {@link IComponent}.
 	 */
-	public Network(IComponent systemBoundary) {
-		network = ModelUtils.transformAtomicComponentNetwork(systemBoundary);
-	}
+	// public Network(IComponent systemBoundary) {
+	// network = ModelUtils.transformAtomicComponentNetwork(systemBoundary);
+	// }
 
 	/** {@inheritDoc} */
 	@Override
@@ -65,12 +63,12 @@ public class Network implements INetwork {
 				component);
 		final List<IAtomicComponent> successors = new ArrayList<>();
 
-		for (final IChannel ch : component.getOutgoing()) {
-			Assert.assertInstanceOf(ch.getDst(), IAtomicComponent.class,
-					"component");
-			final IAtomicComponent dst = (IAtomicComponent) ch.getDst();
-			successors.add(dst);
-		}
+		// for (final IChannel ch : component.getOutbound()) {
+		// Assert.assertInstanceOf(ch.getDst(), IAtomicComponent.class,
+		// "component");
+		// final IAtomicComponent dst = (IAtomicComponent) ch.getDst();
+		// successors.add(dst);
+		// }
 		return successors;
 	}
 
@@ -81,12 +79,12 @@ public class Network implements INetwork {
 				"The given component %s is not contained in this network!",
 				component);
 		final List<IAtomicComponent> predecessors = new ArrayList<>();
-		for (final IChannel ch : component.getIncoming()) {
-			Assert.assertInstanceOf(ch.getSrc(), IAtomicComponent.class,
-					"component");
-			final IAtomicComponent src = (IAtomicComponent) ch.getSrc();
-			predecessors.add(src);
-		}
+		// for (final IChannel ch : component.getInbound()) {
+		// Assert.assertInstanceOf(ch.getSrc(), IAtomicComponent.class,
+		// "component");
+		// final IAtomicComponent src = (IAtomicComponent) ch.getSrc();
+		// predecessors.add(src);
+		// }
 		return predecessors;
 	}
 
@@ -96,11 +94,11 @@ public class Network implements INetwork {
 		Assert.assertTrue(network.contains(c1) && network.contains(c2),
 				"Both components %s, %s have to be in this network!", c1, c2);
 		final List<IChannel> channels = new ArrayList<>();
-		for (final IChannel ch : c1.getOutgoing()) {
-			if (ch.getDst().equals(c2)) {
-				channels.add(ch);
-			}
-		}
+		// for (final IChannel ch : c1.getOutbound()) {
+		// if (ch.getDst().equals(c2)) {
+		// channels.add(ch);
+		// }
+		// }
 		return channels;
 	}
 
@@ -115,16 +113,16 @@ public class Network implements INetwork {
 	public IListMultiSet<IChannel> getAllChannels() {
 		final IListMultiSet<IChannel> channels = new ListMultiSet<>();
 
-		for (final IAtomicComponent component : network) {
-			for (final IChannel och : component.getOutgoing()) {
-				channels.add(och);
-			}
-			for (final IChannel ich : component.getIncoming()) {
-				if (ich.getSrc() == null) {
-					channels.add(ich);
-				}
-			}
-		}
+		// for (final IAtomicComponent component : network) {
+		// for (final IChannel och : component.getOutbound()) {
+		// channels.add(och);
+		// }
+		// for (final IChannel ich : component.getInbound()) {
+		// if (ich.getSrc() == null) {
+		// channels.add(ich);
+		// }
+		// }
+		// }
 
 		return channels;
 	}

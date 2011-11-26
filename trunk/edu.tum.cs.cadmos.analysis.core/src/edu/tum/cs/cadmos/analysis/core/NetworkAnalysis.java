@@ -35,7 +35,6 @@ import edu.tum.cs.cadmos.analysis.core.utils.NetworkUtils;
 import edu.tum.cs.cadmos.commons.core.Assert;
 import edu.tum.cs.cadmos.core.model.IAtomicComponent;
 import edu.tum.cs.cadmos.core.model.IChannel;
-import edu.tum.cs.cadmos.core.model.IComponent;
 
 /**
  * A set of iterative analysis techniques for networks of components.
@@ -263,14 +262,14 @@ public class NetworkAnalysis {
 		}
 
 		componentOutputDelays.put(component, delay);
-		for (final IChannel channel : component.getOutgoing()) {
-			channelOutputDelays.put(channel, delay + channel.getDelay());
-			final IComponent dst = channel.getDst();
-			Assert.assertInstanceOf(dst, IAtomicComponent.class, "dst");
-			getOutgoingDelays(network, (IAtomicComponent) dst,
-					componentOutputDelays, channelOutputDelays,
-					delay + channel.getDelay());
-		}
+		// for (final IChannel channel : component.getOutbound()) {
+		// channelOutputDelays.put(channel, delay + channel.getDelay());
+		// final IComponent dst = channel.getDst();
+		// Assert.assertInstanceOf(dst, IAtomicComponent.class, "dst");
+		// getOutgoingDelays(network, (IAtomicComponent) dst,
+		// componentOutputDelays, channelOutputDelays,
+		// delay + channel.getDelay());
+		// }
 	}
 
 	/**
@@ -407,19 +406,19 @@ public class NetworkAnalysis {
 	 * Note that outputs to the environment are strongly causal by definition.
 	 */
 	public static int analyzeCausality(IAtomicComponent comp) {
-		boolean initialized = false;
-		int result = 0;
-		for (final IChannel ch : comp.getOutgoing()) {
-			if (initialized) {
-				result = min(result, ch.getDelay());
-			} else {
-				result = ch.getDelay();
-				initialized = true;
-			}
-			if (result == 0) {
-				break;
-			}
-		}
+		final boolean initialized = false;
+		final int result = 0;
+		// for (final IChannel ch : comp.getOutbound()) {
+		// if (initialized) {
+		// result = min(result, ch.getDelay());
+		// } else {
+		// result = ch.getDelay();
+		// initialized = true;
+		// }
+		// if (result == 0) {
+		// break;
+		// }
+		// }
 		return result;
 	}
 
