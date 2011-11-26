@@ -95,7 +95,6 @@ public class TestModelElements {
 				"Expected IllegalArgumentException when adding two outbound ports with equal id to same component");
 	}
 
-	@SuppressWarnings("unused")
 	@Test(expected = AssertionError.class)
 	public void test_Create_Channel_With_Null_Src_And_Null_Dst_ERR() {
 		new Channel("x", null, null, 0);
