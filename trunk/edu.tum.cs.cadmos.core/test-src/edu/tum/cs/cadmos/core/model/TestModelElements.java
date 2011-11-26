@@ -1,6 +1,9 @@
 package edu.tum.cs.cadmos.core.model;
 
-import static java.util.Arrays.asList;
+import static edu.tum.cs.cadmos.core.model.EPortDirection.INBOUND;
+import static edu.tum.cs.cadmos.core.model.EPortDirection.OUTBOUND;
+import static edu.tum.cs.cadmos.core.model.ModelUtils.createChannel;
+import static edu.tum.cs.cadmos.core.types.VoidType.VOID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -11,52 +14,53 @@ import edu.tum.cs.cadmos.commons.core.ListSet;
 public class TestModelElements {
 
 	@Test
-	public void test_Add_Channels_To_Component() {
+	public void test_Add_Ports_To_Component() {
 		final IComponent c = new AtomicComponent("C", null);
-		final IChannel x = new Channel("x", null, c, 0);
-		final IChannel y = new Channel("y", c, null, 0);
-		assertEquals(1, c.getIncoming().size());
-		assertTrue(c.getIncoming().contains(x));
-		assertEquals(1, c.getOutgoing().size());
-		assertTrue(c.getOutgoing().contains(y));
+		final IPort x = new Port("x", null, VOID, c, INBOUND);
+		final IPort y = new Port("y", null, VOID, c, OUTBOUND);
+		assertEquals(1, c.getInbound().size());
+		assertTrue(c.getInbound().contains(x));
+		assertEquals(1, c.getOutbound().size());
+		assertTrue(c.getOutbound().contains(y));
 	}
 
 	@Test
 	public void test_Add_Loop_Channel_To_Component() {
 		final IComponent c = new AtomicComponent("C", null);
-		final IChannel loop = new Channel("loop", c, c, 0);
-		assertEquals(1, c.getIncoming().size());
-		assertEquals(1, c.getOutgoing().size());
-		assertTrue(c.getIncoming().contains(loop));
-		assertTrue(c.getOutgoing().contains(loop));
+		final IChannel loop = createChannel("loop", c, c, 1);
+		assertEquals(1, c.getInbound().size());
+		assertEquals(1, c.getOutbound().size());
+		assertTrue(c.getInboundIncomingChannels().contains(loop));
+		assertTrue(c.getOutboundOutgoingChannels().contains(loop));
 	}
 
 	@Test
-	public void test_Wire_Components_In_Same_Parent_OK() {
+	public void test_Wire_Sibling_Components_OK() {
 		final ICompositeComponent p = new CompositeComponent("Parent", null);
 		final IComponent c1 = new AtomicComponent("C1", p);
 		final IComponent c2 = new AtomicComponent("C2", p);
 		assertEquals(p, c1.getParent());
 		assertEquals(p, c2.getParent());
 		assertEquals(new ListSet<>(c1, c2), p.getChildren());
-		final IChannel x = new Channel("x", c1, c2, 0);
-		assertEquals(1, c1.getOutgoing().size());
-		assertEquals(1, c2.getIncoming().size());
-		assertTrue(c1.getOutgoing().contains(x));
-		assertTrue(c2.getIncoming().contains(x));
+		final IChannel x = createChannel("x", c1, c2, 0);
+		assertEquals(1, c1.getOutbound().size());
+		assertEquals(1, c2.getInbound().size());
+		assertTrue(c1.getOutboundOutgoingChannels().contains(x));
+		assertTrue(c2.getInboundIncomingChannels().contains(x));
 	}
 
-	@SuppressWarnings("unused")
 	@Test
 	public void test_Wire_Components_In_Different_Parents_ERR() {
 		final ICompositeComponent p1 = new CompositeComponent("Parent1", null);
 		final ICompositeComponent p2 = new CompositeComponent("Parent2", null);
 		final IComponent c1 = new AtomicComponent("C1", p1);
 		final IComponent c2 = new AtomicComponent("C2", p2);
+		final IPort x1 = new Port("x1", null, VOID, c1, OUTBOUND);
+		final IPort x2 = new Port("x2", null, VOID, c2, INBOUND);
 		assertEquals(p1, c1.getParent());
 		assertEquals(p2, c2.getParent());
 		try {
-			new Channel("x", c1, c2, 0);
+			new Channel("x", x1, x2, 0);
 			throw new Error(
 					"Expected AssertionError when wiring two components in different parents");
 		} catch (final AssertionError e) {
@@ -64,7 +68,6 @@ public class TestModelElements {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void test_Add_Components_Same_Ids_ERR() {
 		final ICompositeComponent p = new CompositeComponent("Parent", null);
@@ -74,26 +77,22 @@ public class TestModelElements {
 				"Expected IllegalArgumentException when adding two components with equal id to same parent");
 	}
 
-	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
-	public void test_Add_Channels_Incoming_Same_Ids_ERR() {
+	public void test_Add_Ports_Inbound_Same_Ids_ERR() {
 		final IComponent c = new AtomicComponent("C", null);
-		new Channel("x", null, c, 0);
-		new Channel("x", null, c, 0);
+		new Port("x", null, VOID, c, INBOUND);
+		new Port("x", null, VOID, c, INBOUND);
 		throw new Error(
-				"Expected IllegalArgumentException when adding two incoming channels with equal id to same component");
+				"Expected IllegalArgumentException when adding two inbound ports with equal id to same component");
 	}
 
-	@Test
-	public void test_Add_Channels_Outgoing_Same_Ids_OK() {
+	@Test(expected = IllegalArgumentException.class)
+	public void test_Add_Ports_Outbound_Same_Ids_ERR() {
 		final IComponent c = new AtomicComponent("C", null);
-		final IChannel x1 = new Channel("x", c, null, 0);
-		final IChannel x2 = new Channel("x", c, null, 0);
-		final IChannel y1 = new Channel("y", c, null, 0);
-		final IChannel y2 = new Channel("y", c, null, 0);
-		assertEquals(asList(x1, x2), c.getOutgoing().get("x"));
-		assertEquals(asList(y1, y2), c.getOutgoing().get("y"));
-		assertEquals(0, c.getOutgoing().get("z").size());
+		new Port("x", null, VOID, c, OUTBOUND);
+		new Port("x", null, VOID, c, OUTBOUND);
+		throw new Error(
+				"Expected IllegalArgumentException when adding two outbound ports with equal id to same component");
 	}
 
 	@SuppressWarnings("unused")
@@ -114,7 +113,6 @@ public class TestModelElements {
 		assertTrue(c.getVariables().contains(v2));
 	}
 
-	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void test_Add_Variables_Same_Id_To_Component_ERR() {
 		final IAtomicComponent c = new AtomicComponent("C", null);
@@ -124,44 +122,40 @@ public class TestModelElements {
 				"Expected IllegalArgumentException when adding variables with equal ids to same component");
 	}
 
-	@SuppressWarnings("unused")
 	@Test(expected = AssertionError.class)
-	public void test_Add_Variable_Same_Id_As_Channel_To_Source_ERR() {
+	public void test_Add_Variable_Same_Id_As_Inbound_Port_ERR() {
 		final IAtomicComponent c = new AtomicComponent("C", null);
-		new Channel("x", c, null, 0);
+		new Port("x", null, VOID, c, INBOUND);
 		new Variable("x", c);
 		throw new Error(
-				"Expected AssertionError when adding variable with an id equal to the id of a channel");
+				"Expected AssertionError when adding variable with an id equal to the id of an inbound port");
 	}
 
-	@SuppressWarnings("unused")
 	@Test(expected = AssertionError.class)
-	public void test_Add_Channel_Same_Id_As_Variable_To_Source_ERR() {
+	public void test_Add_Variable_Same_Id_As_Outbound_Port_ERR() {
+		final IAtomicComponent c = new AtomicComponent("C", null);
+		new Port("x", null, VOID, c, OUTBOUND);
+		new Variable("x", c);
+		throw new Error(
+				"Expected AssertionError when adding variable with an id equal to the id of an outbound port");
+	}
+
+	@Test(expected = AssertionError.class)
+	public void test_Add_Inbound_Port_Same_Id_As_Variable_ERR() {
 		final IAtomicComponent c = new AtomicComponent("C", null);
 		new Variable("x", c);
-		new Channel("x", c, null, 0);
+		new Port("x", null, VOID, c, INBOUND);
 		throw new Error(
-				"Expected AssertionError when adding channel with an id equal to the id of a variable");
+				"Expected AssertionError when adding an inbound port with an id equal to the id of a variable");
 	}
 
-	@SuppressWarnings("unused")
 	@Test(expected = AssertionError.class)
 	public void test_Add_Variable_Same_Id_As_Channel_To_Destination_ERR() {
 		final IAtomicComponent c = new AtomicComponent("C", null);
-		new Channel("x", null, c, 0);
 		new Variable("x", c);
+		new Port("x", null, VOID, c, OUTBOUND);
 		throw new Error(
-				"Expected AssertionError when adding variable with an id equal to the id of a channel");
-	}
-
-	@SuppressWarnings("unused")
-	@Test(expected = AssertionError.class)
-	public void test_Add_Channel_Same_Id_As_Variable_To_Destination_ERR() {
-		final IAtomicComponent c = new AtomicComponent("C", null);
-		new Variable("x", c);
-		new Channel("x", null, c, 0);
-		throw new Error(
-				"Expected AssertionError when adding channel with an id equal to the id of a variable");
+				"Expected AssertionError when adding an outbound port with an id equal to the id of a variable");
 	}
 
 }

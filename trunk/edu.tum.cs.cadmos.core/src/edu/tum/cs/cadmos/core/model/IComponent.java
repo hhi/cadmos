@@ -22,13 +22,13 @@ import edu.tum.cs.cadmos.commons.core.IListMultiSet;
 import edu.tum.cs.cadmos.commons.core.IListSet;
 
 /**
- * A component in a hierarchical data-flow system model, which has a parent and
- * a set of incoming and outgoing channels. The incoming and outgoing channels
- * allow to connect this component to sibling components that have the same
- * parent.
+ * A component is part of a hierarchical data-flow system model and has a parent
+ * and a set of inound and outbound ports. The incoming and outgoing channels of
+ * these ports allow to connect this component to its parent-, sibling- or
+ * children components.
  * <p>
- * Note that the parent optionally can be <code>null</code> to indicate that
- * this is a root-level component.
+ * Note that the parent of a component optionally can be <code>null</code> to
+ * indicate that this is a root-level component.
  * <p>
  * The non-abstract instances of components implement the
  * {@link IAtomicComponent} and {@link ICompositeComponent} interfaces. This
@@ -39,6 +39,7 @@ import edu.tum.cs.cadmos.commons.core.IListSet;
  * @see AbstractComponent
  * @see IAtomicComponent
  * @see ICompositeComponent
+ * @see IPort
  * @see IChannel
  * 
  * @author wolfgang.schwitzer
@@ -52,28 +53,79 @@ public interface IComponent extends IElement {
 	/**
 	 * Returns the parent component, which optionally can be <code>null</code>
 	 * to indicate that this is a root-level component.
+	 * <p>
+	 * Note that if <code>a.getParent() == b</code> holds then
+	 * <code>b.getChildren().contains(a)</code> must hold, too.
 	 */
 	ICompositeComponent getParent();
 
-	/**
-	 * Returns the set of incoming channels, that is, for each channel
-	 * <code>c</code> in incoming <code>c.getDst().equals(this)</code> holds.
-	 */
-	IListSet<IChannel> getIncoming();
+	/** Returns the set of inbound ports. */
+	IListSet<IPort> getInbound();
+
+	/** Returns the set of outbound ports. */
+	IListSet<IPort> getOutbound();
 
 	/**
-	 * Returns the set of outgoing channels, that is, for each channel
-	 * <code>c</code> in outgoing <code>c.getSrc().equals(this)</code> holds.
+	 * Returns the union multiset of all inbound and outbound ports.
+	 * 
+	 * @see #getInbound()
+	 * @see #getOutbound()
+	 * @see #getPorts(EPortDirection)
 	 */
-	IListMultiSet<IChannel> getOutgoing();
+	IListMultiSet<IPort> getAllPorts();
+
+	/**
+	 * Returns the ports with the given direction.
+	 * 
+	 * @see #getInbound()
+	 * @see #getOutbound()
+	 * @see #getAllPorts()
+	 * */
+	IListSet<IPort> getPorts(EPortDirection direction);
+
+	/** Returns the set of incoming channels of all inbound ports. */
+	IListSet<IChannel> getInboundIncomingChannels();
+
+	/** Returns the set of outgoing channels of all inbound ports. */
+	IListSet<IChannel> getInboundOutgoingChannels();
+
+	/** Returns the set of incoming channels of all outbound ports. */
+	IListSet<IChannel> getOutboundIncomingChannels();
+
+	/** Returns the set of outgoing channels of all outbound ports. */
+	IListSet<IChannel> getOutboundOutgoingChannels();
+
+	/**
+	 * Returns the union set of all incoming and outgoing channels connected to
+	 * all inbound and outbound ports.
+	 * <p>
+	 * If a channel is a self-loop, it is only contained once in the returned
+	 * set.
+	 * 
+	 * @see #getInboundIncomingChannels()
+	 * @see #getInboundOutgoingChannels()
+	 * @see #getOutboundIncomingChannels()
+	 * @see #getOutboundOutgoingChannels()
+	 */
+	IListSet<IChannel> getAllChannels();
 
 	/**
 	 * Returns a clone of this component within the given <i>newParent</i>.
 	 * <p>
-	 * <b>Important:</b> incoming and outgoing channels are not contained in the
-	 * returned clone and have to be rewired manually.
+	 * <b>Important:</b> inbound and outbound ports are cloned, but their
+	 * respective channels are not contained in the returned clone and have to
+	 * be created and rewired manually.
 	 * 
 	 */
 	IComponent clone(ICompositeComponent newParent);
+
+	/**
+	 * Clones all ports of this component and creates them as members of the
+	 * given <i>newComponent</i>.
+	 * <p>
+	 * This method should be used by concrete subclasses in their respective
+	 * {@link #clone()} method implementations.
+	 */
+	void clonePorts(IComponent newComponent);
 
 }

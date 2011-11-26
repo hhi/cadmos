@@ -20,20 +20,20 @@ package edu.tum.cs.cadmos.core.model;
 import static edu.tum.cs.cadmos.commons.core.Assert.assertNotNull;
 import static edu.tum.cs.cadmos.commons.core.Assert.assertTrue;
 import static edu.tum.cs.cadmos.core.expressions.ConstantExpression.EMPTY_MESSAGE;
-import static edu.tum.cs.cadmos.core.types.VoidType.VOID;
+import static edu.tum.cs.cadmos.core.model.EPortDirection.INBOUND;
+import static edu.tum.cs.cadmos.core.model.EPortDirection.OUTBOUND;
 import static java.util.Collections.nCopies;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.tum.cs.cadmos.commons.core.AbstractElement;
 import edu.tum.cs.cadmos.core.expressions.ConstantExpression;
 import edu.tum.cs.cadmos.core.expressions.IExpression;
-import edu.tum.cs.cadmos.core.types.IType;
-import edu.tum.cs.cadmos.core.types.VoidType;
 
 /**
- * A channel is a typed element that connects a source and a destination
- * component.
+ * A channel is directed, typed and connects from a source to a destination
+ * port.
  * <p>
  * This is the reference implementation of the {@link IChannel} interface.
  * 
@@ -45,11 +45,11 @@ import edu.tum.cs.cadmos.core.types.VoidType;
  * @version $Date$
  * @ConQAT.Rating RED Hash:
  */
-public class Channel extends AbstractTypedElement implements IChannel {
+public class Channel extends AbstractElement implements IChannel {
 
-	private final IComponent src;
+	private final IPort src;
 
-	private final IComponent dst;
+	private final IPort dst;
 
 	private final List<IExpression> initialMessages = new ArrayList<>();
 
@@ -59,24 +59,17 @@ public class Channel extends AbstractTypedElement implements IChannel {
 
 	/**
 	 * Creates a new channel and adds this channel to <i>src outgoing</i> and
-	 * <i>dst incoming</i> if either of these or both are not <code>null</code>.
+	 * sets it as <i>dst incoming</i>.
 	 * 
 	 * @throws AssertionError
-	 *             if <i>src</i> and <i>dst</i> are both <code>null</code>.
-	 * @see Channel#Channel(String, IComponent, IComponent, int)
+	 *             if <i>src</i> or <i>dst</i> is <code>null</code>.
+	 * @see #Channel(String, IPort, IPort, int)
 	 */
-	public Channel(String id, String name, IType type, IComponent src,
-			IComponent dst, List<IExpression> initialMessages, int srcRate,
-			int dstRate) {
-		super(id, name, type);
-		assertTrue(src != null || dst != null,
-				"Expected 'src' and 'dst' to be not null at the same time");
-		if (src != null && dst != null) {
-			assertTrue(
-					src.getParent() == dst.getParent(),
-					"Expected same parent of 'src' and 'dst', but was '%s' and '%s'",
-					src.getParent(), dst.getParent());
-		}
+	public Channel(String id, String name, IPort src, IPort dst,
+			List<IExpression> initialMessages, int srcRate, int dstRate) {
+		super(id, name);
+		assertNotNull(src, "src");
+		assertNotNull(dst, "dst");
 		for (final IExpression initialMessage : initialMessages) {
 			assertNotNull(initialMessage, "initialMessage");
 		}
@@ -84,45 +77,82 @@ public class Channel extends AbstractTypedElement implements IChannel {
 				srcRate);
 		assertTrue(dstRate > 0, "Expected 'dstRate' to be > 0, but was '%s'",
 				dstRate);
+		final IComponent srcComp = src.getComponent();
+		final ICompositeComponent srcParent = srcComp.getParent();
+		final IComponent dstComp = dst.getComponent();
+		final ICompositeComponent dstParent = dstComp.getParent();
+		assertTrue(
+				(/* Sibling -> Sibling */srcParent == dstParent)
+						|| /* Parent -> Child */(srcComp == dstParent)
+						|| /* Child -> Parent */(srcParent == dstComp),
+				"Expected channel to connect sibling components with each other "
+						+ "or a parent with a child component, but was '%s' -> '%s'",
+				srcComp, dstComp);
+		final EPortDirection srcDirection = src.getDirection();
+		final EPortDirection dstDirection = dst.getDirection();
+		if (srcParent == dstParent) { /* Sibling -> Sibling */
+			assertTrue(
+					srcDirection == OUTBOUND && dstDirection == INBOUND,
+					"Expected siblings to connect from OUTBOUND to INBOUND port, but was '%s' -> '%s'",
+					srcDirection, dstDirection);
+		} else if (srcComp == dstParent) { /* Parent -> Child */
+			assertTrue(
+					srcDirection == INBOUND && dstDirection == INBOUND,
+					"Expected a parent to connect to a child from INBOUND to INBOUND port, but was '%s' -> '%s'",
+					srcDirection, dstDirection);
+		} else if (srcParent == dstComp) { /* Child -> Parent */
+			assertTrue(
+					srcDirection == OUTBOUND && dstDirection == OUTBOUND,
+					"Expected a child to connect to a parent from OUTBOUND to OUTBOUND port, but was '%s' -> '%s'",
+					srcDirection, dstDirection);
+		} else {
+			assertTrue(false, "Internal error: unhandled case");
+		}
 		this.src = src;
 		this.dst = dst;
 		this.initialMessages.addAll(initialMessages);
 		this.srcRate = srcRate;
 		this.dstRate = dstRate;
-		if (src != null) {
-			src.getOutgoing().add(this);
-		}
-		if (dst != null) {
-			dst.getIncoming().add(this);
-		}
+		src.getOutgoing().add(this);
+		dst.setIncoming(this);
 	}
 
 	/**
-	 * Creates a new channel with {@link VoidType#VOID} as data type and
-	 * <i>delay</i> initial messages equal to
+	 * Creates a new channel with <i>delay</i> initial messages equal to
 	 * {@link ConstantExpression#EMPTY_MESSAGE}.
 	 * <p>
 	 * This constructor is useful for testing purposes.
 	 * 
 	 * @throws AssertionError
-	 *             if <i>src</i> and <i>dst</i> are both <code>null</code>.
-	 * @see #Channel(String, String, IType, IComponent, IComponent, List, int,
-	 *      int)
+	 *             if <i>src</i> or <i>dst</i> is <code>null</code>.
+	 * @see #Channel(String, String, IPort, IPort, List, int, int)
 	 */
-	public Channel(String id, IComponent src, IComponent dst, int delay) {
-		this(id, null, VOID, src, dst, nCopies(delay, EMPTY_MESSAGE), 1, 1);
+	public Channel(String id, IPort src, IPort dst, int delay) {
+		this(id, null, src, dst, nCopies(delay, EMPTY_MESSAGE), 1, 1);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public IComponent getSrc() {
+	public IPort getSrc() {
 		return src;
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public IComponent getDst() {
+	public IPort getDst() {
 		return dst;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public IComponent getSrcComponent() {
+		return src.getComponent();
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public IComponent getDstComponent() {
+		return dst.getComponent();
 	}
 
 	/** {@inheritDoc} */
@@ -151,8 +181,8 @@ public class Channel extends AbstractTypedElement implements IChannel {
 
 	/** {@inheritDoc} */
 	@Override
-	public IChannel clone(IComponent newSrc, IComponent newDst) {
-		return new Channel(getId(), getName(), getType(), newSrc, newDst,
+	public IChannel clone(IPort newSrc, IPort newDst) {
+		return new Channel(getId(), getName(), newSrc, newDst,
 				getInitialMessages(), getSrcRate(), getDstRate());
 	}
 
@@ -160,7 +190,7 @@ public class Channel extends AbstractTypedElement implements IChannel {
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "(" + getId() + ", " + getSrc()
-				+ "->" + getDst() + ")";
+				+ " -> " + getDst() + ")";
 
 	}
 

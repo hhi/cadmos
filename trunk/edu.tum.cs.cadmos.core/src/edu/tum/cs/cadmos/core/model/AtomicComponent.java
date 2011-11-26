@@ -72,6 +72,7 @@ public class AtomicComponent extends AbstractComponent implements
 	public IComponent clone(ICompositeComponent newParent) {
 		final IAtomicComponent clone = new AtomicComponent(getId(), getName(),
 				newParent, getMachine());
+		clonePorts(clone);
 		for (final IVariable variable : variables) {
 			variable.clone(clone);
 		}
@@ -82,11 +83,14 @@ public class AtomicComponent extends AbstractComponent implements
 	@Override
 	public void verifyConsistentAdd(IListCollection<?, ?> collection,
 			IIdentifiable element) throws AssertionError {
-		if (collection == incoming || collection == outgoing) {
-			assertNotContainedIn(element, variables, "channel", "variables");
+		if (collection == inbound || collection == outbound) {
+			assertNotContainedIn(element, variables, "port element",
+					"variables");
 		} else if (collection == variables) {
-			assertNotContainedIn(element, incoming, "variable", "incoming");
-			assertNotContainedIn(element, outgoing, "variable", "outgoing");
+			assertNotContainedIn(element, inbound, "variable element",
+					"inbound");
+			assertNotContainedIn(element, outbound, "variable element",
+					"outbound");
 		}
 	}
 

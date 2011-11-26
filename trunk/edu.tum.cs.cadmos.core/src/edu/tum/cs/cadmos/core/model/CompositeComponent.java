@@ -17,7 +17,7 @@
 
 package edu.tum.cs.cadmos.core.model;
 
-import static edu.tum.cs.cadmos.commons.core.Assert.assertNotNull;
+import static edu.tum.cs.cadmos.commons.core.Assert.assertTrue;
 import edu.tum.cs.cadmos.commons.core.IListSet;
 import edu.tum.cs.cadmos.commons.core.ListSet;
 
@@ -60,31 +60,46 @@ public class CompositeComponent extends AbstractComponent implements
 	public IComponent clone(ICompositeComponent newParent) {
 		final ICompositeComponent clone = new CompositeComponent(getId(),
 				getName(), newParent);
+		clonePorts(clone);
 		/* Clone the children components. */
 		for (final IComponent child : getChildren()) {
 			child.clone(clone);
 		}
-		/* Rewire the cloned children components. */
+		/*
+		 * Rewire the clone with its cloned children components and the cloned
+		 * children with each other.
+		 */
 		final IListSet<IComponent> cloneChildren = clone.getChildren();
 		for (final IComponent child : getChildren()) {
-			for (final IChannel c : child.getIncoming()) {
-				if (c.getSrc() == null) {
-					assertNotNull(c.getDst(), "c.getDst()");
-					final IComponent newDst = cloneChildren.get(c.getDst());
-					c.clone(null, newDst);
-				}
-			}
-			for (final IChannel c : child.getOutgoing()) {
-				final IComponent newSrc = cloneChildren.get(c.getSrc());
-				final IComponent newDst;
-				if (c.getDst() == null) {
-					newDst = null;
+			final IComponent cloneChild = cloneChildren.get(child);
+			for (final IPort dstPort : child.getInbound()) {
+				final IPort srcPort = dstPort.getIncomingOppositePort();
+				final IPort cloneSrcPort;
+				if (srcPort.getComponent() == this) {
+					cloneSrcPort = clone.getInbound().get(srcPort);
 				} else {
-					newDst = cloneChildren.get(c.getDst());
+					final IComponent cloneSrcComponent = cloneChildren
+							.get(srcPort.getComponent());
+					cloneSrcPort = cloneSrcComponent.getOutbound().get(srcPort);
 				}
-				c.clone(newSrc, newDst);
+				final IPort cloneDstPort = cloneChild.getInbound().get(dstPort);
+				dstPort.getIncoming().clone(cloneSrcPort, cloneDstPort);
 			}
 		}
+		for (final IPort dstPort : getOutbound()) {
+			final IPort srcPort = dstPort.getIncomingOppositePort();
+			final IPort cloneDstPort = clone.getOutbound().get(dstPort);
+			assertTrue(
+					cloneChildren.contains(srcPort.getComponent()),
+					"Expected cloneChildren to contain component '%s' of incoming opposite port",
+					srcPort.getComponent());
+			final IComponent cloneSrcComponent = cloneChildren.get(srcPort
+					.getComponent());
+			final IPort cloneSrcPort = cloneSrcComponent.getOutbound().get(
+					srcPort);
+			dstPort.getIncoming().clone(cloneSrcPort, cloneDstPort);
+		}
+
 		return clone;
 	}
 }

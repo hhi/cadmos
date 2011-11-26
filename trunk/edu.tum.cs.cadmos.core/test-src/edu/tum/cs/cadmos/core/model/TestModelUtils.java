@@ -1,9 +1,9 @@
 package edu.tum.cs.cadmos.core.model;
 
-import static edu.tum.cs.cadmos.core.types.VoidType.VOID;
+import static edu.tum.cs.cadmos.core.model.ModelUtils.createChannel;
 import static java.util.Arrays.asList;
-import static junit.framework.Assert.assertNotSame;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -14,7 +14,6 @@ import org.junit.Test;
 
 import edu.tum.cs.cadmos.commons.core.IListSet;
 import edu.tum.cs.cadmos.core.expressions.ConstantExpression;
-import edu.tum.cs.cadmos.core.expressions.IExpression;
 
 public class TestModelUtils {
 
@@ -35,36 +34,6 @@ public class TestModelUtils {
 	}
 
 	@Test
-	public void test_getOutboundChildChannel() {
-		final ICompositeComponent parent = new CompositeComponent("parent",
-				null);
-		final IAtomicComponent c1 = new AtomicComponent("c1", parent);
-		final IAtomicComponent c2 = new AtomicComponent("c2", parent);
-		@SuppressWarnings("unused")
-		final IChannel x_internal = new Channel("x", c1, c2, 0);
-		final IChannel x_outbound = new Channel("x", c2, null, 0);
-		final IChannel result = ModelUtils.getOutboundChildChannel(parent,
-				x_outbound);
-		assertSame(x_outbound, result);
-	}
-
-	@Test
-	public void test_getInboundChildChannels() {
-		final ICompositeComponent parent = new CompositeComponent("parent",
-				null);
-		final IAtomicComponent c1 = new AtomicComponent("c1", parent);
-		final IAtomicComponent c2 = new AtomicComponent("c2", parent);
-		final IAtomicComponent c3 = new AtomicComponent("c3", parent);
-		@SuppressWarnings("unused")
-		final IChannel x_internal = new Channel("x", c1, c2, 0);
-		final IChannel x_inbound1 = new Channel("x", null, c1, 0);
-		final IChannel x_inbound3 = new Channel("x", null, c3, 0);
-		final List<IChannel> result = ModelUtils.getInboundChildChannels(
-				parent, x_inbound1);
-		assertEquals(asList(x_inbound1, x_inbound3), result);
-	}
-
-	@Test
 	public void test_getSrcPath() {
 		final ICompositeComponent root = new CompositeComponent("root", null);
 		final ICompositeComponent comp1 = new CompositeComponent("comp1", root);
@@ -72,37 +41,42 @@ public class TestModelUtils {
 		final IAtomicComponent a1 = new AtomicComponent("a1", comp1);
 		final IAtomicComponent a2 = new AtomicComponent("a2", comp2);
 		final IAtomicComponent a3 = new AtomicComponent("a3", comp2);
-		final IChannel a_comp1 = new Channel("a", null, comp1, 0);
-		final IChannel a_a1 = new Channel("a", null, a1, 0);
-		final IChannel x_a1 = new Channel("x", a1, null, 0);
-		final IChannel x_comp1_comp2 = new Channel("x", comp1, comp2, 0);
-		final IChannel x_a2 = new Channel("x", null, a2, 0);
-		final IChannel y_a2_a3 = new Channel("y", a2, a3, 0);
-		final IChannel z_a3 = new Channel("z", a3, null, 0);
-		final IChannel z_comp2 = new Channel("z", comp2, null, 0);
+		final IChannel root_comp1 = createChannel("a", root, comp1, 0);
+		final IChannel comp1_a1 = createChannel("a", comp1, a1, 0);
+		final IChannel a1_comp1 = createChannel("x", a1, comp1, 0);
+		final IChannel comp1_comp2 = createChannel("x", comp1, comp2, 0);
+		final IChannel comp2_a2 = createChannel("x", comp2, a2, 0);
+		final IChannel a2_a3 = createChannel("y", a2, a3, 0);
+		final IChannel a3_comp2 = createChannel("z", a3, comp2, 0);
+		final IChannel comp2_root = createChannel("z", comp2, root, 0);
 
-		final Deque<IChannel> path1 = ModelUtils.getSrcPath(x_a2, root);
-		assertSame(x_a1, path1.pollFirst());
-		assertSame(x_comp1_comp2, path1.pollFirst());
-		assertSame(x_a2, path1.pollFirst());
+		final Deque<IChannel> path1 = ModelUtils.getSrcPath(comp2_a2.getDst(),
+				root);
+		assertSame(a1_comp1, path1.pollFirst());
+		assertSame(comp1_comp2, path1.pollFirst());
+		assertSame(comp2_a2, path1.pollFirst());
 		assertTrue(path1.isEmpty());
 
-		final Deque<IChannel> path2 = ModelUtils.getSrcPath(y_a2_a3, root);
-		assertSame(y_a2_a3, path2.pollFirst());
+		final Deque<IChannel> path2 = ModelUtils.getSrcPath(a2_a3.getDst(),
+				root);
+		assertSame(a2_a3, path2.pollFirst());
 		assertTrue(path2.isEmpty());
 
-		final Deque<IChannel> path3 = ModelUtils.getSrcPath(z_comp2, root);
-		assertSame(z_a3, path3.pollFirst());
-		assertSame(z_comp2, path3.pollFirst());
+		final Deque<IChannel> path3 = ModelUtils.getSrcPath(
+				comp2_root.getDst(), root);
+		assertSame(a3_comp2, path3.pollFirst());
+		assertSame(comp2_root, path3.pollFirst());
 		assertTrue(path3.isEmpty());
 
-		final Deque<IChannel> path4 = ModelUtils.getSrcPath(a_a1, root);
-		assertSame(a_comp1, path4.pollFirst());
-		assertSame(a_a1, path4.pollFirst());
+		final Deque<IChannel> path4 = ModelUtils.getSrcPath(comp1_a1.getDst(),
+				root);
+		assertSame(root_comp1, path4.pollFirst());
+		assertSame(comp1_a1, path4.pollFirst());
 		assertTrue(path4.isEmpty());
 
-		final Deque<IChannel> path5 = ModelUtils.getSrcPath(x_a2, comp2);
-		assertSame(x_a2, path5.pollFirst());
+		final Deque<IChannel> path5 = ModelUtils.getSrcPath(comp2_a2.getDst(),
+				comp2);
+		assertSame(comp2_a2, path5.pollFirst());
 		assertTrue(path5.isEmpty());
 	}
 
@@ -114,53 +88,60 @@ public class TestModelUtils {
 		final IAtomicComponent a1 = new AtomicComponent("a1", comp1);
 		final IAtomicComponent a2 = new AtomicComponent("a2", comp2);
 		final IAtomicComponent a3 = new AtomicComponent("a3", comp2);
-		final IChannel a_a1 = new Channel("a", a1, null, 0);
-		final IChannel a_comp1_comp2 = new Channel("a", comp1, comp2, 0);
-		final IChannel a_a2 = new Channel("a", null, a2, 0);
-		final IChannel a_a3 = new Channel("a", null, a3, 0);
+		final IChannel a1_comp1 = createChannel("a", a1, comp1, 0);
+		final IChannel comp1_comp2 = createChannel("a", comp1, comp2, 0);
+		final IChannel comp2_a2 = createChannel("a", comp2, a2, 0);
+		final IChannel comp2_a3 = createChannel("a", comp2, a3, 0);
 
-		final List<Deque<IChannel>> paths = ModelUtils.getDstPaths(a_a1, root);
+		final List<Deque<IChannel>> paths = ModelUtils.getDstPaths(
+				a1_comp1.getSrc(), root);
 		assertEquals(2, paths.size());
-		assertEquals(asList(a_a1, a_comp1_comp2, a_a2), paths.get(0));
-		assertEquals(asList(a_a1, a_comp1_comp2, a_a3), paths.get(1));
+		assertEquals(asList(a1_comp1, comp1_comp2, comp2_a2), paths.get(0));
+		assertEquals(asList(a1_comp1, comp1_comp2, comp2_a3), paths.get(1));
 	}
 
 	@Test
 	public void test_transformAtomicComponentNetwork_Single_AtomicComponent() {
-		final IAtomicComponent root = new AtomicComponent("root", null);
-		final IChannel a_root = new Channel("a", null, root, 2);
-		final IChannel root_b = new Channel("b", root, null, 2);
-		final IChannel root_c = new Channel("c", root, null, 2);
+		final ICompositeComponent root = new CompositeComponent("root", null);
+		final IAtomicComponent comp = new AtomicComponent("atomic", root);
+		final IChannel root_a_comp = createChannel("a", root, comp, 2);
+		final IChannel comp_b_root = createChannel("b", comp, root, 2);
+		final IChannel comp_c_root = createChannel("c", comp, root, 2);
 
-		final IListSet<IAtomicComponent> network = ModelUtils
+		final ICompositeComponent network = ModelUtils
 				.transformAtomicComponentNetwork(root);
-		assertEquals(1, network.size());
-		assertEquals(root, network.getFirst());
-		assertNotSame(root, network.getFirst());
+		final IListSet<IComponent> atomics = network.getChildren();
+		assertEquals(1, atomics.size());
+		final IComponent atomic = atomics.getFirst();
+		assertEquals(comp, atomic);
+		assertNotSame(comp, atomic);
 
-		assertEquals(1, network.getFirst().getIncoming().size());
-		assertEquals(a_root, network.getFirst().getIncoming().getFirst());
-		assertNotSame(a_root, network.getFirst().getIncoming().getFirst());
-		assertEquals(2, network.getFirst().getIncoming().getFirst().getDelay());
+		assertEquals(1, atomic.getInbound().size());
+		final IChannel incoming = atomic.getInbound().getFirst().getIncoming();
+		assertEquals(root_a_comp, incoming);
+		assertNotSame(root_a_comp, incoming);
+		assertEquals(2, incoming.getDelay());
 
-		assertEquals(2, network.getFirst().getOutgoing().size());
+		assertEquals(2, atomic.getOutbound().size());
 
-		assertEquals(root_b, network.getFirst().getOutgoing().getFirst());
-		assertNotSame(root_b, network.getFirst().getOutgoing().getFirst());
-		assertEquals(2, network.getFirst().getOutgoing().getFirst().getDelay());
+		assertEquals(comp_b_root, atomic.getOutbound().getFirst().getOutgoing()
+				.getFirst());
+		assertNotSame(comp_b_root, atomic.getOutbound().getFirst()
+				.getOutgoing().getFirst());
+		assertEquals(2, atomic.getOutbound().getFirst().getOutgoing()
+				.getFirst().getDelay());
 
-		assertEquals(root_c, network.getFirst().getOutgoing().getLast());
-		assertNotSame(root_c, network.getFirst().getOutgoing().getLast());
-		assertEquals(2, network.getFirst().getOutgoing().getLast().getDelay());
+		assertEquals(comp_c_root, atomic.getOutbound().getLast().getOutgoing()
+				.getFirst());
+		assertNotSame(comp_c_root, atomic.getOutbound().getLast().getOutgoing()
+				.getFirst());
+		assertEquals(2, atomic.getOutbound().getLast().getOutgoing().getFirst()
+				.getDelay());
 	}
 
 	@Test
-	public void test_transformAtomicComponentNetwork() {
+	public void test_transformAtomicComponentNetwork_Two_AtomicComponents() {
 		final ICompositeComponent root = new CompositeComponent("root", null);
-		final IChannel a_root = new Channel("a", null, VOID, null, root,
-				asList((IExpression) new ConstantExpression("alpha")), 2, 3);
-		final IChannel root_b = new Channel("b", root, null, 0);
-		final IChannel root_c = new Channel("c", root, null, 0);
 
 		final ICompositeComponent comp1 = new CompositeComponent("comp1", root);
 		final ICompositeComponent comp2 = new CompositeComponent("comp2", root);
@@ -168,83 +149,76 @@ public class TestModelUtils {
 		final IAtomicComponent a2 = new AtomicComponent("a2", comp2);
 		final IAtomicComponent a3 = new AtomicComponent("a3", comp2);
 
-		final IChannel a_comp1 = new Channel("a", null, VOID, null, comp1,
-				asList((IExpression) new ConstantExpression("beta")), 2, 2);
-		final IChannel comp1_x_comp2 = new Channel("x", comp1, comp2, 1);
-		final IChannel comp2_b = new Channel("b", comp2, null, 0);
-		final IChannel comp2_c = new Channel("c", comp2, null, 0);
+		final IChannel root_a_comp1 = createChannel("a", root, comp1, 0);
+		root_a_comp1.getInitialMessages().add(new ConstantExpression("alpha"));
+		final IChannel comp1_x_comp2 = createChannel("x", comp1, comp2, 1);
+		final IChannel comp2_b_root = createChannel("b", comp2, root, 0);
+		createChannel("c", comp2, root, 0);
 
-		final IChannel a_a1 = new Channel("a", null, VOID, null, a1,
-				asList((IExpression) new ConstantExpression("gamma")), 1, 2);
-		final IChannel a1_x = new Channel("x", a1, null, 1);
-		final IChannel x_a2 = new Channel("x", null, a2, 1);
-		final IChannel x_a3 = new Channel("x", null, a3, 0);
-		final IChannel a2_b = new Channel("b", a2, null, 0);
-		final IChannel a3_c = new Channel("c", a3, null, 0);
+		final IChannel comp1_a_a1 = createChannel("a", comp1, a1, 0);
+		comp1_a_a1.getInitialMessages().add(new ConstantExpression("beta"));
+		final IChannel a1_x_comp1 = createChannel("x", a1, comp1, 1);
+		final IChannel comp2_x_a2 = createChannel("x", comp2, a2, 1);
+		final IChannel comp2_x_a3 = createChannel("x", comp2, a3, 0);
+		final IChannel a2_b_comp2 = createChannel("b", a2, comp2, 0);
+		createChannel("c", a3, comp2, 0);
 
-		final IListSet<IAtomicComponent> network = ModelUtils
+		final ICompositeComponent network = ModelUtils
 				.transformAtomicComponentNetwork(root);
+		final IListSet<IComponent> atomics = network.getChildren();
 
-		/* Assert that all 3 atomic components are present and have been cloned. */
-		assertEquals(3, network.size());
-		assertEquals(a1, network.get("a1"));
-		assertNotSame(a1, network.get("a1"));
-		assertEquals(a2, network.get("a2"));
-		assertNotSame(a2, network.get("a2"));
-		assertEquals(a3, network.get("a3"));
-		assertNotSame(a3, network.get("a3"));
+		/*
+		 * Assert that all 3 atomic components are present and have been cloned.
+		 */
+		assertEquals(3, atomics.size());
+		assertEquals(a1, atomics.get("a1"));
+		assertNotSame(a1, atomics.get("a1"));
+		assertEquals(a2, atomics.get("a2"));
+		assertNotSame(a2, atomics.get("a2"));
+		assertEquals(a3, atomics.get("a3"));
+		assertNotSame(a3, atomics.get("a3"));
 
 		/*
 		 * Assert that rewiring works and delays as well as rates are correctly
 		 * calculated.
 		 */
-		assertEquals(1, network.get("a1").getIncoming().size());
-		final IChannel a = network.get("a1").getIncoming().getFirst();
-		assertEquals("a", a.getId());
-		assertNotSame(a_root, a);
-		assertNotSame(a_comp1, a);
-		assertNotSame(a_a1, a);
-		assertEquals(1, a.getSrcRate());
-		assertEquals(3, a.getDstRate());
-		assertEquals(3, a.getDelay());
-		assertEquals("gamma",
-				((ConstantExpression) a.getInitialMessages().get(0)).getValue());
+		assertEquals(1, atomics.get("a1").getInbound().size());
+		final IChannel a = atomics.get("a1").getInbound().getFirst()
+				.getIncoming();
+		assertEquals("root.a::a1.a", a.getId());
+		assertEquals(2, a.getDelay());
 		assertEquals("beta", ((ConstantExpression) a.getInitialMessages()
-				.get(1)).getValue());
+				.get(0)).getValue());
 		assertEquals("alpha",
-				((ConstantExpression) a.getInitialMessages().get(2)).getValue());
+				((ConstantExpression) a.getInitialMessages().get(1)).getValue());
 
-		assertEquals(1, network.get("a2").getOutgoing().size());
-		final IChannel b = network.get("a2").getOutgoing().getFirst();
-		assertEquals("b", b.getId());
-		assertNotSame(a2_b, b);
-		assertNotSame(comp2_b, b);
-		assertNotSame(root_b, b);
+		assertEquals(1, atomics.get("a2").getOutbound().size());
+		final IChannel b = atomics.get("a2").getOutbound().getFirst()
+				.getOutgoing().getFirst();
+		assertEquals("a2.b::root.b", b.getId());
+		assertNotSame(a2_b_comp2, b);
+		assertNotSame(comp2_b_root, b);
 		assertEquals(1, b.getSrcRate());
 		assertEquals(1, b.getDstRate());
 		assertEquals(0, b.getDelay());
 
-		assertEquals(2, network.get("a1").getOutgoing().size());
-		final IChannel a1_a2 = network.get("a1").getOutgoing().getFirst();
-		assertEquals(a2, a1_a2.getDst());
+		assertEquals(1, atomics.get("a1").getOutbound().size());
+		assertEquals(2, atomics.get("a1").getOutbound().getFirst()
+				.getOutgoing().size());
+		final IChannel a1_a2 = atomics.get("a1").getOutbound().get("x")
+				.getOutgoing().getFirst();
+		assertEquals(a2, a1_a2.getDst().getComponent());
 		assertNotSame(comp1_x_comp2, a1_a2);
-		assertNotSame(a1_x, a1_a2);
-		assertNotSame(x_a2, a1_a2);
+		assertNotSame(a1_x_comp1, a1_a2);
+		assertNotSame(comp2_x_a2, a1_a2);
 		assertEquals(3, a1_a2.getDelay());
-		final IChannel a1_a3 = network.get("a1").getOutgoing().getLast();
-		assertEquals(a3, a1_a3.getDst());
+		final IChannel a1_a3 = atomics.get("a1").getOutbound().get("x")
+				.getOutgoing().getLast();
+		assertEquals(a3, a1_a3.getDst().getComponent());
 		assertNotSame(comp1_x_comp2, a1_a3);
-		assertNotSame(a1_x, a1_a3);
-		assertNotSame(x_a3, a1_a3);
+		assertNotSame(a1_x_comp1, a1_a3);
+		assertNotSame(comp2_x_a3, a1_a3);
 		assertEquals(2, a1_a3.getDelay());
-
-		assertEquals(1, network.get("a3").getOutgoing().size());
-		final IChannel c = network.get("a3").getOutgoing().getFirst();
-		assertEquals("c", c.getId());
-		assertNotSame(a3_c, c);
-		assertNotSame(comp2_c, c);
-		assertNotSame(root_c, c);
-
 	}
 
 }

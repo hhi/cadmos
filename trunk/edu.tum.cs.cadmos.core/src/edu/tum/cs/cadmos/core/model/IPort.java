@@ -17,13 +17,22 @@
 
 package edu.tum.cs.cadmos.core.model;
 
-import java.util.List;
-
-import edu.tum.cs.cadmos.commons.core.IElement;
-import edu.tum.cs.cadmos.core.expressions.IExpression;
+import edu.tum.cs.cadmos.commons.core.IListMultiSet;
+import edu.tum.cs.cadmos.commons.core.IListSet;
 
 /**
- * A channel is directed and connects from a source to a destination port.
+ * A port belongs to a {@link IComponent} and represents the typed source- or
+ * destination connection point of a {@link IChannel}.
+ * <p>
+ * A port can either have inbound or outbound direction:<br>
+ * <b>Inbound ports.</b> If a port is inbound, it is the destination of one
+ * incoming channel from the parent or sibling level and the source of one or
+ * more outgoing channels to the children level. If a port has no outgoing
+ * channels, the port is a direct input of the component's machine.<br>
+ * <b>Outbound ports.</b> If a port is outbound, it is the destination of one
+ * channel from the children level and the source of one or more outgoing
+ * channels to the parent or sibling level. If the port has no incoming channel,
+ * the port is a direct output of the component's machine.
  * 
  * @author wolfgang.schwitzer
  * @author nvpopa@gmail.com
@@ -31,42 +40,28 @@ import edu.tum.cs.cadmos.core.expressions.IExpression;
  * @version $Rev$
  * @version $Author$
  * @version $Date$
- * @ConQAT.Rating GREEN Hash: 918F24F813D187B494D5ED1A3F260CC4
+ * @ConQAT.Rating RED Hash:
  */
-public interface IChannel extends IElement {
+public interface IPort extends ITypedElement {
 
-	IPort getSrc();
+	IComponent getComponent();
 
-	IPort getDst();
+	EPortDirection getDirection();
 
-	IComponent getSrcComponent();
+	IChannel getIncoming();
 
-	IComponent getDstComponent();
+	void setIncoming(IChannel incoming);
 
-	/**
-	 * Returns the number of messages that are buffered by this channel. The
-	 * delay equals the number of initial messages provided.
-	 * 
-	 * @see #getInitialMessages()
-	 */
-	int getDelay();
+	IListSet<IChannel> getOutgoing();
 
-	/**
-	 * Returns the list of initial messages. Messages transmitted over this
-	 * channel are buffered and delayed by the number of initial messages.
-	 * 
-	 * @see #getDelay()
-	 */
-	List<IExpression> getInitialMessages();
+	IPort getIncomingOppositePort();
 
-	int getSrcRate();
+	IListMultiSet<IPort> getOutgoingOppositePorts();
 
-	int getDstRate();
+	IComponent getIncomingOppositeComponent();
 
-	/**
-	 * Returns a clone of this channel that connects from the given
-	 * <i>newSrc</i> to the given <i>newDst</i>.
-	 */
-	IChannel clone(IPort newSrc, IPort newDst);
+	IListSet<IComponent> getOutgoingOppositeComponents();
+
+	IPort clone(IComponent newComponent);
 
 }

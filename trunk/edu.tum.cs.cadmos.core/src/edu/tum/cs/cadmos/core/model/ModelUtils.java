@@ -18,9 +18,11 @@
 package edu.tum.cs.cadmos.core.model;
 
 import static edu.tum.cs.cadmos.commons.core.Assert.assertInstanceOf;
-import static edu.tum.cs.cadmos.commons.core.Assert.assertNotNull;
 import static edu.tum.cs.cadmos.commons.core.Assert.assertTrue;
-import static java.util.Arrays.asList;
+import static edu.tum.cs.cadmos.core.model.EPortDirection.INBOUND;
+import static edu.tum.cs.cadmos.core.model.EPortDirection.OUTBOUND;
+import static edu.tum.cs.cadmos.core.types.VoidType.VOID;
+import static java.lang.String.format;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import edu.tum.cs.cadmos.commons.core.Assert;
+import edu.tum.cs.cadmos.commons.core.IListMultiSet;
 import edu.tum.cs.cadmos.commons.core.IListSet;
 import edu.tum.cs.cadmos.commons.core.ListSet;
 import edu.tum.cs.cadmos.core.expressions.IExpression;
@@ -45,304 +47,199 @@ import edu.tum.cs.cadmos.core.expressions.IExpression;
  * @version $Rev$
  * @version $Author$
  * @version $Date$
- * @ConQAT.Rating RED Hash: 25C6DC14D5E2667733012506A11748EC
+ * @ConQAT.Rating RED Hash: FE098789A84DA1255F89925314898CBF
  */
 public class ModelUtils {
 
+	/** Returns the union of all incoming channels of the given <i>ports</i>. */
+	public static IListSet<IChannel> getIncoming(Iterable<IPort> ports) {
+		final IListSet<IChannel> result = new ListSet<>();
+		for (final IPort port : ports) {
+			result.add(port.getIncoming());
+		}
+		return result;
+	}
+
+	/** Returns the union of all outgoing channels of the given <i>ports</i>. */
+	public static IListSet<IChannel> getOutgoing(Iterable<IPort> ports) {
+		final IListSet<IChannel> result = new ListSet<>();
+		for (final IPort port : ports) {
+			result.addAll(port.getOutgoing());
+		}
+		return result;
+	}
+
 	/**
 	 * Returns a set of all atomic components recursively found in the given
-	 * <i>component</i> in DFS order or the <i>component</i> itself if it is
-	 * already an atomic component.
+	 * <i>component</i> in <a
+	 * href="http://en.wikipedia.org/wiki/Breadth-first_search">BFS order</a> or
+	 * the <i>component</i> itself if it is already an atomic component.
 	 */
-	// TODO(VP): ensure that component is not null and return null or assertion
-	// error otherwise.
 	public static IListSet<IAtomicComponent> getAtomicComponents(
 			IComponent component) {
-		if (component instanceof IAtomicComponent) {
-			return new ListSet<>((IAtomicComponent) component);
-		}
-		assertInstanceOf(component, ICompositeComponent.class, "component");
 		final ListSet<IAtomicComponent> result = new ListSet<>();
-		for (final IComponent child : ((ICompositeComponent) component)
-				.getChildren()) {
-			result.addAll(getAtomicComponents(child));
-		}
-		return result;
-	}
-
-	/**
-	 * Returns the outbound channel of any of the children of the given
-	 * <i>parent</i>, equal to the given <i>channel</i> or <code>null</code> if
-	 * no such outbound channels exist.
-	 * <p>
-	 * Note that a channel is <i>outbound</i> if its destination is
-	 * <code>null</code>.
-	 * 
-	 * @throws AssertionError
-	 *             if more than 1 outbound channel has an equal id to the given
-	 *             <i>channel</i>.
-	 */
-	public static IChannel getOutboundChildChannel(ICompositeComponent parent,
-			IChannel channel) {
-		final List<IChannel> result = new ArrayList<>();
-		for (final IComponent child : parent.getChildren()) {
-			for (final IChannel candidate : child.getOutgoing().get(channel)) {
-				if (candidate.getDst() == null) {
-					result.add(candidate);
-				}
-			}
-		}
-		Assert.assertTrue(
-				result.size() <= 1,
-				"Expected exactly 0 or 1 outbound channel with id '%s' in parent '%s', but found %s",
-				channel.getId(), parent, result);
-		if (result.size() == 0) {
-			return null;
-		}
-		return result.get(0);
-	}
-
-	/**
-	 * Returns the inbound channels of any of the children of the given
-	 * <i>parent</i>, equal to the given <i>channel</i> or an empty list if no
-	 * such inbound channels exist.
-	 * <p>
-	 * Note that a channel is <i>inbound</i> if its source is <code>null</code>.
-	 */
-	public static List<IChannel> getInboundChildChannels(
-			ICompositeComponent parent, IChannel channel) {
-		final List<IChannel> result = new ArrayList<>();
-		for (final IComponent child : parent.getChildren()) {
-			final IChannel candidate = child.getIncoming().get(channel);
-			if (candidate != null && candidate.getSrc() == null) {
-				result.add(candidate);
+		/* Initialize dynamic work queue. */
+		final Deque<IComponent> queue = new LinkedList<>();
+		queue.add(component);
+		while (!queue.isEmpty()) {
+			final IComponent current = queue.removeFirst();
+			if (current instanceof IAtomicComponent) {
+				result.add((IAtomicComponent) current);
+			} else {
+				assertInstanceOf(current, ICompositeComponent.class, "current");
+				queue.addAll(((ICompositeComponent) current).getChildren()
+						.toList());
 			}
 		}
 		return result;
 	}
 
 	/**
-	 * Returns the path of channels to the atomic source component of the given
-	 * <i>channel</i> that is transitively reachable within the given
-	 * <i>systemBoundary</i> or throws an {@link AssertionError} if no such
-	 * source exists.
+	 * Returns the path of channels to the source of the given <i>port</i> that
+	 * is transitively reachable within the given <i>systemBoundary</i>.
 	 * <p>
 	 * The path is returned as a {@link Deque} of {@link IChannel}s with the
-	 * channel going out of the transitive source (e.g. <i>srcOutgoing</i>) as
-	 * first element and the given <i>channel</i> as last element:
-	 * <code>[<i>srcOutgoing</i>, ..., <i>channel</i>]</code>.
-	 * 
-	 * @throws AssertionError
-	 *             if the component model is no well-formed and, hence, the
-	 *             transitive source component is not within the system
-	 *             boundary.
+	 * outgoing channel of the transitive source as first element and the
+	 * incoming channel of the given <i>port</i> as last element:
+	 * <code>[<i>source.getOutgoing()<sub>i</sub></i>, ..., <i>port.getIncoming()</i>]</code>.
+	 * <p>
+	 * Use <code>null</code> as a system boundary to search without constraints
+	 * on the system boundary.
 	 */
-	public static Deque<IChannel> getSrcPath(IChannel channel,
+	public static Deque<IChannel> getSrcPath(IPort port,
 			IComponent systemBoundary) {
-		final IComponent src = channel.getSrc();
-		if (src instanceof IAtomicComponent) {
-			return createPath(channel);
+		final Deque<IChannel> result = new LinkedList<>();
+		IPort current = port;
+		while (current.getIncoming() != null
+				&& !(current.getComponent() == systemBoundary && current
+						.getDirection() == INBOUND)) {
+			result.addFirst(current.getIncoming());
+			current = current.getIncomingOppositePort();
 		}
-		if (src instanceof ICompositeComponent) {
-			final ICompositeComponent compSrc = (ICompositeComponent) src;
-			final IChannel outbound = getOutboundChildChannel(compSrc, channel);
-			return extendSrcPath(outbound, systemBoundary, channel);
-		}
-		final IComponent dst = channel.getDst();
-		assertNotNull(dst, "dst");
-		final ICompositeComponent parent = dst.getParent();
-		if (src == null && (parent == systemBoundary || parent == null)) {
-			return createPath(channel);
-		}
-		if (src == null && parent != systemBoundary) {
-			final IChannel incoming = parent.getIncoming().get(channel);
-			return extendSrcPath(incoming, systemBoundary, channel);
-		}
-		throw new AssertionError("Cannot find path to transitive source for '"
-				+ channel + "' within system boundary '" + systemBoundary + "'");
+		return result;
 	}
 
 	/**
-	 * Returns a path initialized with the given <i>channel</i> as single
-	 * element.
-	 */
-	private static Deque<IChannel> createPath(IChannel channel) {
-		return new LinkedList<>(asList(channel));
-	}
-
-	/**
-	 * Returns the result of {@link #getSrcPath(IChannel, IComponent)} for the
-	 * given <i>nextChannel</i> extended by the given <i>channel</i> as last
-	 * element.
-	 */
-	private static Deque<IChannel> extendSrcPath(final IChannel nextChannel,
-			IComponent systemBoundary, IChannel channel) {
-		assertNotNull(nextChannel, "nextChannel");
-		final Deque<IChannel> path = getSrcPath(nextChannel, systemBoundary);
-		path.addLast(channel);
-		return path;
-	}
-
-	/**
-	 * Returns a list of paths of channels to the atomic destination components
-	 * of the given <i>channel</i> that are transitively reachable within the
-	 * given <i>systemBoundary</i> or throws an {@link AssertionError} if no
-	 * such destination exists.
+	 * Returns a list of paths of channels to the destinations of the given
+	 * <i>port</i> that are transitively reachable within the given
+	 * <i>systemBoundary</i>.
 	 * <p>
 	 * Each of the paths is returned as a {@link Deque} of {@link IChannel}s
-	 * with the given <i>channel</i> as first element and the channel incoming
-	 * to a transitive destination (e.g. <i>dstIncoming</i>) as last element:
-	 * <code>[<i>channel</i>, ..., <i>dstIncoming</i>]</code>.
+	 * with the an outgoing channel of the given <i>port</i> as first element
+	 * and the channel incoming to a transitive destination as last element:
+	 * <code>[<i>port.getOutgoing()<sub>i</sub></i>, ..., <i>destination.getIncoming()</i>]</code>.
 	 * <p>
-	 * The result is a list of all such paths leading from the given
-	 * <i>channel</i> to different destinations (e.g.
-	 * <i>dstIncoming<sub>1</sub></i>, ..., <i>dstIncoming<sub>n</sub></i>):
-	 * <code>[[<i>channel</i>, ..., <i>dstIncoming<sub>1</sub></i>], ..., [<i>channel</i>, ..., <i>dstIncoming<sub>n</sub></i>]]</code>.
-	 * 
-	 * @throws AssertionError
-	 *             if the component model is no well-formed and, hence, a
-	 *             transitive destination component is not within the system
-	 *             boundary.
+	 * The result is a list with length <i>n</i> of all such paths leading from
+	 * the given source <i>port</i> to different destinations:
+	 * <code>[[<i>port.getOutgoing()<sub>1</sub></i>, ..., <i>destination<sub>1</sub>.getIncoming()</i>], ..., [<i>port.getOutgoing()<sub>n</sub></i>, ..., <i>destination<sub>n</sub>.getIncoming()</i>]]</code>.
+	 * <p>
+	 * Use <code>null</code> as a system boundary to search without constraints
+	 * on the system boundary.
 	 */
-	public static List<Deque<IChannel>> getDstPaths(IChannel channel,
+	public static List<Deque<IChannel>> getDstPaths(IPort port,
 			IComponent systemBoundary) {
-		final IComponent dst = channel.getDst();
-		if (dst instanceof IAtomicComponent) {
-			return createPaths(channel);
-		}
-		if (dst instanceof ICompositeComponent) {
-			final ICompositeComponent compDst = (ICompositeComponent) dst;
-			final List<IChannel> inbound = getInboundChildChannels(compDst,
-					channel);
-			return extendDstPaths(inbound, systemBoundary, channel);
-		}
-		assertTrue(dst == null, "Expected 'dst' to be null, but was '%s'", dst);
-		final IComponent src = channel.getSrc();
-		assertNotNull(src, "src");
-		final ICompositeComponent parent = src.getParent();
-		if (dst == null && (parent == systemBoundary || parent == null)) {
-			return createPaths(channel);
-		}
-		if (dst == null && parent != systemBoundary) {
-			final List<IChannel> outgoing = parent.getOutgoing().get(channel);
-			return extendDstPaths(outgoing, systemBoundary, channel);
-		}
-		throw new AssertionError(
-				"Cannot find path to transitive destination for '" + channel
-						+ "' within system boundary '" + systemBoundary + "'");
-	}
-
-	/**
-	 * Returns the result of {@link #getDstPaths(IChannel, IComponent)} for all
-	 * given <i>nextChannels</i>, each extended by the given <i>channel</i> as
-	 * first element.
-	 */
-	private static List<Deque<IChannel>> extendDstPaths(
-			final List<IChannel> nextChannels, IComponent systemBoundary,
-			IChannel channel) {
-		assertTrue(nextChannels.size() > 0,
-				"Expected 'nextChannels' to have at least 1 element, but was 0");
-		final List<Deque<IChannel>> result = new LinkedList<>();
-		for (final IChannel inbound : nextChannels) {
-			final List<Deque<IChannel>> paths = getDstPaths(inbound,
-					systemBoundary);
-			for (final Deque<IChannel> path : paths) {
-				path.addFirst(channel);
-				result.add(path);
+		/* Phase 1: find destination ports. */
+		final List<IPort> destinations = new ArrayList<>();
+		/* Initialize dynamic work queue. */
+		final Deque<IPort> queue = new LinkedList<>();
+		queue.add(port);
+		while (!queue.isEmpty()) {
+			final IPort current = queue.removeFirst();
+			final IListMultiSet<IPort> next = current
+					.getOutgoingOppositePorts();
+			final boolean boundaryReached = current.getComponent() == systemBoundary
+					&& current.getDirection() == OUTBOUND;
+			if (boundaryReached || next.isEmpty()) {
+				destinations.add(current); // current is a destination
+			} else {
+				queue.addAll(next.toList()); // continue search
 			}
 		}
-		return result;
-	}
-
-	/**
-	 * Returns a list of paths initialized with one path having the given
-	 * <i>channel</i> as single element.
-	 */
-	private static List<Deque<IChannel>> createPaths(IChannel channel) {
+		/* Phase 2: get result by searching a source path for each destination. */
 		final List<Deque<IChannel>> result = new LinkedList<>();
-		result.add(createPath(channel));
+		for (final IPort dst : destinations) {
+			final Deque<IChannel> path = getSrcPath(dst, port.getComponent());
+			assertTrue(path.getFirst().getSrc() == port,
+					"Expected 'path' to begin at 'port', but was '%s'", path);
+			result.add(path);
+		}
 		return result;
 	}
 
-	public static IListSet<IAtomicComponent> transformAtomicComponentNetwork(
-			IComponent systemBoundary) {
+	public static ICompositeComponent transformAtomicComponentNetwork(
+			ICompositeComponent systemBoundary) {
+		/* Get a shallow clone of the system boundary and its ports. */
+		final ICompositeComponent cloneBoundary = new CompositeComponent(
+				systemBoundary.getId(), systemBoundary.getName(), null);
+		systemBoundary.clonePorts(cloneBoundary);
 		/* Find the atomic components within the system boundary. */
-		final IListSet<IAtomicComponent> atomicComponents = getAtomicComponents(systemBoundary);
+		final IListSet<IAtomicComponent> atomics = getAtomicComponents(systemBoundary);
 		/* Clone the atomic components. */
-		final IListSet<IAtomicComponent> clones = new ListSet<>();
-		for (final IAtomicComponent atomicComponent : atomicComponents) {
-			clones.add((IAtomicComponent) atomicComponent.clone(null));
+		for (final IAtomicComponent atomic : atomics) {
+			atomic.clone(cloneBoundary);
 		}
-		/* Rewire the incoming paths. */
-		for (final IChannel channel : systemBoundary.getIncoming()) {
-			final List<Deque<IChannel>> dstPaths = getDstPaths(channel,
-					systemBoundary);
-			for (final Deque<IChannel> path : dstPaths) {
-				assertTrue(path.size() > 0, "Expected path to be non-empty");
-				final IComponent candidate = path.getLast().getDst();
-				assertInstanceOf(candidate, IAtomicComponent.class, "dst");
-				final IComponent dst = clones.get((IAtomicComponent) candidate);
-				assertNotNull(dst, "dst");
-				final List<IExpression> initialMessages = getPathInitialMessages(path);
-				final SrcDstRate rate = getPathSrcDstRate(path);
-				new Channel(path.getLast().getId(), path.getLast().getName(),
-						path.getLast().getType(), null, dst, initialMessages,
-						rate.srcRate, rate.dstRate);
-			}
-		}
-		/* Rewire the outgoing paths. */
-		for (final IChannel channel : systemBoundary.getOutgoing()) {
-			final Deque<IChannel> path = getSrcPath(channel, systemBoundary);
-			assertTrue(path.size() > 0, "Expected path to be non-empty");
-			final IComponent candidate = path.getFirst().getSrc();
-			assertInstanceOf(candidate, IAtomicComponent.class, "src");
-			final IAtomicComponent src = clones
-					.get((IAtomicComponent) candidate);
-			assertNotNull(src, "src");
-			final List<IExpression> initialMessages = getPathInitialMessages(path);
-			final SrcDstRate rate = getPathSrcDstRate(path);
-			new Channel(path.getLast().getId(), path.getLast().getName(), path
-					.getLast().getType(), src, null, initialMessages,
-					rate.srcRate, rate.dstRate);
-		}
-		/* Rewire the internal paths. */
-		for (final IAtomicComponent atomicComponent : atomicComponents) {
-			final IAtomicComponent src = clones.get(atomicComponent);
-			assertNotNull(src, "src");
-			for (final IChannel channel : atomicComponent.getOutgoing()) {
-				final List<Deque<IChannel>> dstPaths = getDstPaths(channel,
-						systemBoundary);
-				for (final Deque<IChannel> path : dstPaths) {
-					assertTrue(path.size() > 0, "Expected path to be non-empty");
-					final IComponent candidate = path.getLast().getDst();
-					if (candidate == null) {
-						/* Skip channels that go out of the system boundary. */
-						continue;
+		final IListSet<IComponent> clones = cloneBoundary.getChildren();
+		/*
+		 * Rewire the cloned system boundary with its cloned atomic components
+		 * and the cloned atomic components with each other.
+		 */
+		for (final IAtomicComponent atomic : atomics) {
+			final IComponent clone = clones.get(atomic);
+			for (final IPort dstPort : atomic.getInbound()) {
+				final Deque<IChannel> path = getSrcPath(dstPort, systemBoundary);
+				assertTrue(!path.isEmpty(), "Expected 'path' to be not empty");
+				final IPort srcPort = path.getFirst().getSrc();
+				final IPort cloneSrcPort;
+				if (srcPort.getComponent() == systemBoundary) {
+					cloneSrcPort = cloneBoundary.getInbound().get(srcPort);
+				} else {
+					final IComponent cloneSrcComponent = clones.get(srcPort
+							.getComponent());
+					if (cloneSrcComponent == null) {
+						continue; /* Path cannot be rewired. */
 					}
-					assertInstanceOf(candidate, IAtomicComponent.class, "dst");
-					final IComponent dst = clones
-							.get((IAtomicComponent) candidate);
-					final List<IExpression> initialMessages = getPathInitialMessages(path);
-					final SrcDstRate rate = getPathSrcDstRate(path);
-					new Channel(path.getLast().getId(), path.getLast()
-							.getName(), path.getLast().getType(), src, dst,
-							initialMessages, rate.srcRate, rate.dstRate);
+					cloneSrcPort = cloneSrcComponent.getOutbound().get(srcPort);
 				}
+				final IPort cloneDstPort = clone.getInbound().get(dstPort);
+				transformPathToChannel(path, cloneSrcPort, cloneDstPort);
 			}
 		}
-		return clones;
+		for (final IPort dstPort : systemBoundary.getOutbound()) {
+			final Deque<IChannel> path = getSrcPath(dstPort, systemBoundary);
+			assertTrue(!path.isEmpty(), "Expected 'path' to be not empty");
+			final IPort srcPort = path.getFirst().getSrc();
+			final IComponent cloneSrcComponent = clones.get(srcPort
+					.getComponent());
+			if (cloneSrcComponent == null) {
+				continue; /* Path cannot be rewired. */
+			}
+			final IPort cloneSrcPort = cloneSrcComponent.getOutbound().get(
+					srcPort);
+			final IPort cloneDstPort = cloneBoundary.getOutbound().get(dstPort);
+			transformPathToChannel(path, cloneSrcPort, cloneDstPort);
+		}
+		return cloneBoundary;
 	}
 
-	private static class SrcDstRate {
+	/**
+	 * A pair of source- and destination-rates.
+	 * 
+	 * @author wolfgang.schwitzer
+	 * 
+	 * @see ModelUtils#getPathRates(Deque)
+	 */
+	private static class Rates {
 
+		/** The source rate. */
 		public final int srcRate;
 
+		/** The destination rate. */
 		public final int dstRate;
 
 		/**
-		 * Creates an immutable ModelUtils.SrcDstRate.
+		 * Creates an immutable src-/dst-rates pair.
 		 */
-		public SrcDstRate(int srcRate, int dstRate) {
+		public Rates(int srcRate, int dstRate) {
 			this.srcRate = srcRate;
 			this.dstRate = dstRate;
 		}
@@ -352,13 +249,16 @@ public class ModelUtils {
 	/**
 	 * Returns the total source and destination rate of a path. Both rates are
 	 * normalized according to their greatest common divisor.
+	 * 
+	 * @see ModelUtils#getPathSrcRate(Deque)
+	 * @see ModelUtils#getPathDstRate(Deque)
 	 */
-	private static SrcDstRate getPathSrcDstRate(Deque<IChannel> path) {
+	private static Rates getPathRates(Deque<IChannel> path) {
 		final BigInteger srcRate = getPathSrcRate(path);
 		final BigInteger dstRate = getPathDstRate(path);
 		final BigInteger gcd = srcRate.gcd(dstRate);
-		return new SrcDstRate(srcRate.divide(gcd).intValue(), dstRate.divide(
-				gcd).intValue());
+		return new Rates(srcRate.divide(gcd).intValue(), dstRate.divide(gcd)
+				.intValue());
 	}
 
 	/**
@@ -377,6 +277,8 @@ public class ModelUtils {
 
 	/**
 	 * Returns the product of all source rates on the given <i>path</i>.
+	 * 
+	 * @see ModelUtils#getPathRates(Deque)
 	 */
 	public static BigInteger getPathSrcRate(Deque<IChannel> path) {
 		assertTrue(!path.isEmpty(), "Expected path to be not empty");
@@ -389,6 +291,8 @@ public class ModelUtils {
 
 	/**
 	 * Returns the product of all destination rates on the given <i>path</i>.
+	 * 
+	 * @see ModelUtils#getPathRates(Deque)
 	 */
 	public static BigInteger getPathDstRate(Deque<IChannel> path) {
 		assertTrue(!path.isEmpty(), "Expected path to be not empty");
@@ -397,6 +301,72 @@ public class ModelUtils {
 			result = result.multiply(BigInteger.valueOf(channel.getDstRate()));
 		}
 		return result;
+	}
+
+	/**
+	 * Returns a unique id for the given non-empty <i>path</i>.
+	 * 
+	 * @throws AssertionError
+	 *             if the given path is empty.
+	 */
+	public static String getPathId(Deque<IChannel> path) {
+		assertTrue(!path.isEmpty(), "Expected path to be not empty");
+		final IPort src = path.getFirst().getSrc();
+		final IPort dst = path.getLast().getDst();
+		return src.getComponent().getId() + "." + src.getId() + "::"
+				+ dst.getComponent().getId() + "." + dst.getId();
+	}
+
+	/**
+	 * Returns a newly created channel that has the combined properties of all
+	 * channels on the given <i>path</i> (e.g. <i>id</i>, <i>initial
+	 * messages</i>, <i>rates</i>) and that connects from to given <i>src-</i>
+	 * to the given <i>dst-</i>port.
+	 */
+	public static IChannel transformPathToChannel(Deque<IChannel> path,
+			IPort src, IPort dst) {
+		final List<IExpression> initialMessages = getPathInitialMessages(path);
+		final Rates rates = getPathRates(path);
+		return new Channel(getPathId(path), path.getLast().getName(), src, dst,
+				initialMessages, rates.srcRate, rates.dstRate);
+	}
+
+	/**
+	 * Creates and returns a new channel and the respective source and
+	 * destination ports.
+	 * <p>
+	 * This is a convenience method intended to be used mainly in unit testing
+	 * context.
+	 */
+	public static IChannel createChannel(String id, IComponent src,
+			IComponent dst, int delay) {
+		final EPortDirection srcDirection;
+		final EPortDirection dstDirection;
+		if (src.getParent() == dst.getParent()) {
+			srcDirection = OUTBOUND;
+			dstDirection = INBOUND;
+		} else if (src == dst.getParent()) {
+			srcDirection = INBOUND;
+			dstDirection = INBOUND;
+
+		} else if (src.getParent() == dst) {
+			srcDirection = OUTBOUND;
+			dstDirection = OUTBOUND;
+		} else {
+			throw new IllegalArgumentException(format(
+					"Cannot connect 'src' and 'dst' components: '%s' -> '%s'",
+					src, dst));
+		}
+		IPort srcPort = src.getPorts(srcDirection).get(id);
+		if (srcPort == null) {
+			srcPort = new Port(id, null, VOID, src, srcDirection);
+		}
+		IPort dstPort = dst.getPorts(dstDirection).get(id);
+		if (dstPort == null) {
+			dstPort = new Port(id, null, VOID, dst, dstDirection);
+		}
+		return new Channel(src.getId() + "." + srcPort.getId() + "::"
+				+ dst.getId() + "." + dstPort.getId(), srcPort, dstPort, delay);
 	}
 
 }

@@ -17,56 +17,17 @@
 
 package edu.tum.cs.cadmos.core.model;
 
-import java.util.List;
-
-import edu.tum.cs.cadmos.commons.core.IElement;
-import edu.tum.cs.cadmos.core.expressions.IExpression;
-
 /**
- * A channel is directed and connects from a source to a destination port.
+ * Defines the direction of an {@link IPort}.
  * 
  * @author wolfgang.schwitzer
- * @author nvpopa@gmail.com
- * @author dominik.chessa@gmail.com
  * @version $Rev$
  * @version $Author$
  * @version $Date$
- * @ConQAT.Rating GREEN Hash: 918F24F813D187B494D5ED1A3F260CC4
+ * @ConQAT.Rating RED Hash:
  */
-public interface IChannel extends IElement {
+public enum EPortDirection {
 
-	IPort getSrc();
-
-	IPort getDst();
-
-	IComponent getSrcComponent();
-
-	IComponent getDstComponent();
-
-	/**
-	 * Returns the number of messages that are buffered by this channel. The
-	 * delay equals the number of initial messages provided.
-	 * 
-	 * @see #getInitialMessages()
-	 */
-	int getDelay();
-
-	/**
-	 * Returns the list of initial messages. Messages transmitted over this
-	 * channel are buffered and delayed by the number of initial messages.
-	 * 
-	 * @see #getDelay()
-	 */
-	List<IExpression> getInitialMessages();
-
-	int getSrcRate();
-
-	int getDstRate();
-
-	/**
-	 * Returns a clone of this channel that connects from the given
-	 * <i>newSrc</i> to the given <i>newDst</i>.
-	 */
-	IChannel clone(IPort newSrc, IPort newDst);
+	INBOUND, OUTBOUND
 
 }
