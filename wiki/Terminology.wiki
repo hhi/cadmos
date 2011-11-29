@@ -41,7 +41,6 @@ See also:*
 [Terminology#Type Type],
 [Terminology#Stream Stream],
 [Terminology#System_Boundary System Boundary],
-[Terminology#Buffer Buffer],
 [Terminology#Rate Rate]
 *
 
@@ -71,7 +70,6 @@ See also:*
 [Terminology#Port Port],
 [Terminology#Type Type],
 [Terminology#Stream Stream],
-[Terminology#Buffer Buffer],
 [Terminology#Rate Rate]
 *
 
@@ -93,12 +91,10 @@ We say that _s_ has a length of _n_, denoted as #_s_ = _n_.
 If _n_ is a finite number, the stream _s_ is a _finite stream_.
 In Cadmos, we often analyze _reactive_ systems and we use the concept of _infinite streams_ to express, that reactive systems are typically designed to run (potentially) for ever.
 We access a message at a given index _i_ by _s_(_i_).
-In addition, we allow _empty messages_ in streams.
-For example, _s_ = (_a_, , , _b_) has the properties #_s_ = 4, _s_(0) = _a_, _s_(3) = _b_ and _s_(1) = _s_(2) = {{{<empty>}}}.
+In addition, we allow _empty messages_ in streams, denoted by the symbol {{{<>}}}.
+For example, _s_ = (_a_, {{{<>}}}, {{{<>}}}, _b_) has the properties #_s_ = 4, _s_(0) = _a_, _s_(3) = _b_ and _s_(1) = _s_(2) = {{{<>}}}.
 
 == System Boundary ==
-
-== Buffer ==
 
 == Rate ==
 
