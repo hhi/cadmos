@@ -3,7 +3,7 @@
 
 http://www4.in.tum.de/~schwitze/cadmos/cadmos-sketch.png
 
-= Terminology and Concepts =
+= Concepts and Terminology =
 
 *Authors:* W. Schwitzer, D. Chessa, V. Popa
 
@@ -15,6 +15,7 @@ The function that is realized by a component is also called the _behavior_ of th
 The behavior of a component is either defined directly by a _non-deterministic transition machine_ or it is defined by the composed behavior of several _children_ components.
 This hierarchical parent-children relation describes the _structure_ of a system.
 Additionally, a component has a number of _inbound_ and _outbound_ _ports_, which serve as _typed_ connection points for _incoming_ and _outgoing_ _channels_.
+Together, the _inbound_ and _outbound_ _ports_ of a component define the _syntactic interface_ of that component.
 
 See also:*
 [Terminology#Channel Channel],
@@ -30,8 +31,8 @@ See also:*
 A channel transmits a _stream_ of _typed messages_ from a source component to a destination component.
 We say, a channel is _outgoing_ from its source component and _incoming_ to its destination component.
 A channel is not directly connected to _components_, rather it is connected to the _inbound_ and _outbound_ _ports_ of _components_.
-Furthermore, a channel can _buffer_ messages by a certain _delay_, so a message sent by the source component at step _i_ will be received by the destination component at step _i + delay_.
-A channel with a given buffer length of _d_ also requires _d_ initial messages.
+Furthermore, a channel can _defer_ the transmission of messages by a certain _delay_, so a message sent by the source component at step _i_ will be received by the destination component at step _i + delay_.
+A channel with a given _delay_ of _d_ also requires _d_ initial messages.
 
 See also:*
 [Terminology#Component Component],
@@ -45,9 +46,11 @@ See also:*
 *
 
 == Port ==
-A port belongs to a _component_ and represents the _typed_ source- or destination connection point of a _channel_.
-A port can either be inbound or outbound.
-If a port is inbound, it is the destination of one incoming channel. If a port is outbound, it is the source of one or more outgoing channels.
+A port belongs to a _component_ and represents a _typed_ source- or destination-connection point of _channels_.
+Each port can have an _incoming_ _channel_ and a number of _outgoing_ _channels_.
+The port itself can either be _inbound_ or _outbound_ with respect to its owning _component_.
+If a port is inbound, it routes messages from the outside of its owning component to the inside.
+If a port is outbound, it routes messages from the inside of a component to the outside.
 
 See also:*
 [Terminology#Component Component],
