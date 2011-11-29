@@ -59,9 +59,11 @@ See also:*
 *
 
 == Message ==
-A message has a data _type_ and is transmitted over a _channel_ with the same data _type_.
-Any message is produced and sent by the _source component_ of a channel and received and consumed by the _destination component_ of a channel.
-Messages can be _buffered_ in channels and can be produced and consumed at different _rates_.
+A message has a data _type_ and is transmitted over a _channel_.
+The _source port_ and _destination port_ of a _channel_ have data _types_ that are compatible with the data _type_ of transmitted messages.
+A message is produced and sent by the _source component_ of a channel and received and consumed by the _destination component_ of a channel.
+The transmission of messages can be _delayed_ by channels.
+Additionally, messages may be produced and consumed at different _rates_.
 
 See also:*
 [Terminology#Component Component],
@@ -73,7 +75,7 @@ See also:*
 *
 
 == Type ==
-A type is basically defined by a set of all possible values that instances of that type can take.
+A type basically defines a set of all possible values that instances of that type can take.
 Cadmos uses typed _channels_ and typed _variables_. 
 We distinguish between _elementary types_ and _composite types_.
 Elementary types are _Boolean_ = {*false*, *true*}, subsets of _Integer_ numbers defined by {_min_, _min_+1, ..., _max_-1, _max_}, ranges in _Real_ numbers defined by {{{[}}}_min_, ..., _max_{{{]}}} and _Enumeration_ types defined by {_lit_,,1,,, ..., _lit,,n,,_}.
