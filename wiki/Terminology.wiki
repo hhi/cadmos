@@ -49,8 +49,8 @@ See also:*
 A port belongs to a _component_ and represents a _typed_ source- or destination-connection point of _channels_.
 Each port can have an _incoming_ _channel_ and a number of _outgoing_ _channels_.
 The port itself can either be _inbound_ or _outbound_ with respect to its owning _component_.
-If a port is inbound, it routes messages from the outside of its owning component to the inside.
-If a port is outbound, it routes messages from the inside of a component to the outside.
+If a port is _inbound_, it routes messages from the outside of its owning _component_ to the inside.
+If a port is _outbound_, it routes messages from the inside of its owning _component_ to the outside.
 
 See also:*
 [Terminology#Component Component],
