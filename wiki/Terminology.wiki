@@ -68,6 +68,7 @@ Additionally, messages may be produced and consumed at different _rates_.
 See also:*
 [Terminology#Component Component],
 [Terminology#Channel Channel],
+[Terminology#Port Port],
 [Terminology#Type Type],
 [Terminology#Stream Stream],
 [Terminology#Buffer Buffer],
@@ -76,13 +77,13 @@ See also:*
 
 == Type ==
 A type basically defines a set of all possible values that instances of that type can take.
-Cadmos uses typed _channels_ and typed _variables_. 
+Cadmos uses typed _ports_ and typed _variables_. 
 We distinguish between _elementary types_ and _composite types_.
 Elementary types are _Boolean_ = {*false*, *true*}, subsets of _Integer_ numbers defined by {_min_, _min_+1, ..., _max_-1, _max_}, ranges in _Real_ numbers defined by {{{[}}}_min_, ..., _max_{{{]}}} and _Enumeration_ types defined by {_lit_,,1,,, ..., _lit,,n,,_}.
 Composite types are _Record_ types defined by the set of all tuples {((_type_,,1,,, _lit_,,1,,), ..., (_type,,n,,_, _lit,,n,,_))}.
 
 See also:*
-[Terminology#Channel Channel],
+[Terminology#Port Port],
 [Terminology#Variable Variable]
 *
 
