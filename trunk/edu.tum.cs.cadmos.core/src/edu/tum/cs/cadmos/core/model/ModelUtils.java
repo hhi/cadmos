@@ -369,4 +369,16 @@ public class ModelUtils {
 				+ dst.getId() + "." + dstPort.getId(), srcPort, dstPort, delay);
 	}
 
+	public static Deque<IChannel> getSrcPaths(IPort port,
+			IComponent systemBoundary, IListSet<IComponent> blackBoxes) {
+		// TODO(WS,VP->VP): Implement
+		return null;
+	}
+
+	public static List<Deque<IChannel>> getDstPaths(IPort port,
+			IComponent systemBoundary, IListSet<IComponent> blackBoxes) {
+		// TODO(WS,VP->VP): Implement
+		return null;
+	}
+
 }
