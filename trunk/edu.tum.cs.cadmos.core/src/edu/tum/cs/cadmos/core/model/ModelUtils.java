@@ -369,16 +369,66 @@ public class ModelUtils {
 				+ dst.getId() + "." + dstPort.getId(), srcPort, dstPort, delay);
 	}
 
-	public static Deque<IChannel> getSrcPaths(IPort port,
+	/**
+	 * Computes almost the same thing as
+	 * {@link ModelUtils#getSrcPath(IPort, IComponent)} by searching the path of
+	 * channels to the source of the given <i>port</i>.
+	 * <p>
+	 * In this case the search continues until the transitive source component
+	 * of the given port is a {@link IComponent} contained in <i>blackBoxes</i>.
+	 */
+	public static Deque<IChannel> getSrcPath(IPort port,
 			IComponent systemBoundary, IListSet<IComponent> blackBoxes) {
-		// TODO(WS,VP->VP): Implement
-		return null;
+		final Deque<IChannel> result = new LinkedList<>();
+		IPort current = port;
+		do {
+			final Deque<IChannel> srcPath = getSrcPath(current, systemBoundary);
+			final Iterator<IChannel> it = srcPath.descendingIterator();
+			while (it.hasNext()) {
+				result.addFirst(it.next());
+			}
+			current = result.getFirst().getSrc();
+		} while (!blackBoxes.contains(current.getComponent())
+				&& !(current.getComponent() instanceof AtomicComponent));
+
+		return result;
 	}
 
+	/**
+	 * Computes almost the same thing as
+	 * {@link ModelUtils#getDstPaths(IPort, IComponent)} by searching the path
+	 * of channels to the destination of the given <i>port</i>.
+	 * <p>
+	 * In this case the search continues until the transitive destination
+	 * component of the given port is a {@link IComponent} contained in
+	 * <i>blackBoxes</i>.
+	 */
 	public static List<Deque<IChannel>> getDstPaths(IPort port,
 			IComponent systemBoundary, IListSet<IComponent> blackBoxes) {
-		// TODO(WS,VP->VP): Implement
-		return null;
-	}
+		final List<Deque<IChannel>> result = new LinkedList<>();
+		final List<Deque<IChannel>> queue = getDstPaths(port, systemBoundary);
+		int index = 0;
 
+		while (!queue.isEmpty()) {
+			final Deque<IChannel> path = queue.get(index++);
+			final IPort current = path.peekLast().getDst();
+
+			if (!blackBoxes.contains(current.getComponent())
+					&& !(current.getComponent() instanceof AtomicComponent)) {
+				final List<Deque<IChannel>> dstPaths = getDstPaths(current,
+						systemBoundary);
+				for (final Deque<IChannel> dpath : dstPaths) {
+					final Deque<IChannel> newPath = new LinkedList<>();
+					newPath.addAll(path);
+					newPath.addAll(dpath);
+					queue.add(newPath);
+				}
+			} else {
+				result.add(path);
+			}
+
+		}
+
+		return result;
+	}
 }
