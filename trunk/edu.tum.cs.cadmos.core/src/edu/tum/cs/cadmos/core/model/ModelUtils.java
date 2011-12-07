@@ -408,27 +408,25 @@ public class ModelUtils {
 	public static List<Deque<IChannel>> getDstPaths(IPort port,
 			IComponent systemBoundary, IListSet<IComponent> blackBoxes) {
 		final List<Deque<IChannel>> result = new LinkedList<>();
-		final List<Deque<IChannel>> queue = getDstPaths(port, systemBoundary);
-		int index = 0;
+		final List<Deque<IChannel>> dstPaths = getDstPaths(port, systemBoundary);
 
-		while (!queue.isEmpty()) {
-			final Deque<IChannel> path = queue.get(index++);
-			final IPort current = path.peekLast().getDst();
+		for (final Deque<IChannel> path : dstPaths) {
+			final Iterator<IChannel> it = path.iterator();
+			final Deque<IChannel> newPath = new LinkedList<>();
 
-			if (!blackBoxes.contains(current.getComponent())
-					&& !(current.getComponent() instanceof AtomicComponent)) {
-				final List<Deque<IChannel>> dstPaths = getDstPaths(current,
-						systemBoundary);
-				for (final Deque<IChannel> dpath : dstPaths) {
-					final Deque<IChannel> newPath = new LinkedList<>();
-					newPath.addAll(path);
-					newPath.addAll(dpath);
-					queue.add(newPath);
+			while (it.hasNext()) {
+				final IChannel channel = it.next();
+				final IPort current = channel.getDst();
+				newPath.addLast(channel);
+				if (blackBoxes.contains(current.getComponent())
+						|| (current.getComponent() instanceof AtomicComponent)) {
+					break;
 				}
-			} else {
-				result.add(path);
 			}
 
+			if (newPath.size() > 0) {
+				result.add(newPath);
+			}
 		}
 
 		return result;
