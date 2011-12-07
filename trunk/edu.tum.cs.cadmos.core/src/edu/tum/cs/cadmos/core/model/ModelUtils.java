@@ -380,16 +380,18 @@ public class ModelUtils {
 	public static Deque<IChannel> getSrcPath(IPort port,
 			IComponent systemBoundary, IListSet<IComponent> blackBoxes) {
 		final Deque<IChannel> result = new LinkedList<>();
-		IPort current = port;
-		do {
-			final Deque<IChannel> srcPath = getSrcPath(current, systemBoundary);
-			final Iterator<IChannel> it = srcPath.descendingIterator();
-			while (it.hasNext()) {
-				result.addFirst(it.next());
+		final Deque<IChannel> srcPath = getSrcPath(port, systemBoundary);
+		final Iterator<IChannel> it = srcPath.descendingIterator();
+
+		while (it.hasNext()) {
+			final IChannel channel = it.next();
+			final IPort current = channel.getSrc();
+			result.addFirst(channel);
+			if (blackBoxes.contains(current.getComponent())
+					|| (current.getComponent() instanceof AtomicComponent)) {
+				break;
 			}
-			current = result.getFirst().getSrc();
-		} while (!blackBoxes.contains(current.getComponent())
-				&& !(current.getComponent() instanceof AtomicComponent));
+		}
 
 		return result;
 	}
