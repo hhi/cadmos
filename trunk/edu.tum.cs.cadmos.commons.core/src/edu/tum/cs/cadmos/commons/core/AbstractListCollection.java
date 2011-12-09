@@ -154,4 +154,10 @@ public abstract class AbstractListCollection<E extends IIdentifiable, R>
 		return list.hashCode();
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public String toString() {
+		return list.toString();
+	}
+
 }
