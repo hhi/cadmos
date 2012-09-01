@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Cadmos Common Utilities
+Bundle-SymbolicName: edu.tum.cs.cadmos.common
+Bundle-Version: 1.0.0
+Bundle-Vendor: http://www4.in.tum.de/
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Export-Package: edu.tum.cs.cadmos.common
+Require-Bundle: org.junit
