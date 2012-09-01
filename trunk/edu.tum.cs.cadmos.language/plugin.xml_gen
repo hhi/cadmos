@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<plugin>
+
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package 
+       uri = "http://www.tum.edu/cs/cadmos/language/Cadmos" 
+       class = "edu.tum.cs.cadmos.language.cadmos.CadmosPackage"
+       genModel = "edu/tum/cs/cadmos/language/Cadmos.genmodel" /> 
+	
+  </extension>
+
+
+
+
+</plugin>
