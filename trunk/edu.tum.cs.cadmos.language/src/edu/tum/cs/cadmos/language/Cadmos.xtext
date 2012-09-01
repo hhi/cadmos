@@ -1,0 +1,56 @@
+grammar edu.tum.cs.cadmos.language.Cadmos with org.eclipse.xtext.common.Terminals
+
+generate cadmos "http://www.tum.edu/cs/cadmos/language/Cadmos"
+
+Model:
+	('package' name=QualifiedName)?
+	imports+=Import*
+	elements+=ModelElement*;
+
+Import:
+	'import' importedNamespace=QualifiedNameWithWildcard;
+
+ModelElement:
+	Component;
+
+Component:
+	'component' name=ID
+	('(' (parameters+=Parameter (',' parameters+=Parameter)*)? ')')?
+	'{' (elements+=ComponentElement)* '}';
+
+Parameter:
+	name=ID '=' value=INT;
+
+ComponentElement:
+	Port | Embedding | Channel;
+
+enum PortDirection:
+	Incoming='in' | Outgoing='out';
+
+Port:
+	direction=PortDirection name=ID;
+
+Embedding:
+	'embed' component=[Component] (multiple?='[' cardinality=Value ']')?
+	name=ID ('(' (parameterValues+=Value (',' parameterValues+=Value)*)? ')')?;
+
+Channel:
+	'channel' source=PortRef '->' destinations+=PortRef (',' destinations+=PortRef)*;
+
+PortRef:
+	(embedding=[Embedding] '.')? port=[Port];
+
+Value:
+	IntegerLiteral | ParameterRef;
+
+IntegerLiteral:
+	value=INT;
+
+ParameterRef:
+	parameter=[Parameter];
+
+QualifiedName:
+	ID ('.' ID)*;
+
+QualifiedNameWithWildcard:
+	QualifiedName '.*'?;
