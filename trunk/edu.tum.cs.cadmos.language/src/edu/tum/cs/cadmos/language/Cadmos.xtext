@@ -25,7 +25,7 @@ ComponentElement:
 	Port | Embedding | Channel;
 
 enum PortDirection:
-	Incoming='in' | Outgoing='out';
+	Inbound='in' | Outbound='out';
 
 Port:
 	direction=PortDirection name=ID;
