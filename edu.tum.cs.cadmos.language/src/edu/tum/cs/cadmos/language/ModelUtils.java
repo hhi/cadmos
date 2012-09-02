@@ -2,14 +2,19 @@ package edu.tum.cs.cadmos.language;
 
 import java.util.List;
 
+import edu.tum.cs.cadmos.common.Assert;
 import edu.tum.cs.cadmos.common.ListUtils;
 import edu.tum.cs.cadmos.common.Predicate;
 import edu.tum.cs.cadmos.language.cadmos.Channel;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.ComponentElement;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
+import edu.tum.cs.cadmos.language.cadmos.IntegerLiteral;
+import edu.tum.cs.cadmos.language.cadmos.Parameter;
+import edu.tum.cs.cadmos.language.cadmos.ParameterRef;
 import edu.tum.cs.cadmos.language.cadmos.Port;
 import edu.tum.cs.cadmos.language.cadmos.PortDirection;
+import edu.tum.cs.cadmos.language.cadmos.Value;
 
 public class ModelUtils {
 
@@ -57,6 +62,22 @@ public class ModelUtils {
 
 	public static List<Port> getOutgoingPorts(Component component) {
 		return getPorts(component, PortDirection.OUTBOUND);
+	}
+
+	public static int eval(Value value, List<Parameter> parameters) {
+		if (value instanceof IntegerLiteral) {
+			return ((IntegerLiteral) value).getValue();
+		}
+		Assert.assertInstanceOf(value, ParameterRef.class, "value");
+		final Parameter parameter = ((ParameterRef) value).getParameter();
+		final String name = parameter.getName();
+		for (final Parameter candidate : parameters) {
+			if (candidate.getName().equals(name)) {
+				return candidate.getValue();
+			}
+		}
+		throw new AssertionError(
+				String.format("Parameter '%s' not found", name));
 	}
 
 }
