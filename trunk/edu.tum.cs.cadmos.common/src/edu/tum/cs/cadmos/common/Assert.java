@@ -121,6 +121,33 @@ public class Assert {
 	}
 
 	/**
+	 * Asserts that the given <i>element</i> is contained in the given
+	 * <i>collection</i> and throws an {@link AssertionError} otherwise.
+	 * <p>
+	 * The message will be formatted with the given <i>elementName</i> and
+	 * <i>collectionName</i> if the <i>element</i> is contained in the
+	 * <i>collection</i>.
+	 * <p>
+	 * Example: <code>assertContainedIn(e, c, "e", "c");</code> throws an
+	 * assertion error with message
+	 * "Element 'e' (e) is not present in collection 'c' ([...])".
+	 * 
+	 * @param <E>
+	 * 
+	 * @throws AssertionError
+	 *             if the <i>element</i> is not contained in the
+	 *             <i>collection</i>.
+	 */
+	public static <E> void assertContainedIn(E element,
+			Collection<E> collection, String elementName, String collectionName) {
+		if (collection.contains(element)) {
+			throw new AssertionError(String.format(
+					"Element '%s' (%s) is not present in collection '%s' (%s)",
+					elementName, element, collectionName, collection));
+		}
+	}
+
+	/**
 	 * Asserts that the given <i>instance</i> is an instance of the given
 	 * <i>superClass</i>, that is "
 	 * <code><i>instance</i> <b>instanceof</b> <i>superClass</i></code>" holds,
