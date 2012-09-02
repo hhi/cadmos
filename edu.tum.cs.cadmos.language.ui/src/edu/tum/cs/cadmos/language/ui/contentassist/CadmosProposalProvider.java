@@ -19,6 +19,7 @@ import edu.tum.cs.cadmos.language.ModelUtils;
 import edu.tum.cs.cadmos.language.cadmos.CadmosPackage;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
+import edu.tum.cs.cadmos.language.cadmos.Parameter;
 import edu.tum.cs.cadmos.language.cadmos.Port;
 
 /**
@@ -55,6 +56,24 @@ public class CadmosProposalProvider extends AbstractCadmosProposalProvider {
 						+ port.getName();
 				acceptor.accept(createCompletionProposal(proposal, context));
 			}
+		}
+	}
+
+	@Override
+	public void completeEmbedding_ParameterAssignments(EObject model,
+			Assignment assignment, ContentAssistContext context,
+			ICompletionProposalAcceptor acceptor) {
+		super.completeEmbedding_ParameterAssignments(model, assignment,
+				context, acceptor);
+		final Embedding embedding = (Embedding) model;
+		final Component component = embedding.getComponent();
+		if (component == null) {
+			return;
+		}
+		for (final Parameter parameter : component.getParameters()) {
+			final String proposal = parameter.getName() + "="
+					+ parameter.getValue();
+			acceptor.accept(createCompletionProposal(proposal, context));
 		}
 	}
 }
