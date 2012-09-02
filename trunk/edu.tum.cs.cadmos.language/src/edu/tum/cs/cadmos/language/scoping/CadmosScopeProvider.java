@@ -47,7 +47,6 @@ public class CadmosScopeProvider extends AbstractDeclarativeScopeProvider {
 			ParameterAssignment assignment, EReference ref) {
 		final Embedding embedding = EcoreUtil2.getContainerOfType(assignment,
 				Embedding.class);
-		System.out.println(embedding);
 		if (embedding == null) {
 			return IScope.NULLSCOPE;
 		}
