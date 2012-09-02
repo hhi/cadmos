@@ -28,7 +28,7 @@ enum PortDirection:
 	Inbound='in' | Outbound='out';
 
 Port:
-	direction=PortDirection name=ID;
+	direction=PortDirection name=ID (multiple?='[' cardinality=Value ']')?;
 
 Embedding:
 	'embed' component=[Component] (multiple?='[' cardinality=Value ']')?
