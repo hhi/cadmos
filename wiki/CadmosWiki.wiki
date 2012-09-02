@@ -5,7 +5,7 @@
 <tr>
 <td valign="top" width="50%">
 <h1>Cadmos Wiki</h1>
-_*Concurrent Architectures Design and Modeling Support*_
+_*Concurrent Architecture Design and Modeling for Systems*_
 </td>
 <td valign="top" align="right" width="50%">
 http://www4.in.tum.de/~schwitze/cadmos/cadmos-lens-reflections.png
