@@ -32,7 +32,7 @@ Port:
 
 Embedding:
 	'embed' component=[Component] (multiple?='[' cardinality=Value ']')?
-	name=ID ('(' (parameterAssignments+=ParameterAssigment (',' parameterAssignments+=ParameterAssigment)*)? ')')?;
+	name=ID ('(' (parameterAssignments+=ParameterAssignment (',' parameterAssignments+=ParameterAssignment)*)? ')')?;
 
 Channel:
 	'channel' source=PortRef '->' destinations+=PortRef (',' destinations+=PortRef)*;
@@ -49,7 +49,7 @@ IntegerLiteral:
 ParameterRef:
 	parameter=[Parameter];
 
-ParameterAssigment:
+ParameterAssignment:
 	left=[Parameter] '=' right=Value;
 
 QualifiedName:
