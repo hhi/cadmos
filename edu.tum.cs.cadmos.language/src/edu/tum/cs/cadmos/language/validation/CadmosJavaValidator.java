@@ -31,12 +31,12 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 	public void checkChannelDirections(Channel channel) {
 		final PortRef src = channel.getSource();
 		if (src.getEmbedding() == null && src.getPort() != null
-				&& src.getPort().getDirection() != PortDirection.INCOMING) {
+				&& src.getPort().getDirection() != PortDirection.INBOUND) {
 			error("Component-level source port must be incoming",
 					CadmosPackage.Literals.CHANNEL__SOURCE);
 		}
 		if (src.getEmbedding() != null && src.getPort() != null
-				&& src.getPort().getDirection() != PortDirection.OUTGOING) {
+				&& src.getPort().getDirection() != PortDirection.OUTBOUND) {
 			error("Embedding-level source port must be outgoing",
 					CadmosPackage.Literals.CHANNEL__SOURCE);
 		}
@@ -48,12 +48,12 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 						CadmosPackage.Literals.CHANNEL__DESTINATIONS, index);
 			}
 			if (dst.getEmbedding() == null && dst.getPort() != null
-					&& dst.getPort().getDirection() != PortDirection.OUTGOING) {
+					&& dst.getPort().getDirection() != PortDirection.OUTBOUND) {
 				error("Component-level destination port must be outgoing",
 						CadmosPackage.Literals.CHANNEL__DESTINATIONS, index);
 			}
 			if (dst.getEmbedding() != null && dst.getPort() != null
-					&& dst.getPort().getDirection() != PortDirection.INCOMING) {
+					&& dst.getPort().getDirection() != PortDirection.INBOUND) {
 				error("Embedding-level destination port must be incoming",
 						CadmosPackage.Literals.CHANNEL__DESTINATIONS, index);
 			}
@@ -65,11 +65,11 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 		final Component component = EcoreUtil2.getContainerOfType(port,
 				Component.class);
 		for (final Channel channel : ModelUtils.getChannels(component)) {
-			if (port.getDirection() == PortDirection.INCOMING
+			if (port.getDirection() == PortDirection.INBOUND
 					&& channel.getSource().getPort() == port) {
 				return;
 			}
-			if (port.getDirection() == PortDirection.OUTGOING) {
+			if (port.getDirection() == PortDirection.OUTBOUND) {
 				for (final PortRef dst : channel.getDestinations()) {
 					if (dst.getPort() == port) {
 						return;
@@ -89,12 +89,12 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 		for (final Port port : ModelUtils.getPorts(embedding.getComponent())) {
 			boolean linked = false;
 			for (final Channel channel : channels) {
-				if (port.getDirection() == PortDirection.OUTGOING
+				if (port.getDirection() == PortDirection.OUTBOUND
 						&& channel.getSource().getPort() == port) {
 					linked = true;
 					break;
 				}
-				if (port.getDirection() == PortDirection.INCOMING) {
+				if (port.getDirection() == PortDirection.INBOUND) {
 					for (final PortRef dst : channel.getDestinations()) {
 						if (dst.getPort() == port) {
 							linked = true;

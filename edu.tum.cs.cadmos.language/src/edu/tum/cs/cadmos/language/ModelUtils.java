@@ -52,11 +52,11 @@ public class ModelUtils {
 	}
 
 	public static List<Port> getIncomingPorts(Component component) {
-		return getPorts(component, PortDirection.INCOMING);
+		return getPorts(component, PortDirection.INBOUND);
 	}
 
 	public static List<Port> getOutgoingPorts(Component component) {
-		return getPorts(component, PortDirection.OUTGOING);
+		return getPorts(component, PortDirection.OUTBOUND);
 	}
 
 }
