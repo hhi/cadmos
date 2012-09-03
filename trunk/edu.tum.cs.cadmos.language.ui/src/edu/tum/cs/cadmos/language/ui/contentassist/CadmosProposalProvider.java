@@ -71,7 +71,7 @@ public class CadmosProposalProvider extends AbstractCadmosProposalProvider {
 			return;
 		}
 		for (final Parameter parameter : component.getParameters()) {
-			final String proposal = parameter.getName() + "="
+			final String proposal = parameter.getName() + " = "
 					+ parameter.getValue();
 			acceptor.accept(createCompletionProposal(proposal, context));
 		}
