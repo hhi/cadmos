@@ -2,6 +2,10 @@ package edu.tum.cs.cadmos.language;
 
 import java.util.List;
 
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
+
 import edu.tum.cs.cadmos.common.Assert;
 import edu.tum.cs.cadmos.common.ListUtils;
 import edu.tum.cs.cadmos.common.Predicate;
@@ -78,6 +82,16 @@ public class ModelUtils {
 		}
 		throw new AssertionError(
 				String.format("Parameter '%s' not found", name));
+	}
+
+	public static String getEObjectName(EObject object) {
+		final EClass eClass = object.eClass();
+		final EStructuralFeature nameFeature = eClass
+				.getEStructuralFeature("name");
+		if (nameFeature == null) {
+			return eClass.getName();
+		}
+		return (String) eClass.eGet(nameFeature);
 	}
 
 }
