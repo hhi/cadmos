@@ -22,7 +22,10 @@ Parameter:
 	name=ID '=' value=INT;
 
 ComponentElement:
-	Port | Embedding | Channel;
+	NamedComponentElement | Channel;
+
+NamedComponentElement:
+	Port | Embedding;
 
 enum PortDirection:
 	Inbound='in' | Outbound='out';
@@ -31,8 +34,9 @@ Port:
 	direction=PortDirection name=ID (multiple?='[' cardinality=Value ']')?;
 
 Embedding:
-	'embed' component=[Component] (multiple?='[' cardinality=Value ']')?
-	name=ID ('(' (parameterAssignments+=ParameterAssignment (',' parameterAssignments+=ParameterAssignment)*)? ')')?;
+	'embed' component=[Component]
+	('(' (parameterAssignments+=ParameterAssignment (',' parameterAssignments+=ParameterAssignment)*)? ')')?
+	name=ID (multiple?='[' cardinality=Value ']')?;
 
 Channel:
 	'channel' source=PortRef '->' destinations+=PortRef (',' destinations+=PortRef)*;
