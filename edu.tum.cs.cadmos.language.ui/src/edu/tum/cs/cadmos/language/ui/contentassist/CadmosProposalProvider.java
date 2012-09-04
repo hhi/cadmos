@@ -35,8 +35,10 @@ public class CadmosProposalProvider extends AbstractCadmosProposalProvider {
 		super.completeEmbedding_Name(model, assignment, context, acceptor);
 		final Embedding embedding = (Embedding) model;
 		final String name = embedding.getComponent().getName();
-		final String proposal = StringUtils.toFeatureName(name);
-		acceptor.accept(createCompletionProposal(proposal, context));
+		acceptor.accept(createCompletionProposal(
+				StringUtils.toFeatureName(name), context));
+		acceptor.accept(createCompletionProposal(
+				StringUtils.toCCAbbreviatedFeatureName(name), context));
 	}
 
 	@Override
