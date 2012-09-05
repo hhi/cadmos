@@ -84,14 +84,23 @@ public class ModelUtils {
 				String.format("Parameter '%s' not found", name));
 	}
 
-	public static String getEObjectName(EObject object) {
-		final EClass eClass = object.eClass();
+	@SuppressWarnings("rawtypes")
+	public static String getEObjectName(EObject eObject) {
+		final EClass eClass = eObject.eClass();
 		final EStructuralFeature nameFeature = eClass
 				.getEStructuralFeature("name");
 		if (nameFeature == null) {
+			if (eObject.eContainer() != null) {
+				final EObject eContainer = eObject.eContainer();
+				final Object eContainingFeature = eContainer.eGet(eObject
+						.eContainingFeature());
+				if (eContainingFeature instanceof List) {
+					return eClass.getName() + "$"
+							+ ((List) eContainingFeature).indexOf(eObject);
+				}
+			}
 			return eClass.getName();
 		}
-		return (String) eClass.eGet(nameFeature);
+		return eObject.eGet(nameFeature).toString();
 	}
-
 }
