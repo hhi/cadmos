@@ -104,4 +104,16 @@ public class ModelUtils {
 		}
 		return String.valueOf(eObject.eGet(nameFeature));
 	}
+
+	public static <E extends EObject> String getEObjectNames(List<E> list,
+			String separator) {
+		final StringBuilder s = new StringBuilder();
+		for (int i = 0; i < list.size(); i++) {
+			if (i > 0) {
+				s.append(separator);
+			}
+			s.append(getEObjectName(list.get(i)));
+		}
+		return s.toString();
+	}
 }
