@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.Assignment;
+import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.RuleCall;
 import org.eclipse.xtext.resource.IEObjectDescription;
 import org.eclipse.xtext.scoping.IScope;
@@ -73,9 +74,17 @@ public class CadmosProposalProvider extends AbstractCadmosProposalProvider {
 			return;
 		}
 		for (final Parameter parameter : component.getParameters()) {
-			final String proposal = parameter.getName() + "="
+			final String valueProposal = parameter.getName() + "="
 					+ parameter.getValue();
-			acceptor.accept(createCompletionProposal(proposal, context));
+			acceptor.accept(createCompletionProposal(valueProposal, context));
+			final Component containerComponent = EcoreUtil2.getContainerOfType(
+					embedding, Component.class);
+			for (final Parameter containerComponentParameter : containerComponent
+					.getParameters()) {
+				final String nameProposal = parameter.getName() + "="
+						+ containerComponentParameter.getName();
+				acceptor.accept(createCompletionProposal(nameProposal, context));
+			}
 		}
 	}
 }
