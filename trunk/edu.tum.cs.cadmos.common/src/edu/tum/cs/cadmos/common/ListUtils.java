@@ -1,6 +1,7 @@
 package edu.tum.cs.cadmos.common;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ListUtils {
@@ -35,5 +36,12 @@ public class ListUtils {
 			}
 		}
 		return result;
+	}
+
+	public static <E> List<E> nullIsEmpty(List<E> list) {
+		if (list == null) {
+			return Collections.EMPTY_LIST;
+		}
+		return list;
 	}
 }
