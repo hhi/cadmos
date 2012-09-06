@@ -56,6 +56,8 @@ public class CadmosFormatter extends AbstractDeclarativeFormatter {
 		// parameterAssignment
 		c.setNoLinewrap().around(
 				g.getParameterAssignmentAccess().getEqualsSignKeyword_1());
+		c.setNoSpace().around(
+				g.getParameterAssignmentAccess().getEqualsSignKeyword_1());
 
 		// comments
 		c.setLinewrap(0, 1, 2).before(g.getSL_COMMENTRule());
