@@ -31,18 +31,18 @@ enum PortDirection:
 	Inbound='in' | Outbound='out';
 
 Port:
-	direction=PortDirection name=ID (multiple?='[' cardinality=Value ']')?;
+	direction=PortDirection name=ID ('[' cardinality=Value ']')?;
 
 Embedding:
 	'embed' component=[Component]
 	('(' (parameterAssignments+=ParameterAssignment (',' parameterAssignments+=ParameterAssignment)*)? ')')?
-	name=ID (multiple?='[' cardinality=Value ']')?;
+	name=ID ('[' cardinality=Value ']')?;
 
 Channel:
 	'channel' source=PortRef '->' destinations+=PortRef (',' destinations+=PortRef)*;
 
 PortRef:
-	(embedding=[Embedding] '.')? port=[Port];
+	(embedding=[Embedding] ('[' embeddingIndex=ID ']')? '.')? port=[Port] ('[' portIndex=ID ']')?;
 
 Value:
 	IntegerLiteral | ParameterRef;
