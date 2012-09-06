@@ -1,8 +1,13 @@
 package edu.tum.cs.cadmos.language.validation;
 
+import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtext.EcoreUtil2;
@@ -206,4 +211,35 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 		}
 	}
 
+	@Check
+	public void checkAcyclicEmbedding(Embedding embedding) {
+		final Component parentComponent = EcoreUtil2.getContainerOfType(
+				embedding, Component.class);
+		final Set<Component> onpath = new LinkedHashSet<>();
+		onpath.add(parentComponent);
+		final Deque<Embedding> work = new LinkedList<>();
+		work.addLast(embedding);
+		while (!work.isEmpty()) {
+			final Embedding current = work.removeFirst();
+			final Component component = current.getComponent();
+			if (component != null) {
+				if (onpath.contains(component)) {
+					error("Embedding of "
+							+ embedding.getComponent().getName()
+							+ " creates infinite cyclic composition ("
+							+ ModelUtils.getEObjectNames(Arrays.asList(onpath
+									.toArray(new Component[onpath.size()])),
+									", ") + ", "
+							+ ModelUtils.getEObjectName(component) + ", ...)",
+							CadmosPackage.Literals.EMBEDDING__COMPONENT);
+					break; // leave dynamic DFS while-loop
+				}
+				onpath.add(component);
+				for (final Embedding componentEmbedding : ModelUtils
+						.getEmbeddings(component)) {
+					work.add(componentEmbedding);
+				}
+			}
+		}
+	}
 }
