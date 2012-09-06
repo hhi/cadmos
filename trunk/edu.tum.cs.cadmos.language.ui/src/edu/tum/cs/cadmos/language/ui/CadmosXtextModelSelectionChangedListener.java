@@ -60,6 +60,7 @@ public class CadmosXtextModelSelectionChangedListener implements
 				long t = System.nanoTime();
 				final Node node = translator.translate();
 				t = System.nanoTime() - t;
+				System.out.println();
 				System.out.println(node);
 				System.out.println((t / 1000) / 1000.0 + "ms");
 			}
