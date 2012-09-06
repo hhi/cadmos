@@ -83,11 +83,25 @@ public class ArchitectureTranslator {
 			List<Parameter> parameters) {
 		// Create list of optionally overwritten parameters for embedded
 		// component.
+		final List<Parameter> embeddedParameters = deferEmbeddedParameters(
+				embedding, parameters);
+		// Translate embedding and create instance of embedded component.
+		final int cardinality = evalCardinality(embedding.isMultiple(),
+				embedding.getCardinality(), parameters);
+		final Node embeddingNode = new Node(parent, embedding, 0);
+		for (int i = 0; i < cardinality; i++) {
+			translateComponent(embedding.getComponent(), embeddingNode, i,
+					embeddedParameters);
+		}
+	}
+
+	private List<Parameter> deferEmbeddedParameters(Embedding embedding,
+			List<Parameter> parameters) {
+		final List<Parameter> result = new ArrayList<>();
 		final Component component = embedding.getComponent();
-		final List<Parameter> embeddedParameters = new ArrayList<>();
 		for (final Parameter parameter : component.getParameters()) {
 			final Parameter embeddedParameter = factory.createParameter();
-			embeddedParameters.add(embeddedParameter);
+			result.add(embeddedParameter);
 			final String name = parameter.getName();
 			embeddedParameter.setName(name);
 			int value = parameter.getValue(); // Begin with default value.
@@ -101,13 +115,7 @@ public class ArchitectureTranslator {
 			}
 			embeddedParameter.setValue(value);
 		}
-		// Translate embedding and create instance of embedded component.
-		final int cardinality = evalCardinality(embedding.isMultiple(),
-				embedding.getCardinality(), parameters);
-		final Node embeddingNode = new Node(parent, embedding, 0);
-		for (int i = 0; i < cardinality; i++) {
-			translateComponent(component, embeddingNode, i, embeddedParameters);
-		}
+		return result;
 	}
 
 	private void translateChannel(Channel channel, Node parent,
