@@ -16,6 +16,7 @@ import edu.tum.cs.cadmos.language.cadmos.Embedding;
 import edu.tum.cs.cadmos.language.cadmos.NamedComponentElement;
 import edu.tum.cs.cadmos.language.cadmos.Parameter;
 import edu.tum.cs.cadmos.language.cadmos.ParameterAssignment;
+import edu.tum.cs.cadmos.language.cadmos.ParameterRef;
 import edu.tum.cs.cadmos.language.cadmos.Port;
 import edu.tum.cs.cadmos.language.cadmos.PortDirection;
 import edu.tum.cs.cadmos.language.cadmos.PortRef;
@@ -148,6 +149,53 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 							CadmosPackage.Literals.PARAMETER__NAME, 0);
 					break;
 				}
+			}
+		}
+	}
+
+	@Check
+	public void checkUnusedComponentParameters(Component component) {
+		for (final Parameter p : component.getParameters()) {
+			boolean parameterUsed = false;
+			for (final Embedding embedding : ModelUtils
+					.getEmbeddings(component)) {
+				for (final ParameterAssignment assignment : embedding
+						.getParameterAssignments()) {
+					if (assignment.getLeft() == p) {
+						parameterUsed = true;
+						break;
+					}
+				}
+				if (embedding.getCardinality() instanceof ParameterRef) {
+					final ParameterRef ref = (ParameterRef) embedding
+							.getCardinality();
+					if (ref.getParameter() == p) {
+						parameterUsed = true;
+						break;
+					}
+				}
+				if (parameterUsed) {
+					break;
+				}
+			}
+			for (final Port port : ModelUtils.getPorts(component)) {
+				if (port.getCardinality() instanceof ParameterRef) {
+					final ParameterRef ref = (ParameterRef) port
+							.getCardinality();
+					if (ref.getParameter() == p) {
+						parameterUsed = true;
+						break;
+					}
+				}
+				if (parameterUsed) {
+					break;
+				}
+			}
+			if (!parameterUsed) {
+				warning("Parameter " + p.getName() + " of component "
+						+ component.getName() + " is unused", component,
+						CadmosPackage.Literals.COMPONENT__PARAMETERS, component
+								.getParameters().indexOf(p));
 			}
 		}
 	}
