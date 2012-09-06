@@ -86,6 +86,7 @@ public class ModelUtils {
 
 	@SuppressWarnings("rawtypes")
 	public static String getEObjectName(EObject eObject) {
+		Assert.assertNotNull(eObject, "eObject");
 		final EClass eClass = eObject.eClass();
 		final EStructuralFeature nameFeature = eClass
 				.getEStructuralFeature("name");
@@ -101,6 +102,6 @@ public class ModelUtils {
 			}
 			return eClass.getName();
 		}
-		return eObject.eGet(nameFeature).toString();
+		return String.valueOf(eObject.eGet(nameFeature));
 	}
 }
