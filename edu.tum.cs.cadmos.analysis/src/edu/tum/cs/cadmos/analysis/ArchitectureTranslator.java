@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.tum.cs.cadmos.common.Assert;
+import edu.tum.cs.cadmos.common.ListUtils;
 import edu.tum.cs.cadmos.language.ModelUtils;
 import edu.tum.cs.cadmos.language.cadmos.CadmosFactory;
 import edu.tum.cs.cadmos.language.cadmos.CadmosPackage;
@@ -14,7 +15,6 @@ import edu.tum.cs.cadmos.language.cadmos.Embedding;
 import edu.tum.cs.cadmos.language.cadmos.Parameter;
 import edu.tum.cs.cadmos.language.cadmos.ParameterAssignment;
 import edu.tum.cs.cadmos.language.cadmos.Port;
-import edu.tum.cs.cadmos.language.cadmos.PortRef;
 import edu.tum.cs.cadmos.language.cadmos.Value;
 
 public class ArchitectureTranslator {
@@ -28,17 +28,17 @@ public class ArchitectureTranslator {
 	}
 
 	public Node translate() {
-		return translateComponent(rootComponent, null, 0,
+		final Node rootNode = new Node(null, rootComponent, 0);
+		translateComponent(rootComponent, rootNode,
 				rootComponent.getParameters());
+		return rootNode;
 	}
 
-	private Node translateComponent(Component component, Node parent,
-			int index, List<Parameter> parameters) {
-		final Node node = new Node(parent, component, index);
+	private void translateComponent(Component component, Node parent,
+			List<Parameter> parameters) {
 		for (final ComponentElement element : component.getElements()) {
-			translateComponentElement(element, node, parameters);
+			translateComponentElement(element, parent, parameters);
 		}
-		return node;
 	}
 
 	private void translateComponentElement(ComponentElement element,
@@ -62,18 +62,17 @@ public class ArchitectureTranslator {
 		}
 	}
 
-	private static int evalCardinality(boolean multiple, Value cardinality,
-			List<Parameter> parameters) {
-		if (cardinality != null && multiple) {
-			return ModelUtils.eval(cardinality, parameters);
+	private static int eval(Value value, List<Parameter> parameters,
+			int defaultValue) {
+		if (value != null) {
+			return ModelUtils.eval(value, parameters);
 		}
-		return 1;
+		return defaultValue;
 	}
 
 	private static void translatePort(Port port, Node parent,
 			List<Parameter> parameters) {
-		final int cardinality = evalCardinality(port.isMultiple(),
-				port.getCardinality(), parameters);
+		final int cardinality = eval(port.getCardinality(), parameters, 1);
 		for (int i = 0; i < cardinality; i++) {
 			new Node(parent, port, i);
 		}
@@ -86,11 +85,10 @@ public class ArchitectureTranslator {
 		final List<Parameter> embeddedParameters = deferEmbeddedParameters(
 				embedding, parameters);
 		// Translate embedding and create instance of embedded component.
-		final int cardinality = evalCardinality(embedding.isMultiple(),
-				embedding.getCardinality(), parameters);
-		final Node embeddingNode = new Node(parent, embedding, 0);
+		final int cardinality = eval(embedding.getCardinality(), parameters, 1);
 		for (int i = 0; i < cardinality; i++) {
-			translateComponent(embedding.getComponent(), embeddingNode, i,
+			final Node embeddingNode = new Node(parent, embedding, i);
+			translateComponent(embedding.getComponent(), embeddingNode,
 					embeddedParameters);
 		}
 	}
@@ -99,7 +97,11 @@ public class ArchitectureTranslator {
 			List<Parameter> parameters) {
 		final List<Parameter> result = new ArrayList<>();
 		final Component component = embedding.getComponent();
-		for (final Parameter parameter : component.getParameters()) {
+		if (component == null) {
+			return result;
+		}
+		for (final Parameter parameter : ListUtils.nullIsEmpty(component
+				.getParameters())) {
 			final Parameter embeddedParameter = factory.createParameter();
 			result.add(embeddedParameter);
 			final String name = parameter.getName();
@@ -120,27 +122,29 @@ public class ArchitectureTranslator {
 
 	private void translateChannel(Channel channel, Node parent,
 			List<Parameter> parameters) {
-		final PortRef srcRef = channel.getSource();
-		final Embedding srcEmbedding = srcRef.getEmbedding();
-		final Port srcPort = srcRef.getPort();
-		final int srcEmbeddingCardinality = srcEmbedding != null ? evalCardinality(
-				srcEmbedding.isMultiple(), srcEmbedding.getCardinality(),
-				parameters) : 1;
-		final int srcPortCardinality = evalCardinality(srcPort.isMultiple(),
-				srcPort.getCardinality(), parameters);
-		for (final PortRef dstRef : channel.getDestinations()) {
-			final Embedding dstEmbedding = dstRef.getEmbedding();
-			final Port dstPort = dstRef.getPort();
-			final int dstEmbeddingCardinality = dstEmbedding != null ? evalCardinality(
-					dstEmbedding.isMultiple(), dstEmbedding.getCardinality(),
-					parameters) : 1;
-			final int dstPortCardinality = evalCardinality(
-					dstPort.isMultiple(), dstPort.getCardinality(), parameters);
-			final Node channelNode = new Node(parent, channel, 0);
-			// for (int i = 0; i < cardinality; i++) {
-			// new Node(channelNode, dstRef, i);
-			// }
-		}
+		// final PortRef srcRef = channel.getSource();
+		// final Embedding srcEmbedding = srcRef.getEmbedding();
+		// final Port srcPort = srcRef.getPort();
+		// final int srcEmbeddingCardinality = srcEmbedding != null ?
+		// evalOrdinalValue(
+		// srcEmbedding.isMultiple(), srcEmbedding.getCardinality(),
+		// parameters) : 1;
+		// final int srcPortCardinality = evalOrdinalValue(srcPort.isMultiple(),
+		// srcPort.getCardinality(), parameters);
+		// for (final PortRef dstRef : channel.getDestinations()) {
+		// final Embedding dstEmbedding = dstRef.getEmbedding();
+		// final Port dstPort = dstRef.getPort();
+		// final int dstEmbeddingCardinality = dstEmbedding != null ?
+		// evalOrdinalValue(
+		// dstEmbedding.isMultiple(), dstEmbedding.getCardinality(),
+		// parameters) : 1;
+		// final int dstPortCardinality = evalOrdinalValue(
+		// dstPort.isMultiple(), dstPort.getCardinality(), parameters);
+		// final Node channelNode = new Node(parent, channel, 0);
+		// // for (int i = 0; i < cardinality; i++) {
+		// // new Node(channelNode, dstRef, i);
+		// // }
+		// }
 	}
 
 }
