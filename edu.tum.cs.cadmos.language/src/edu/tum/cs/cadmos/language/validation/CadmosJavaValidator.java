@@ -23,16 +23,6 @@ import edu.tum.cs.cadmos.language.cadmos.PortRef;
 
 public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 
-	// Use this template:
-	//
-	// @Check
-	// public void checkGreetingStartsWithCapital(Greeting greeting) {
-	// if (!Character.isUpperCase(greeting.getName().charAt(0))) {
-	// warning("Name should start with a capital",
-	// MyDslPackage.Literals.GREETING__NAME);
-	// }
-	// }
-
 	@Check
 	public void checkChannelDirections(Channel channel) {
 		final PortRef src = channel.getSource();
