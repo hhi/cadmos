@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 
 import edu.tum.cs.cadmos.common.Assert;
+import edu.tum.cs.cadmos.common.ListUtils;
 import edu.tum.cs.cadmos.language.ModelUtils;
 
 public class Node implements Iterable<Node> {
@@ -79,10 +80,7 @@ public class Node implements Iterable<Node> {
 	}
 
 	public Node findChild(EObject semanticObject, int index) {
-		if (children == null) {
-			return null;
-		}
-		for (final Node child : children) {
+		for (final Node child : ListUtils.nullIsEmpty(children)) {
 			if (child.getSemanticObject() == semanticObject
 					&& child.getIndex() == index) {
 				return child;
@@ -114,10 +112,7 @@ public class Node implements Iterable<Node> {
 
 	@Override
 	public Iterator<Node> iterator() {
-		if (children == null) {
-			return Collections.EMPTY_LIST.iterator();
-		}
-		return children.iterator();
+		return ListUtils.nullIsEmpty(children).iterator();
 	}
 
 	public void addReference(Node ref) {
@@ -133,10 +128,7 @@ public class Node implements Iterable<Node> {
 	}
 
 	public List<Node> getReferences() {
-		if (references == null) {
-			return Collections.EMPTY_LIST;
-		}
-		return Collections.unmodifiableList(references);
+		return Collections.unmodifiableList(ListUtils.nullIsEmpty(references));
 	}
 
 	public Node getFirstReference() {
@@ -153,10 +145,8 @@ public class Node implements Iterable<Node> {
 	}
 
 	public List<Node> getReferencedBy() {
-		if (referencedBy == null) {
-			return Collections.EMPTY_LIST;
-		}
-		return Collections.unmodifiableList(referencedBy);
+		return Collections
+				.unmodifiableList(ListUtils.nullIsEmpty(referencedBy));
 	}
 
 	@Override
