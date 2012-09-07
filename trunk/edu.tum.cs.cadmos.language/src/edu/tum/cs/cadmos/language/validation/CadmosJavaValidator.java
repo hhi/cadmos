@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.validation.Check;
 
@@ -31,6 +30,7 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 	@Check
 	public void checkChannelDirections(Channel channel) {
 		final PortRef src = channel.getSource();
+		final PortRef dst = channel.getDestination();
 		if (src.getEmbedding() == null && src.getPort() != null
 				&& src.getPort().getDirection() != PortDirection.INBOUND) {
 			error("Component-level source port must be inbound",
@@ -41,23 +41,19 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 			error("Embedding-level source port must be outbound",
 					CadmosPackage.Literals.CHANNEL__SOURCE);
 		}
-		final EList<PortRef> dsts = channel.getDestinations();
-		for (int index = 0; index < dsts.size(); index++) {
-			final PortRef dst = dsts.get(index);
-			if (src.getEmbedding() == null && dst.getEmbedding() == null) {
-				error("Component-level ports cannot be linked directly",
-						CadmosPackage.Literals.CHANNEL__DESTINATIONS, index);
-			}
-			if (dst.getEmbedding() == null && dst.getPort() != null
-					&& dst.getPort().getDirection() != PortDirection.OUTBOUND) {
-				error("Component-level destination port must be outbound",
-						CadmosPackage.Literals.CHANNEL__DESTINATIONS, index);
-			}
-			if (dst.getEmbedding() != null && dst.getPort() != null
-					&& dst.getPort().getDirection() != PortDirection.INBOUND) {
-				error("Embedding-level destination port must be inbound",
-						CadmosPackage.Literals.CHANNEL__DESTINATIONS, index);
-			}
+		if (src.getEmbedding() == null && dst.getEmbedding() == null) {
+			error("Component-level ports cannot be linked directly",
+					CadmosPackage.Literals.CHANNEL__DESTINATION);
+		}
+		if (dst.getEmbedding() == null && dst.getPort() != null
+				&& dst.getPort().getDirection() != PortDirection.OUTBOUND) {
+			error("Component-level destination port must be outbound",
+					CadmosPackage.Literals.CHANNEL__DESTINATION);
+		}
+		if (dst.getEmbedding() != null && dst.getPort() != null
+				&& dst.getPort().getDirection() != PortDirection.INBOUND) {
+			error("Embedding-level destination port must be inbound",
+					CadmosPackage.Literals.CHANNEL__DESTINATION);
 		}
 	}
 
@@ -71,10 +67,8 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 				return;
 			}
 			if (port.getDirection() == PortDirection.OUTBOUND) {
-				for (final PortRef dst : channel.getDestinations()) {
-					if (dst.getPort() == port) {
-						return;
-					}
+				if (channel.getDestination().getPort() == port) {
+					return;
 				}
 			}
 		}
@@ -97,11 +91,9 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 					break;
 				}
 				if (port.getDirection() == PortDirection.INBOUND) {
-					for (final PortRef dst : channel.getDestinations()) {
-						if (dst.getPort() == port) {
-							linked = true;
-							break;
-						}
+					if (channel.getDestination().getPort() == port) {
+						linked = true;
+						break;
 					}
 				}
 			}

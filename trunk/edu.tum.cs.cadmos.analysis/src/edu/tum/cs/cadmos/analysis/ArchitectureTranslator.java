@@ -7,7 +7,6 @@ import edu.tum.cs.cadmos.common.Assert;
 import edu.tum.cs.cadmos.common.ListUtils;
 import edu.tum.cs.cadmos.language.ModelUtils;
 import edu.tum.cs.cadmos.language.cadmos.CadmosFactory;
-import edu.tum.cs.cadmos.language.cadmos.CadmosPackage;
 import edu.tum.cs.cadmos.language.cadmos.Channel;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.ComponentElement;
@@ -15,6 +14,7 @@ import edu.tum.cs.cadmos.language.cadmos.Embedding;
 import edu.tum.cs.cadmos.language.cadmos.Parameter;
 import edu.tum.cs.cadmos.language.cadmos.ParameterAssignment;
 import edu.tum.cs.cadmos.language.cadmos.Port;
+import edu.tum.cs.cadmos.language.cadmos.PortRef;
 import edu.tum.cs.cadmos.language.cadmos.Value;
 
 public class ArchitectureTranslator {
@@ -43,22 +43,17 @@ public class ArchitectureTranslator {
 
 	private void translateComponentElement(ComponentElement element,
 			Node parent, List<Parameter> parameters) {
-		final int classifierID = element.eClass().getClassifierID();
-		switch (classifierID) {
-		case CadmosPackage.PORT:
+		Assert.assertNotNull(element, "element");
+		if (element instanceof Port) {
 			translatePort((Port) element, parent, parameters);
-			break;
-		case CadmosPackage.EMBEDDING:
+		} else if (element instanceof Embedding) {
 			translateEmbedding((Embedding) element, parent, parameters);
-			break;
-		case CadmosPackage.CHANNEL:
+		} else if (element instanceof Channel) {
 			translateChannel((Channel) element, parent, parameters);
-			break;
-		default:
+		} else {
 			Assert.fails(
-					"Expected PORT='%s', EMBEDDING='%s' or CHANNEL='%s', but was '%s'",
-					CadmosPackage.PORT, CadmosPackage.EMBEDDING,
-					CadmosPackage.CHANNEL, classifierID);
+					"Expected 'element' to be Port, Embedding or Channel, but was '%s'",
+					element.getClass());
 		}
 	}
 
@@ -122,28 +117,58 @@ public class ArchitectureTranslator {
 
 	private void translateChannel(Channel channel, Node parent,
 			List<Parameter> parameters) {
-		// final PortRef srcRef = channel.getSource();
-		// final Embedding srcEmbedding = srcRef.getEmbedding();
-		// final Port srcPort = srcRef.getPort();
-		// final int srcEmbeddingCardinality = srcEmbedding != null ?
-		// evalOrdinalValue(
-		// srcEmbedding.isMultiple(), srcEmbedding.getCardinality(),
-		// parameters) : 1;
-		// final int srcPortCardinality = evalOrdinalValue(srcPort.isMultiple(),
-		// srcPort.getCardinality(), parameters);
-		// for (final PortRef dstRef : channel.getDestinations()) {
-		// final Embedding dstEmbedding = dstRef.getEmbedding();
-		// final Port dstPort = dstRef.getPort();
-		// final int dstEmbeddingCardinality = dstEmbedding != null ?
-		// evalOrdinalValue(
-		// dstEmbedding.isMultiple(), dstEmbedding.getCardinality(),
-		// parameters) : 1;
-		// final int dstPortCardinality = evalOrdinalValue(
-		// dstPort.isMultiple(), dstPort.getCardinality(), parameters);
-		// final Node channelNode = new Node(parent, channel, 0);
-		// // for (int i = 0; i < cardinality; i++) {
-		// // new Node(channelNode, dstRef, i);
-		// // }
+		// Source side.
+		final PortRef srcRef = channel.getSource();
+		final Embedding srcEmbedding = srcRef.getEmbedding();
+		final Port srcPort = srcRef.getPort();
+		final int srcEmbeddingCardinality;
+		final int srcPortCardinality;
+		if (srcEmbedding != null) {
+			// Port belongs to an embedded component.
+			final List<Parameter> embeddedParameters = deferEmbeddedParameters(
+					srcEmbedding, parameters);
+			srcEmbeddingCardinality = eval(srcEmbedding.getCardinality(),
+					parameters, 1);
+			srcPortCardinality = eval(srcPort.getCardinality(),
+					embeddedParameters, 1);
+		} else {
+			// Port belongs to the current component.
+			srcEmbeddingCardinality = 1;
+			srcPortCardinality = eval(srcPort.getCardinality(), parameters, 1);
+		}
+		final String srcEmbeddingIndex = srcRef.getEmbeddingIndex();
+		final String srcPortIndex = srcRef.getPortIndex();
+
+		// Destination side.
+		final PortRef dstRef = channel.getDestination();
+		final Embedding dstEmbedding = dstRef.getEmbedding();
+		final Port dstPort = dstRef.getPort();
+		final int dstEmbeddingCardinality;
+		final int dstPortCardinality;
+		if (dstEmbedding != null) {
+			// Port belongs to an embedded component.
+			final List<Parameter> embeddedParameters = deferEmbeddedParameters(
+					dstEmbedding, parameters);
+			dstEmbeddingCardinality = eval(dstEmbedding.getCardinality(),
+					parameters, 1);
+			dstPortCardinality = eval(dstPort.getCardinality(),
+					embeddedParameters, 1);
+		} else {
+			// Port belongs to the current component.
+			dstEmbeddingCardinality = 1;
+			dstPortCardinality = eval(dstPort.getCardinality(), parameters, 1);
+		}
+		final String dstEmbeddingIndex = dstRef.getEmbeddingIndex();
+		final String dstPortIndex = dstRef.getPortIndex();
+
+		// Create linking node.
+		if (srcEmbeddingIndex == null && srcPortIndex == null
+				&& dstEmbeddingIndex == null && dstPortIndex == null) {
+			// component.port -> component.port
+			final Node node = new Node(parent, channel, 0);
+		}
+		// for (int i = 0; i < cardinality; i++) {
+		// new Node(channelNode, dstRef, i);
 		// }
 	}
 
