@@ -39,7 +39,7 @@ Embedding:
 	name=ID ('[' cardinality=Value ']')?;
 
 Channel:
-	'channel' source=PortRef '->' destinations+=PortRef (',' destinations+=PortRef)*;
+	'channel' source=PortRef '->' destination=PortRef;
 
 PortRef:
 	(embedding=[Embedding] ('[' embeddingIndex=ID ']')? '.')? port=[Port] ('[' portIndex=ID ']')?;
