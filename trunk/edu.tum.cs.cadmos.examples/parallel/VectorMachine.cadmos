@@ -1,0 +1,30 @@
+package parallel.algorithms
+
+component VectorMachine(N=1) {
+	in input
+	out output
+	
+	embed Split(N=N) split
+	embed Instruction instruction[N]
+	embed Merge(N=N) merge
+	
+	channel input -> split.input
+	channel split.output[i] -> instruction[i].input
+	channel instruction[i].output -> merge.input[i]
+	channel merge.output -> output
+}
+
+component Split(N=1) {
+	in input
+	out output[N]
+}
+
+component Instruction {
+	in input
+	out output
+}
+
+component Merge(N=1) {
+	in input[N]
+	out output
+}

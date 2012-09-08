@@ -1,0 +1,45 @@
+package automotive.acc
+
+import automotive.common.*
+
+component ACCSystem {
+	in vehicleAheadExists
+	in vehicleAheadDistance
+	in vehicleSpeed
+	in driverCommandSpeed
+	
+	out enginePower
+	out brakePower
+	
+	embed CruiseControl cc
+	embed PCS pcs
+	embed Arbiter arbiter
+	
+	channel vehicleAheadExists -> pcs.vehicleAheadExists
+	channel vehicleAheadDistance -> pcs.vehicleAheadDistance
+ 	channel vehicleSpeed -> cc.vehicleSpeed
+ 	channel vehicleSpeed -> pcs.vehicleSpeed
+	channel driverCommandSpeed -> cc.driverCommandSpeed
+	
+	channel cc.enginePower -> arbiter.input
+	channel pcs.suspend -> arbiter.suspend
+	channel arbiter.output -> enginePower
+	channel pcs.brakePower -> brakePower 
+}
+
+component CruiseControl {
+	in vehicleSpeed
+	in driverCommandSpeed
+	
+	out enginePower
+}
+
+component PCS {
+	in vehicleAheadExists
+	in vehicleAheadDistance
+	in vehicleSpeed
+	
+	out suspend
+	out brakePower
+}
+
