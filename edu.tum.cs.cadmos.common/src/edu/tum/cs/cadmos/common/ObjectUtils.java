@@ -2,12 +2,31 @@ package edu.tum.cs.cadmos.common;
 
 public class ObjectUtils {
 
-	public static int nullsafeHashcode(Object object) {
-		return object == null ? 0 : object.hashCode();
+	/**
+	 * Returns <code>true</code> if <i>a</i> equals <i>b</i> and returns
+	 * <code>false</code> otherwise, while the interpretation
+	 * <code>(null == null) = true</code> holds.
+	 */
+	public static boolean equalsInterpretNullAsDefinedValue(Object a, Object b) {
+		if (a == null && b == null) {
+			return true;
+		}
+		if (a == null || b == null) {
+			return false;
+		}
+		return a.equals(b);
 	}
 
-	public static boolean nullsafeEquals(Object a, Object b) {
-		return a == b || a != null && b != null && a.equals(b);
+	/**
+	 * Returns <code>true</code> if <i>a</i> equals <i>b</i> and returns
+	 * <code>false</code> otherwise, while the interpretation
+	 * <code>(null == null) = false</code> holds.
+	 */
+	public static boolean equalsInterpretNullAsUndefinedValue(Object a, Object b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		return a.equals(b);
 	}
 
 }

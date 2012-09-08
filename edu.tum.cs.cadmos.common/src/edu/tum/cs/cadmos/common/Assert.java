@@ -213,9 +213,10 @@ public class Assert {
 	 */
 	public static void assertEquals(Object a, Object b, String aName,
 			String bName, boolean nullIsDefinedValue) {
-		if (nullIsDefinedValue && !equalsInterpretNullAsDefinedValue(a, b)
+		if (nullIsDefinedValue
+				&& !ObjectUtils.equalsInterpretNullAsDefinedValue(a, b)
 				|| !nullIsDefinedValue
-				&& !equalsInterpretNullAsUndefinedValue(a, b)) {
+				&& !ObjectUtils.equalsInterpretNullAsUndefinedValue(a, b)) {
 			throw new AssertionError(
 					String.format(
 							"Expected '%s' and '%s' to be equal, but was '%s' and '%s', where ('null' == 'null' = '%s')",
@@ -238,42 +239,15 @@ public class Assert {
 	 */
 	public static void assertNotEquals(Object a, Object b, String aName,
 			String bName, boolean nullIsDefinedValue) {
-		if (nullIsDefinedValue && equalsInterpretNullAsDefinedValue(a, b)
+		if (nullIsDefinedValue
+				&& ObjectUtils.equalsInterpretNullAsDefinedValue(a, b)
 				|| !nullIsDefinedValue
-				&& equalsInterpretNullAsUndefinedValue(a, b)) {
+				&& ObjectUtils.equalsInterpretNullAsUndefinedValue(a, b)) {
 			throw new AssertionError(
 					String.format(
 							"Expected '%s' and '%s' to be not equal, but was '%s' and '%s', where  ('null' == 'null' = '%s')",
 							aName, bName, a, b, nullIsDefinedValue));
 		}
-	}
-
-	/**
-	 * Returns <code>true</code> if <i>a</i> equals <i>b</i> and returns
-	 * <code>false</code> otherwise, while the interpretation
-	 * <code>(null == null) = true</code> holds.
-	 */
-	private static boolean equalsInterpretNullAsDefinedValue(Object a, Object b) {
-		if (a == null && b == null) {
-			return true;
-		}
-		if (a == null || b == null) {
-			return false;
-		}
-		return a.equals(b);
-	}
-
-	/**
-	 * Returns <code>true</code> if <i>a</i> equals <i>b</i> and returns
-	 * <code>false</code> otherwise, while the interpretation
-	 * <code>(null == null) = false</code> holds.
-	 */
-	private static boolean equalsInterpretNullAsUndefinedValue(Object a,
-			Object b) {
-		if (a == null || b == null) {
-			return false;
-		}
-		return a.equals(b);
 	}
 
 }
