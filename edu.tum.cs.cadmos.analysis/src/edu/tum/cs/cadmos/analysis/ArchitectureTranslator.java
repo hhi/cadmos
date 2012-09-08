@@ -5,6 +5,7 @@ import java.util.List;
 
 import edu.tum.cs.cadmos.common.Assert;
 import edu.tum.cs.cadmos.common.ListUtils;
+import edu.tum.cs.cadmos.common.ObjectUtils;
 import edu.tum.cs.cadmos.language.ModelUtils;
 import edu.tum.cs.cadmos.language.cadmos.CadmosFactory;
 import edu.tum.cs.cadmos.language.cadmos.Channel;
@@ -136,8 +137,8 @@ public class ArchitectureTranslator {
 			srcEmbeddingCardinality = 1;
 			srcPortCardinality = eval(srcPort.getCardinality(), parameters, 1);
 		}
-		final String srcEmbeddingIndex = srcRef.getEmbeddingIndex();
-		final String srcPortIndex = srcRef.getPortIndex();
+		final String srcEmbeddingIndexId = srcRef.getEmbeddingIndex();
+		final String srcPortIndexId = srcRef.getPortIndex();
 
 		// Destination side.
 		final PortRef dstRef = channel.getDestination();
@@ -158,18 +159,46 @@ public class ArchitectureTranslator {
 			dstEmbeddingCardinality = 1;
 			dstPortCardinality = eval(dstPort.getCardinality(), parameters, 1);
 		}
-		final String dstEmbeddingIndex = dstRef.getEmbeddingIndex();
-		final String dstPortIndex = dstRef.getPortIndex();
+		final String dstEmbeddingIndexId = dstRef.getEmbeddingIndex();
+		final String dstPortIndexId = dstRef.getPortIndex();
 
-		// Create linking node.
-		if (srcEmbeddingIndex == null && srcPortIndex == null
-				&& dstEmbeddingIndex == null && dstPortIndex == null) {
-			// component.port -> component.port
-			final Node node = new Node(parent, channel, 0);
+		// Check index names.
+		Assert.assertNotEquals(srcEmbeddingIndexId, srcPortIndexId,
+				"srcEmbeddingIndexId", "srcPortIndexId", false);
+		Assert.assertNotEquals(dstEmbeddingIndexId, dstPortIndexId,
+				"dstEmbeddingIndexId", "dstPortIndexId", false);
+
+		// Create linking nodes.
+		int channelIndex = 0;
+		for (int i = 0; i < dstEmbeddingCardinality; i++) {
+			for (int j = 0; j < dstPortCardinality; j++) {
+				final int srcEmbeddingIndex;
+				final int srcPortIndex;
+				final int dstEmbeddingIndex = i;
+				final int dstPortIndex = j;
+				srcEmbeddingIndex = srcEmbeddingIndexId == null ? 0
+						: ObjectUtils.equalsInterpretNullAsDefinedValue(
+								srcEmbeddingIndexId, dstPortIndexId) ? j : i;
+				srcPortIndex = (srcPortIndexId == null) ? 0 : ObjectUtils
+						.equalsInterpretNullAsDefinedValue(srcPortIndexId,
+								dstEmbeddingIndexId) ? i : j;
+				final Node node = new Node(parent, channel, channelIndex++);
+				node.addReference(findPortNode(parent, srcRef,
+						srcEmbeddingIndex, srcPortIndex));
+				node.addReference(findPortNode(parent, dstRef,
+						dstEmbeddingIndex, dstPortIndex));
+			}
 		}
-		// for (int i = 0; i < cardinality; i++) {
-		// new Node(channelNode, dstRef, i);
-		// }
+	}
+
+	private static Node findPortNode(Node node, PortRef ref,
+			int embeddingIndex, int portIndex) {
+		if (ref.getEmbedding() == null) {
+			return node.findChild(ref.getPort(), portIndex);
+		}
+		final Node embeddingNode = node.findChild(ref.getEmbedding(),
+				embeddingIndex);
+		return embeddingNode.findChild(ref.getPort(), portIndex);
 	}
 
 }

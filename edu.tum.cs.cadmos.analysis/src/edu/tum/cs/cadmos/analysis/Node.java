@@ -177,8 +177,8 @@ public class Node implements Iterable<Node> {
 		// text = text.replaceAll("@[a-f0-9]+", "");
 		// s.append(text);
 		s.append(node.getLocalId());
-		appendLocalIdList(s, "references", node.getReferences());
-		appendLocalIdList(s, "referencedBy", node.getReferencedBy());
+		appendIdList(s, "references", node.getReferences());
+		appendIdList(s, "referencedBy", node.getReferencedBy());
 		activeLevels.set(indent, true);
 		for (final Node child : node) {
 			s.append("\n");
@@ -187,7 +187,7 @@ public class Node implements Iterable<Node> {
 		}
 	}
 
-	private static void appendLocalIdList(StringBuilder s, String name,
+	private static void appendIdList(StringBuilder s, String name,
 			List<Node> list) {
 		if (list.isEmpty()) {
 			return;
@@ -195,10 +195,10 @@ public class Node implements Iterable<Node> {
 		s.append("(");
 		s.append(name);
 		s.append(": ");
-		s.append(list.get(0).getLocalId());
+		s.append(list.get(0).getId());
 		for (int i = 1; i < list.size(); i++) {
 			s.append(", ");
-			s.append(list.get(i).getLocalId());
+			s.append(list.get(i).getId());
 		}
 		s.append(") ");
 	}
