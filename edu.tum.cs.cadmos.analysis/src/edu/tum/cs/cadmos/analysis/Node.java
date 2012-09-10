@@ -150,6 +150,16 @@ public class Node implements Iterable<Node> {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof Node && this.getId().equals(((Node) obj).getId());
+	}
+
+	@Override
+	public int hashCode() {
+		return getId().hashCode();
+	}
+
+	@Override
 	public String toString() {
 		final StringBuilder s = new StringBuilder();
 		toString(this, 0, s, new ArrayList<Boolean>());
