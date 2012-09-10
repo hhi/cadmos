@@ -12,6 +12,7 @@ import edu.tum.cs.cadmos.language.cadmos.Channel;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.ComponentElement;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
+import edu.tum.cs.cadmos.language.cadmos.NamedComponentElement;
 import edu.tum.cs.cadmos.language.cadmos.Parameter;
 import edu.tum.cs.cadmos.language.cadmos.ParameterAssignment;
 import edu.tum.cs.cadmos.language.cadmos.Port;
@@ -37,7 +38,14 @@ public class ArchitectureTranslator {
 
 	private void translateComponent(Component component, Node parent,
 			List<Parameter> parameters) {
-		for (final ComponentElement element : component.getElements()) {
+		// Phase I: translate ports and embeddings
+		for (final ComponentElement element : ListUtils.filter(
+				component.getElements(), NamedComponentElement.class)) {
+			translateComponentElement(element, parent, parameters);
+		}
+		// Phase II: translate channels, which reference ports and embedded
+		// ports
+		for (final ComponentElement element : ModelUtils.getChannels(component)) {
 			translateComponentElement(element, parent, parameters);
 		}
 	}
@@ -176,7 +184,7 @@ public class ArchitectureTranslator {
 				final int srcPortIndex;
 				final int dstEmbeddingIndex = i;
 				final int dstPortIndex = j;
-				srcEmbeddingIndex = srcEmbeddingIndexId == null ? 0
+				srcEmbeddingIndex = (srcEmbeddingIndexId == null) ? 0
 						: ObjectUtils.equalsInterpretNullAsDefinedValue(
 								srcEmbeddingIndexId, dstPortIndexId) ? j : i;
 				srcPortIndex = (srcPortIndexId == null) ? 0 : ObjectUtils
