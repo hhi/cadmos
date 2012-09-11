@@ -45,8 +45,6 @@ public class Node implements Iterable<Node> {
 			if (parent.children == null) {
 				parent.children = new ArrayList<>();
 			}
-			Assert.assertNotContainedIn(this, parent.children, "this",
-					"parent.children");
 			parent.children.add(this);
 		}
 	}
@@ -80,13 +78,27 @@ public class Node implements Iterable<Node> {
 	}
 
 	public Node findChild(EObject semanticObject, int index) {
-		for (final Node child : ListUtils.nullIsEmpty(children)) {
+		for (final Node child : this) {
 			if (child.getSemanticObject() == semanticObject
 					&& child.getIndex() == index) {
 				return child;
 			}
 		}
 		return null;
+	}
+
+	public List<Node> filterChildren(
+			Class<? extends EObject> semanticObjectClass) {
+		Assert.assertNotNull(semanticObjectClass, "semanticObjectClass");
+		final List<Node> result = new ArrayList<>();
+		for (final Node child : this) {
+			final EObject obj = child.getSemanticObject();
+			if (obj != null
+					&& semanticObjectClass.isAssignableFrom(obj.getClass())) {
+				result.add(child);
+			}
+		}
+		return result;
 	}
 
 	public Node getFirst() {
