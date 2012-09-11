@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.xtext.util.Pair;
@@ -18,6 +17,7 @@ import edu.tum.cs.cadmos.common.Assert;
 public class Graph implements Iterable<Node> {
 
 	private final Set<Node> vertices = new LinkedHashSet<>();
+	private final List<Pair<Node, Node>> edges = new ArrayList<>();
 	private final Map<Node, Map<Node, Integer>> outgoing = new LinkedHashMap<>();
 	private final Map<Node, Map<Node, Integer>> incoming = new LinkedHashMap<>();
 
@@ -29,6 +29,7 @@ public class Graph implements Iterable<Node> {
 	public void addEdge(Node v1, Node v2) {
 		Assert.assertContainedIn(v1, vertices, "v1", "vertices");
 		Assert.assertContainedIn(v2, vertices, "v2", "vertices");
+		edges.add(Tuples.pair(v1, v2));
 		addEdge(outgoing, v1, v2);
 		addEdge(incoming, v2, v1);
 	}
@@ -61,26 +62,18 @@ public class Graph implements Iterable<Node> {
 	}
 
 	public List<Pair<Node, Node>> getEdges() {
-		final List<Pair<Node, Node>> result = new ArrayList<>();
-		for (final Entry<Node, Map<Node, Integer>> entry : outgoing.entrySet()) {
-			for (final Entry<Node, Integer> dsts : entry.getValue().entrySet()) {
-				for (int i = 0; i < dsts.getValue(); i++) {
-					result.add(Tuples.create(entry.getKey(), dsts.getKey()));
-				}
-			}
-		}
-		return result;
+		return Collections.unmodifiableList(edges);
 	}
 
 	public Map<Node, Integer> getOutgoingEdgesOf(Node v) {
-		return getEdges(outgoing, v);
+		return getEdgesOf(outgoing, v);
 	}
 
 	public Map<Node, Integer> getIncomingEdgesOf(Node v) {
-		return getEdges(incoming, v);
+		return getEdgesOf(incoming, v);
 	}
 
-	private static Map<Node, Integer> getEdges(
+	private static Map<Node, Integer> getEdgesOf(
 			Map<Node, Map<Node, Integer>> src, Node v) {
 		final Map<Node, Integer> dst = src.get(v);
 		if (dst == null) {
