@@ -19,12 +19,12 @@ import edu.tum.cs.cadmos.language.cadmos.Port;
 import edu.tum.cs.cadmos.language.cadmos.PortRef;
 import edu.tum.cs.cadmos.language.cadmos.Value;
 
-public class ArchitectureTranslator {
+public class Architecture2Node {
 
 	private final Component rootComponent;
 	private final CadmosFactory factory;
 
-	public ArchitectureTranslator(Component rootComponent) {
+	public Architecture2Node(Component rootComponent) {
 		this.rootComponent = rootComponent;
 		this.factory = CadmosFactory.eINSTANCE;
 	}

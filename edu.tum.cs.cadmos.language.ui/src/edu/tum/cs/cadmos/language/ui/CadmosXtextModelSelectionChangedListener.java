@@ -13,7 +13,7 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 
-import edu.tum.cs.cadmos.analysis.ArchitectureTranslator;
+import edu.tum.cs.cadmos.analysis.Architecture2Node;
 import edu.tum.cs.cadmos.analysis.Node;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 
@@ -55,10 +55,10 @@ public class CadmosXtextModelSelectionChangedListener implements
 					}
 				}
 				final Component component = (Component) selectedObject;
-				final ArchitectureTranslator translator = new ArchitectureTranslator(
+				final Architecture2Node architecture2Node = new Architecture2Node(
 						component);
 				long t = System.nanoTime();
-				final Node node = translator.translate();
+				final Node node = architecture2Node.translate();
 				t = System.nanoTime() - t;
 				System.out.println();
 				System.out.println(node);
