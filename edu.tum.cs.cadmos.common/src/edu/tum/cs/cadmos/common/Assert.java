@@ -140,7 +140,7 @@ public class Assert {
 	 */
 	public static <E> void assertContainedIn(E element,
 			Collection<E> collection, String elementName, String collectionName) {
-		if (collection.contains(element)) {
+		if (!collection.contains(element)) {
 			throw new AssertionError(String.format(
 					"Element '%s' (%s) is not present in collection '%s' (%s)",
 					elementName, element, collectionName, collection));
