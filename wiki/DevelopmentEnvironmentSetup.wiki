@@ -8,7 +8,7 @@ This page describes the steps to set up a working development environment:
  # Eclipse
  # Workspace
  # Subclipse
- # Quality Rating
+<wiki:comment> # Quality Rating </wiki:comment>
  # SWT Designer
  # SVN Auto-Properties
  # Source Check-out
