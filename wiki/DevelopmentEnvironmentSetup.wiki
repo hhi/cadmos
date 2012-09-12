@@ -22,7 +22,7 @@ Cadmos is developed using new Java 7 language features like inferred type parame
 = Install Eclipse Juno 4.2 (including Xtext) =
 Cadmos makes use of Xtext and Java 7 language features
 which is fully supported starting from Eclipse version 3.7.1.
-An Eclipse Juno 4.2 release including all necessary Xtext features can be downloaded and installed for many platforms and operating systems from [http://www.eclipse.org/Xtext/download.html].
+A pre-built Eclipse Juno 4.2 release including all necessary Xtext features can be downloaded and installed for many platforms and operating systems from [http://www.eclipse.org/Xtext/download.html] (*Full Eclipse* recommended).
 
 <wiki:comment>
 <a href="http://www.eclipse.org/Xtext/download.html">http://www.eclipse.org/eclipse.org-common/themes/Nova/images/eclipse.png</a> 
@@ -57,7 +57,9 @@ For our purposes, it is sufficient to select solely the plug-in *"ConQAT Develop
 </wiki:comment>
 
 = Install SWT Designer =
-Most developers also work on user interface related code, which is developed in Cadmos using the SWT Designer.
+Skip this step if you use a pre-built *Full Eclipse* version from [http://www.eclipse.org/Xtext/download.html], since this already includes _SWT Designer_.
+
+Most developers also work on user interface related code, which is developed in Cadmos using the _SWT Designer_.
 Use the eclipse update manager, go to the pre-installed _Juno_ update site and open the node _General Purpose Tools_.
 Select _SWT Designer_ and _SWT Designer Core_ here and proceed with download and installation.
 
