@@ -57,7 +57,7 @@ For our purposes, it is sufficient to select solely the plug-in *"ConQAT Develop
 </wiki:comment>
 
 = Install SWT Designer =
-Skip this step if you use a pre-built *Full Eclipse* version from [http://www.eclipse.org/Xtext/download.html], since this already includes _SWT Designer_.
+*Skip this step* if you are using a pre-built *Full Eclipse* version from [http://www.eclipse.org/Xtext/download.html], since this already includes _SWT Designer_.
 
 Most developers also work on user interface related code, which is developed in Cadmos using the _SWT Designer_.
 Use the eclipse update manager, go to the pre-installed _Juno_ update site and open the node _General Purpose Tools_.
