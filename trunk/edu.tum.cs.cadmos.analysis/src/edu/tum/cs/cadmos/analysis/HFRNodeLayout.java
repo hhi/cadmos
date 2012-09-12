@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.util.Pair;
 
 import edu.tum.cs.cadmos.common.Assert;
+import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
 import edu.tum.cs.cadmos.language.cadmos.Port;
 import edu.tum.cs.cadmos.language.cadmos.PortDirection;
@@ -23,10 +24,10 @@ import edu.tum.cs.cadmos.language.cadmos.PortDirection;
 public class HFRNodeLayout {
 
 	private static final float EPSILON = 1f / 1000f;
-	private static final int MAX_ITERATIONS = 1000;
-	private static final float ATTRACTION_MULTIPLIER = 0.75f;
-	private static final float REPULSION_MULTIPLIER = 0.75f;
-	private static final float TEMPERATURE_MULTIPLIER = 0.1f;
+	private static final int MAX_ITERATIONS = 2000;
+	private static final float ATTRACTION_MULTIPLIER = 0.2f;
+	private static final float REPULSION_MULTIPLIER = 0.2f;
+	private static final float TEMPERATURE_MULTIPLIER = 0.2f;
 
 	private final Graph graph;
 	final Set<Node> inbound = new LinkedHashSet<>();
@@ -53,8 +54,8 @@ public class HFRNodeLayout {
 		initVectors();
 		iteration = 0;
 		temperature = size.norm() * TEMPERATURE_MULTIPLIER;
-		final float forceConstant = size.area()
-				/ max(1, graph.getVertexCount());
+		final float forceConstant = (float) (size.norm() / max(1f,
+				sqrt(graph.getVertexCount())));
 		attractionConstant = forceConstant * ATTRACTION_MULTIPLIER;
 		repulsionConstant = forceConstant * REPULSION_MULTIPLIER;
 	}
@@ -76,11 +77,12 @@ public class HFRNodeLayout {
 				} else {
 					inner.add(node);
 				}
-			} else if (semanticObject instanceof Embedding) {
+			} else if (semanticObject instanceof Embedding
+					|| semanticObject instanceof Component) {
 				inner.add(node);
 			} else {
 				Assert.fails(
-						"Expected 'semanticObject' to be Port or Embedding,  but was '%s'",
+						"Expected 'semanticObject' to be Port, Component or Embedding,  but was '%s'",
 						semanticObject);
 			}
 		}
@@ -94,7 +96,7 @@ public class HFRNodeLayout {
 		int y = 1;
 		final float scale = size.y / (nodes.size() + 1);
 		for (final Node node : nodes) {
-			pos.put(node, new Vector2D(0, scale * (y++)));
+			pos.put(node, new Vector2D(x, scale * (y++)));
 			disp.put(node, new Vector2D(0, 0));
 		}
 	}
@@ -110,13 +112,15 @@ public class HFRNodeLayout {
 		for (final Node v : graph) {
 			applyPosition(v);
 		}
-		temperature *= (1f - iteration / (float) MAX_ITERATIONS);
+		cool();
 	}
 
 	private void applyRepulsion(Node v1) {
 		final Vector2D v1disp = disp.get(v1);
 		v1disp.set(0, 0);
 		final Vector2D p1 = pos.get(v1);
+		final boolean v1inbound = inbound.contains(v1);
+		final boolean v1outbound = outbound.contains(v1);
 		for (final Node v2 : graph) {
 			if (v1 == v2) {
 				continue; // Do not apply self-repulsion.
@@ -124,7 +128,12 @@ public class HFRNodeLayout {
 			final Vector2D p2 = pos.get(v2);
 			final Vector2D delta = p1.delta(p2);
 			final float length = max(EPSILON, delta.norm());
-			final float force = repulsionConstant * repulsionConstant / length;
+			float force = repulsionConstant * repulsionConstant / length;
+			if (v1inbound && inbound.contains(v2) || v1outbound
+					&& outbound.contains(v2)) {
+				// Interface ports are highly repulsive to each other.
+				force *= repulsionConstant;
+			}
 			v1disp.translate(delta.x / length * force, delta.y / length * force);
 		}
 	}
@@ -136,7 +145,10 @@ public class HFRNodeLayout {
 		final Vector2D p2 = pos.get(v2);
 		final Vector2D delta = p1.delta(p2);
 		final float length = max(EPSILON, delta.norm());
-		final float force = length * length / attractionConstant;
+		float force = (length * length) / attractionConstant;
+		if (v1.getParent() == v2 || v2.getParent() == v1) {
+			force *= 4; // Components highly attract their ports.
+		}
 		final float dx = delta.x / length * force;
 		final float dy = delta.y / length * force;
 		disp.get(v1).translate(-dx, -dy);
@@ -160,8 +172,16 @@ public class HFRNodeLayout {
 		}
 	}
 
+	private void cool() {
+		temperature *= (1f - iteration / (float) MAX_ITERATIONS);
+	}
+
 	public boolean done() {
 		return iteration > MAX_ITERATIONS || temperature < 1f / size.norm();
+	}
+
+	public Vector2D get(Node v) {
+		return pos.get(v);
 	}
 
 }
