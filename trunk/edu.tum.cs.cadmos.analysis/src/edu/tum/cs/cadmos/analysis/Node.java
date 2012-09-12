@@ -39,7 +39,8 @@ public class Node implements Iterable<Node> {
 	public Node(Node parent, EObject semanticObject, int index, int cardinality) {
 		Assert.assertNotNull(semanticObject, "semanticObject");
 		Assert.assertWithinRange(index, 0, Integer.MAX_VALUE, "index");
-		Assert.assertWithinRange(index, 1, Integer.MAX_VALUE, "cardinality");
+		Assert.assertWithinRange(cardinality, 1, Integer.MAX_VALUE,
+				"cardinality");
 		this.parent = parent;
 		this.semanticObject = semanticObject;
 		this.index = index;
