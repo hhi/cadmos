@@ -81,5 +81,10 @@ On Windows systems, the SVN config file is typically found in a path similar to 
 
 = Check-out the Workspace Projects =
  * Follow the guidelines on [http://code.google.com/p/cadmos/source/checkout] to get read-only or write access to the source.
- * Read the page WorkspaceProjectsOverview that helps you to decide, which projects you need to check-out into your eclipse workspace.
- * Read the DevelopmentConventions for Cadmos developers.
+ * Build the language infrastructure (takes about 5-10 seconds):
+http://www4.in.tum.de/~schwitze/cadmos/gen-lang-is.png
+
+= That's it! =
+You may go on with
+ * Reading the page WorkspaceProjectsOverview that helps you to decide, which projects you need to check-out into your eclipse workspace.
+ * Reading the DevelopmentConventions for Cadmos developers.
