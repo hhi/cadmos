@@ -81,7 +81,7 @@ On Windows systems, the SVN config file is typically found in a path similar to 
 
 = Check-out the Workspace Projects =
  * Follow the guidelines on [http://code.google.com/p/cadmos/source/checkout] to get read-only or write access to the source.
- * Build the language infrastructure (takes about 5-10 seconds):
+ * Build the language infrastructure (see below, takes about 5-10 seconds):
 http://www4.in.tum.de/~schwitze/cadmos/gen-lang-is.png
 
 = That's it! =
