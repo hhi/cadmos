@@ -41,13 +41,17 @@ public class HFRNodeLayout {
 	private float attractionConstant;
 	private float repulsionConstant;
 
-	public HFRNodeLayout(Graph graph, float w, float h) {
+	public HFRNodeLayout(Graph graph, float w, float h,
+			HFRNodeLayout predecessor) {
 		Assert.assertNotNull(graph, "graph");
 		Assert.assertTrue(w > 0, "Expected 'w' > 0, but was '%s'", w);
 		Assert.assertTrue(h > 0, "Expected 'h' > 0, but was '%s'", h);
 		this.graph = graph;
 		this.size = new Vector2D(w, h);
 		init();
+		if (predecessor != null) {
+			pos.putAll(predecessor.pos);
+		}
 	}
 
 	private void init() {
