@@ -20,12 +20,14 @@ Cadmos is developed using new Java 7 language features like inferred type parame
 <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">http://www.oracle.com/ocom/groups/public/@otn/documents/webcontent/347320.gif</a>
 
 
-= Install Eclipse Indigo 3.7.1 =
-Cadmos has a _"pure Java"_ *core* part and an eclipse based *ui* part.
-Eclipse has build-in full Java 7 support starting from version 3.7.1, which can be downloaded and installed for many platforms and operating systems from [http://www.eclipse.org/downloads/packages/eclipse-classic-371/indigosr1].
+= Install Eclipse Juno 4.2 (Xtext) =
+Cadmos makes use of Xtext and Java 7 language features
+which is fully supported starting from Eclipse version 3.7.1.
+An Eclipse Juno 4.2 release including all necessary Xtext features can be downloaded and installed for many platforms and operating systems from [http://www.eclipse.org/Xtext/download.html].
 
-<a href="http://www.eclipse.org/downloads/packages/eclipse-classic-371/indigosr1">http://www.eclipse.org/eclipse.org-common/themes/Nova/images/eclipse.png</a> 
+<a href="http://www.eclipse.org/Xtext/download.html">http://www.eclipse.org/eclipse.org-common/themes/Nova/images/eclipse.png</a> 
 
+<a href="http://www.eclipse.org/Xtext/download.html">http://www.eclipse.org/Xtext/images/logo.png</a> 
 
 = Setup Eclipse Workspace =
 Start eclipse and choose a workspace to work with.
