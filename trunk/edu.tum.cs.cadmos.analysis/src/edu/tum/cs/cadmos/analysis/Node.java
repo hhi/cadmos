@@ -16,6 +16,7 @@ public class Node implements Iterable<Node> {
 	private final Node parent;
 	private final EObject semanticObject;
 	private final int index;
+	private final int cardinality;
 
 	/**
 	 * List of child nodes, lazily created by first child node in
@@ -35,12 +36,14 @@ public class Node implements Iterable<Node> {
 	/** Caches this node's id, initialized in {@link #getId()}. */
 	private String id;
 
-	public Node(Node parent, EObject semanticObject, int index) {
+	public Node(Node parent, EObject semanticObject, int index, int cardinality) {
 		Assert.assertNotNull(semanticObject, "semanticObject");
 		Assert.assertWithinRange(index, 0, Integer.MAX_VALUE, "index");
+		Assert.assertWithinRange(index, 1, Integer.MAX_VALUE, "cardinality");
 		this.parent = parent;
 		this.semanticObject = semanticObject;
 		this.index = index;
+		this.cardinality = cardinality;
 		if (parent != null) {
 			if (parent.children == null) {
 				parent.children = new ArrayList<>();
@@ -65,8 +68,9 @@ public class Node implements Iterable<Node> {
 	}
 
 	private String getLocalId() {
-		return ModelUtils.getEObjectName(getSemanticObject()) + "["
-				+ getIndex() + "]";
+		final String localId = ModelUtils.getEObjectName(getSemanticObject())
+				+ (isSingleInstance() ? "" : "[" + getIndex() + "]");
+		return localId;
 	}
 
 	public EObject getSemanticObject() {
@@ -75,6 +79,14 @@ public class Node implements Iterable<Node> {
 
 	public int getIndex() {
 		return index;
+	}
+
+	public int getCardinality() {
+		return cardinality;
+	}
+
+	public boolean isSingleInstance() {
+		return cardinality == 1;
 	}
 
 	public Node findChild(EObject semanticObject, int index) {
