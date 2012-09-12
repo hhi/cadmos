@@ -30,7 +30,7 @@ public class Architecture2Node {
 	}
 
 	public Node translate() {
-		final Node rootNode = new Node(null, rootComponent, 0);
+		final Node rootNode = new Node(null, rootComponent, 0, 1);
 		translateComponent(rootComponent, rootNode,
 				rootComponent.getParameters());
 		return rootNode;
@@ -78,7 +78,7 @@ public class Architecture2Node {
 			List<Parameter> parameters) {
 		final int cardinality = eval(port.getCardinality(), parameters, 1);
 		for (int i = 0; i < cardinality; i++) {
-			new Node(parent, port, i);
+			new Node(parent, port, i, cardinality);
 		}
 	}
 
@@ -91,7 +91,8 @@ public class Architecture2Node {
 		// Translate embedding and create instance of embedded component.
 		final int cardinality = eval(embedding.getCardinality(), parameters, 1);
 		for (int i = 0; i < cardinality; i++) {
-			final Node embeddingNode = new Node(parent, embedding, i);
+			final Node embeddingNode = new Node(parent, embedding, i,
+					cardinality);
 			translateComponent(embedding.getComponent(), embeddingNode,
 					embeddedParameters);
 		}
@@ -190,7 +191,8 @@ public class Architecture2Node {
 				srcPortIndex = (srcPortIndexId == null) ? 0 : ObjectUtils
 						.equalsInterpretNullAsDefinedValue(srcPortIndexId,
 								dstEmbeddingIndexId) ? i : j;
-				final Node node = new Node(parent, channel, channelIndex++);
+				final Node node = new Node(parent, channel, channelIndex++,
+						dstEmbeddingCardinality * dstPortCardinality);
 				node.addReference(findPortNode(parent, srcRef,
 						srcEmbeddingIndex, srcPortIndex));
 				node.addReference(findPortNode(parent, dstRef,
