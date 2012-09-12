@@ -1,5 +1,7 @@
 package edu.tum.cs.cadmos.analysis;
 
+import static java.lang.Math.*;
+
 public class Vector2D {
 
 	public float x;
@@ -19,7 +21,7 @@ public class Vector2D {
 	}
 
 	public float norm() {
-		return (float) Math.sqrt(x * x + y * y);
+		return (float) sqrt(x * x + y * y);
 	}
 
 	public void translate(float deltaX, float deltaY) {
@@ -29,6 +31,14 @@ public class Vector2D {
 
 	public Vector2D delta(Vector2D other) {
 		return new Vector2D(x - other.x, y - other.y);
+	}
+
+	public int roundX() {
+		return round(x);
+	}
+
+	public int roundY() {
+		return round(y);
 	}
 
 }
