@@ -19,7 +19,8 @@ Require-Bundle: edu.tum.cs.cadmos.language;visibility:=reexport,
  edu.tum.cs.cadmos.analysis;bundle-version="1.0.0"
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Export-Package: edu.tum.cs.cadmos.language.ui.contentassist,
+Export-Package: edu.tum.cs.cadmos.language.ui,
+ edu.tum.cs.cadmos.language.ui.contentassist,
  edu.tum.cs.cadmos.language.ui.contentassist.antlr,
  edu.tum.cs.cadmos.language.ui.internal
 Bundle-Activator: edu.tum.cs.cadmos.language.ui.internal.CadmosActivator
