@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.util.Pair;
 
 import edu.tum.cs.cadmos.common.Assert;
@@ -41,18 +40,13 @@ public class HFRNodeLayout {
 	private float attractionConstant;
 	private float repulsionConstant;
 
-	public HFRNodeLayout(Graph graph, float w, float h,
-			HFRNodeLayout predecessor) {
+	public HFRNodeLayout(Graph graph, float w, float h) {
 		Assert.assertNotNull(graph, "graph");
 		Assert.assertTrue(w > 0, "Expected 'w' > 0, but was '%s'", w);
 		Assert.assertTrue(h > 0, "Expected 'h' > 0, but was '%s'", h);
 		this.graph = graph;
 		this.size = new Vector2D(w, h);
 		init();
-		// if (predecessor != null) {
-		// pos.putAll(predecessor.pos);
-		// temperature *= 0.1; // FIXME: new layout only on changed model
-		// }
 	}
 
 	private void init() {
@@ -68,29 +62,22 @@ public class HFRNodeLayout {
 	private void initVectors() {
 		// Partition root-level inbound-port nodes, root-level outbound-port
 		// nodes, and inner nodes.
-		for (final Node node : graph) {
-			final EObject semanticObject = node.getSemanticObject();
-			if (semanticObject instanceof Port) {
-				final Port p = (Port) semanticObject;
-				Assert.assertNotNull(node.getParent(), "node.getParent()");
-				if (node.getParent().getParent() == null) {
-					if (p.getDirection() == PortDirection.INBOUND) {
-						inbound.add(node);
-					} else {
-						outbound.add(node);
-					}
+		for (final Node node : NodeUtils.filterBySemanticObject(
+				graph.getVertices(), Port.class)) {
+			final Port p = (Port) node.getSemanticObject();
+			Assert.assertNotNull(node.getParent(), "node.getParent()");
+			if (node.getParent().getParent() == null) {
+				if (p.getDirection() == PortDirection.INBOUND) {
+					inbound.add(node);
 				} else {
-					inner.add(node);
+					outbound.add(node);
 				}
-			} else if (semanticObject instanceof Embedding
-					|| semanticObject instanceof Component) {
-				inner.add(node);
 			} else {
-				Assert.fails(
-						"Expected 'semanticObject' to be Port, Component or Embedding,  but was '%s'",
-						semanticObject);
+				inner.add(node);
 			}
 		}
+		inner.addAll(NodeUtils.filterBySemanticObject(graph.getVertices(),
+				Embedding.class, Component.class));
 		// Initialize pos and disp vectors.
 		initVectors(inbound, 0);
 		initVectors(outbound, size.x);
