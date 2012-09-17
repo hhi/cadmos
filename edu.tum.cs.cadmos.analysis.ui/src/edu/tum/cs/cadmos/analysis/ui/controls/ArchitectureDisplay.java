@@ -81,7 +81,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		final Node node = new Architecture2Node(component).translate();
 		final Graph graph = Node2Graph.translate(node);
 		layout = new HFRNodeLayout(graph, max(MARGIN, size.x - MARGIN * 2),
-				max(MARGIN, size.y - MARGIN * 2), layout);
+				max(MARGIN, size.y - MARGIN * 2));
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		if (layout != null) {
 			final Point size = getSize();
 			layout = new HFRNodeLayout(layout.getGraph(), max(MARGIN, size.x
-					- MARGIN * 2), max(MARGIN, size.y - MARGIN * 2), layout);
+					- MARGIN * 2), max(MARGIN, size.y - MARGIN * 2));
 		}
 	}
 
