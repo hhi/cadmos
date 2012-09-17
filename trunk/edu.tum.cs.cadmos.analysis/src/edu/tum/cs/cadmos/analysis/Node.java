@@ -203,14 +203,6 @@ public class Node implements Iterable<Node> {
 			s.append(node.isLast() ? "└─" : "├─");
 		}
 		s.append("o ");
-		// TODO: remove this alternative node text, which is useful for
-		// debugging at the moment.
-		//
-		// String text = node.getSemanticObject().toString();
-		// text = text.replace("edu.tum.cs.cadmos.language.cadmos.impl.", "");
-		// text = text.replace("Impl@", "[" + node.getIndex() + "]@");
-		// text = text.replaceAll("@[a-f0-9]+", "");
-		// s.append(text);
 		s.append(node.getLocalId());
 		appendIdList(s, "references", node.getReferences());
 		appendIdList(s, "referencedBy", node.getReferencedBy());
