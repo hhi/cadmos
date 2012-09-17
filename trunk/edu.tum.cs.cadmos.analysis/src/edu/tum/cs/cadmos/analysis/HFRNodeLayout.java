@@ -31,7 +31,8 @@ public class HFRNodeLayout {
 	private final Graph graph;
 	final Set<Node> inbound = new LinkedHashSet<>();
 	final Set<Node> outbound = new LinkedHashSet<>();
-	final Set<Node> inner = new LinkedHashSet<>();
+	final Set<Node> innerPorts = new LinkedHashSet<>();
+	final Set<Node> innerComponents = new LinkedHashSet<>();
 	private final Map<Node, Vector2D> pos = new HashMap<>();
 	private final Map<Node, Vector2D> disp = new HashMap<>();
 	private final Vector2D size;
@@ -73,15 +74,16 @@ public class HFRNodeLayout {
 					outbound.add(node);
 				}
 			} else {
-				inner.add(node);
+				innerPorts.add(node);
 			}
 		}
-		inner.addAll(NodeUtils.filterBySemanticObject(graph.getVertices(),
-				Embedding.class, Component.class));
+		innerComponents.addAll(NodeUtils.filterBySemanticObject(
+				graph.getVertices(), Embedding.class, Component.class));
 		// Initialize pos and disp vectors.
 		initVectors(inbound, 0);
 		initVectors(outbound, size.x);
-		initVectors(inner, 0.5f * size.x);
+		initVectors(innerPorts, 0.5f * size.x);
+		initVectors(innerComponents, 0.5f * size.x);
 	}
 
 	private void initVectors(Set<Node> nodes, float x) {
