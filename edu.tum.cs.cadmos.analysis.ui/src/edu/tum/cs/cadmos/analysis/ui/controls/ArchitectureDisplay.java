@@ -38,8 +38,8 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 	protected Component component;
 	protected HFRNodeLayout layout;
 
-	protected int componentRadius = 10;
-	protected int portRadius = 5;
+	protected Vector2D componentRadius = new Vector2D(10, 10);
+	protected Vector2D portRadius = new Vector2D(5, 5);
 
 	protected Runnable timer = new Runnable() {
 		@Override
@@ -49,7 +49,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 			}
 			long time = System.nanoTime();
 			if (layout != null && !layout.done()) {
-				for (int i = 0; i < 20; i++) {
+				for (int i = 0; i < 50; i++) {
 					layout.step();
 					if (layout.done()
 							|| (System.nanoTime() - time) / 1_000_000 >= TIMER_INTERVAL_MILLIS / 2) {
@@ -99,7 +99,6 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 			final Node v2 = e.getSecond();
 			final Vector2D p1 = layout.get(v1);
 			final Vector2D p2 = layout.get(v2);
-			// gc.setForeground(SWTResourceManager.getColor(23, 54, 93));
 			gc.setForeground(SWTResourceManager.getColor(149, 179, 215));
 			gc.setBackground(gc.getForeground());
 			gc.setLineWidth(1);
@@ -111,9 +110,10 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 			gc.setForeground(SWTResourceManager.getColor(54, 95, 145));
 			gc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 			gc.setLineWidth(2);
-			final int radius = getRadius(v);
-			final Rectangle r = new Rectangle(p.roundX() - radius, p.roundY()
-					- radius, radius * 2, radius * 2);
+			final Vector2D radius = getRadius(v);
+			final Rectangle r = new Rectangle(p.roundX() - radius.roundX(),
+					p.roundY() - radius.roundY(), radius.roundX() * 2,
+					radius.roundY() * 2);
 			r.x += MARGIN;
 			r.y += MARGIN;
 			gc.fillRoundRectangle(r.x, r.y, r.width, r.height, 8, 8);
@@ -125,9 +125,10 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 			gc.setForeground(SWTResourceManager.getColor(79, 129, 189));
 			gc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 			gc.setLineWidth(2);
-			final int radius = getRadius(v);
-			final Rectangle r = new Rectangle(p.roundX() - radius, p.roundY()
-					- radius, radius * 2, radius * 2);
+			final Vector2D radius = getRadius(v);
+			final Rectangle r = new Rectangle(p.roundX() - radius.roundX(),
+					p.roundY() - radius.roundY(), radius.roundX() * 2,
+					radius.roundY() * 2);
 			r.x += MARGIN;
 			r.y += MARGIN;
 			gc.fillOval(r.x, r.y, r.width, r.height);
@@ -136,7 +137,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 
 	}
 
-	private int getRadius(Node v) {
+	private Vector2D getRadius(Node v) {
 		if (v.getSemanticObject() instanceof Port) {
 			return portRadius;
 		}
@@ -157,28 +158,12 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		}
 	}
 
-	public int getComponentRadius() {
-		return componentRadius;
-	}
-
-	public void setComponentRadius(int componentRadius) {
-		this.componentRadius = componentRadius;
-	}
-
-	public int getPortRadius() {
-		return portRadius;
-	}
-
-	public void setPortRadius(int portRadius) {
-		this.portRadius = portRadius;
-	}
-
 	private void paintDirectedEdge(GC gc, Node v1, Node v2, Vector2D p1,
 			Vector2D p2) {
 		final float bend = 0;
 		final float center = 0.5f;
-		final int v1radius = getRadius(v1);
-		final int v2radius = getRadius(v2);
+		final Vector2D v1radius = getRadius(v1);
+		final Vector2D v2radius = getRadius(v2);
 		/* Pre-calculate geometric variables. */
 		final Path line = new Path(gc.getDevice());
 		final float dX = p2.x - p1.x;
@@ -188,10 +173,11 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		/* Draw edge's line as rotated cubic curve. */
 		final Transform lineTransform = new Transform(gc.getDevice());
 		lineTransform.translate(p1.x + MARGIN, p1.y + MARGIN);
+
 		lineTransform.rotate(alpha);
 		gc.setTransform(lineTransform);
-		line.moveTo(v1radius, 0);
-		line.quadTo(center * len, bend, len - v2radius, 0);
+		line.moveTo(v1radius.x, 0);
+		line.quadTo(center * len, bend, len - v2radius.x, 0);
 		gc.drawPath(line);
 		gc.setTransform(null);
 		lineTransform.dispose();
@@ -201,10 +187,11 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		arrowTransform.translate(p2.x + MARGIN, p2.y + MARGIN);
 		// final float beta = (float) (180.0 / PI * atan2(bend, (center + 0.05f)
 		// * len));
+
 		arrowTransform.rotate(alpha);
 		gc.setTransform(arrowTransform);
-		final int[] arrow = new int[] { -v2radius, 0, -v2radius - 8, -2,
-				-v2radius - 8, 3 };
+		final int[] arrow = new int[] { -v2radius.roundX(), 0,
+				-v2radius.roundX() - 8, -2, -v2radius.roundX() - 8, 3 };
 		gc.fillPolygon(arrow);
 		gc.setTransform(null);
 		arrowTransform.dispose();
