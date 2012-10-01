@@ -2,6 +2,7 @@ grammar edu.tum.cs.cadmos.language.Cadmos with org.eclipse.xtext.common.Terminal
 
 generate cadmos "http://www.tum.edu/cs/cadmos/language/Cadmos"
 
+/* MODEL ELEMENTS */
 Model:
 	('package' name=QualifiedName)?
 	imports+=Import*
@@ -22,10 +23,10 @@ Parameter:
 	name=ID '=' value=INT;
 
 ComponentElement:
-	NamedComponentElement | Channel;
+	NamedComponentElement | Channel | Case;
 
 NamedComponentElement:
-	Port | Embedding;
+	Port | Embedding | Variable;
 
 enum PortDirection:
 	Inbound='in' | Outbound='out';
@@ -47,17 +48,86 @@ PortRef:
 Value:
 	IntegerLiteral | ParameterRef;
 
-IntegerLiteral:
-	value=INT;
-
 ParameterRef:
 	parameter=[Parameter];
 
 ParameterAssignment:
 	left=[Parameter] '=' right=Value;
 
+Variable:
+	'var' typeRef=TypeRef name=ID ('=' initializer=Expression)?;
+
+Case:
+	'case' guard=Expression '{' (subcases+=Case | actions+=Expression)* '}';
+
+/* EXPRESSIONS */
+Expression returns Expression:
+	Assignment;
+
+Assignment returns Expression:
+	OrExpression (=> ({BinaryExpression.left=current} op='=') right=OrExpression)*;
+
+OrExpression returns Expression:
+	AndExpression (=> ({BinaryExpression.left=current} op='||') right=AndExpression)*;
+
+AndExpression returns Expression:
+	EqualityExpression (=> ({BinaryExpression.left=current} op='&&') right=EqualityExpression)*;
+
+EqualityExpression returns Expression:
+	RelationalExpression (=> ({BinaryExpression.left=current} op=('==' | '!=')) right=RelationalExpression)*;
+
+RelationalExpression returns Expression:
+	AdditiveExpression (=> ({BinaryExpression.left=current} op=('>=' | '<=' | '>' | '<')) right=AdditiveExpression)*;
+
+AdditiveExpression returns Expression:
+	MultiplicativeExpression (=> ({BinaryExpression.left=current} op=('+' | '-')) right=MultiplicativeExpression)*;
+
+MultiplicativeExpression returns Expression:
+	UnaryExpression (=> ({BinaryExpression.left=current} op=('*' | '**' | '/' | '%')) right=UnaryExpression)*;
+
+UnaryExpression returns Expression:
+	{UnaryExpression} op=('!' | '+' | '-') operand=PrimaryExpression
+	| PrimaryExpression;
+
+PrimaryExpression returns Expression:
+	Call
+	| ParenthesizedExpression
+	| Literal;
+
+Call returns Expression:
+	{Call} target=[NamedComponentElement];
+
+ParenthesizedExpression returns Expression:
+	'(' Expression ')';
+
+Literal returns Expression:
+	BooleanLiteral | IntegerLiteral | RealLiteral;
+
+BooleanLiteral returns Expression:
+	{BooleanLiteral} ('false' | isTrue?='true');
+
+IntegerLiteral returns Expression:
+	{IntegerLiteral} value=INT;
+
+RealLiteral returns Expression:
+	{RealLiteral} value=REAL;
+
+/* TYPE SYSTEM */
+TypeRef:
+	PrimitiveTypeRef;
+
+PrimitiveTypeRef:
+	type=PrimitiveTypes;
+
+enum PrimitiveTypes:
+	Boolean | Integer | Real;
+
+/* TERMINALS AND NAMES */
 QualifiedName:
 	ID ('.' ID)*;
 
 QualifiedNameWithWildcard:
 	QualifiedName '.*'?;
+
+terminal REAL:
+	('0'..'9')* '.' ('0'..'9')+ (('e' | 'E') ('+' | '-')? ('0'..'9')+)?;
