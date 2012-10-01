@@ -68,7 +68,7 @@ public class Node implements Iterable<Node> {
 		return id;
 	}
 
-	private String getLocalId() {
+	public String getLocalId() {
 		final String localId = ModelUtils.getEObjectName(getSemanticObject())
 				+ (isSingleInstance() ? "" : "[" + getIndex() + "]");
 		return localId;
