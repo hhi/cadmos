@@ -175,4 +175,12 @@ public class HFRNodeLayout {
 		return graph;
 	}
 
+	public float getWidth() {
+		return size.x;
+	}
+
+	public float getHeight() {
+		return size.y;
+	}
+
 }
