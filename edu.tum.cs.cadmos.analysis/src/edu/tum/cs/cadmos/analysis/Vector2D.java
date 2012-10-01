@@ -24,6 +24,14 @@ public class Vector2D {
 		return (float) sqrt(x * x + y * y);
 	}
 
+	public float alpha(boolean deg) {
+		final double alpha = atan2(y, x);
+		if (deg) {
+			return (float) (180.0 / PI * alpha);
+		}
+		return (float) alpha;
+	}
+
 	public void translate(float deltaX, float deltaY) {
 		x += deltaX;
 		y += deltaY;
