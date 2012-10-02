@@ -95,7 +95,30 @@ PrimaryExpression returns Expression:
 	| Literal;
 
 Call returns Expression:
-	{Call} target=[NamedComponentElement];
+	Segment (=> ({BinaryExpression.left=current} op='.') right=Segment)*;
+
+Segment returns Expression:
+	CallableSegment
+	//	| MemberSegment
+	| ClosureSegment;
+
+Callable:
+	Port | Variable | ClosureParameter | Parameter;
+
+CallableSegment returns Expression:
+	{CallableSegment} callable=[Callable] ('[' index=Expression ']')?;
+
+	// MemberSegment returns Expression:
+// 	{MemberSegment} member=[Member];
+enum ClosureOperators:
+	For='for' | Exists='exists' | All='all';
+
+ClosureSegment returns Expression:
+	{ClosureSegment} operator=ClosureOperators
+	'(' (parameters+=ClosureParameter (',' parameters+=ClosureParameter)* '|')? expression=Expression ')';
+
+ClosureParameter:
+	declaredName=ID;
 
 ParenthesizedExpression returns Expression:
 	'(' Expression ')';
