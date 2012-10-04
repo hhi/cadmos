@@ -5,6 +5,7 @@ import static java.lang.Math.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -29,6 +30,7 @@ import edu.tum.cs.cadmos.analysis.Node;
 import edu.tum.cs.cadmos.analysis.Node2Graph;
 import edu.tum.cs.cadmos.analysis.NodeUtils;
 import edu.tum.cs.cadmos.analysis.Vector2D;
+import edu.tum.cs.cadmos.language.ModelUtils;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
 import edu.tum.cs.cadmos.language.cadmos.Port;
@@ -37,8 +39,11 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		ControlListener {
 
 	protected static final int TIMER_INTERVAL_MILLIS = 33;
-	protected static final int MARGIN = 25;
+	protected static final int MARGIN_X = 65;
+	protected static final int MARGIN_Y = 55;
 	protected static final int POST_PAINTINGS = 5;
+	private static final int VERTEX_ARC_WIDTH = 8;
+	private static final int VERTEX_ARC_HEIGHT = 8;
 
 	protected Component component;
 	protected HFRNodeLayout layout;
@@ -57,7 +62,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 			}
 			long time = System.nanoTime();
 			if (layout != null && !layout.done()) {
-				for (int i = 0; i < 70; i++) {
+				for (int i = 0; i < 100; i++) {
 					layout.step();
 					if (layout.done()
 							|| (System.nanoTime() - time) / 1_000_000 >= TIMER_INTERVAL_MILLIS / 2) {
@@ -92,8 +97,8 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		final Point size = getSize();
 		final Node node = new Architecture2Node(component).translate();
 		final Graph graph = Node2Graph.translate(node);
-		layout = new HFRNodeLayout(graph, max(MARGIN, size.x - MARGIN * 2),
-				max(MARGIN, size.y - MARGIN * 2));
+		layout = new HFRNodeLayout(graph, max(MARGIN_X, size.x - MARGIN_X * 2),
+				max(MARGIN_Y, size.y - MARGIN_Y * 2));
 	}
 
 	@Override
@@ -115,11 +120,35 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		final GC gc = new GC(buffer);
 		gc.setAntialias(SWT.ON);
 		if (postPaintings > 1) {
-			gc.setAlpha(48);
+			gc.setAlpha(40);
 		}
 		gc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		gc.fillRectangle(getClientArea());
+
+		gc.setForeground(SWTResourceManager.getColor(149, 179, 215));
+		gc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		gc.setLineWidth(2);
 		gc.setAlpha(255);
+		gc.setLineStyle(SWT.LINE_DASH);
+		gc.drawRoundRectangle(MARGIN_X,
+				MARGIN_Y - componentRadius.roundY() - 4, size.x - MARGIN_X * 2,
+				size.y - (MARGIN_Y - componentRadius.roundY() - 4) * 2,
+				VERTEX_ARC_WIDTH * 2, VERTEX_ARC_HEIGHT * 2);
+		gc.setFont(JFaceResources.getBannerFont());
+		final String text = "component "
+				+ component.getName()
+				+ "("
+				+ ModelUtils.getParameterNameValuePairs(
+						component.getParameters(), ", ") + ")";
+		gc.drawString(text, 4, 4, true);
+
+		gc.setLineStyle(SWT.LINE_SOLID);
+		gc.setFont(JFaceResources.getDefaultFont());
+		if (layout.done()) {
+			gc.setAlpha(255);
+		} else {
+			gc.setAlpha(128);
+		}
 
 		for (final Pair<Node, Node> e : graph.getEdges()) {
 			final Node v1 = e.getFirst();
@@ -185,8 +214,8 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 	public void controlResized(ControlEvent e) {
 		if (layout != null) {
 			final Point size = getSize();
-			layout = new HFRNodeLayout(layout.getGraph(), max(MARGIN, size.x
-					- MARGIN * 2), max(MARGIN, size.y - MARGIN * 2));
+			layout = new HFRNodeLayout(layout.getGraph(), max(MARGIN_X, size.x
+					- MARGIN_X * 2), max(MARGIN_Y, size.y - MARGIN_Y * 2));
 		}
 	}
 
@@ -196,14 +225,16 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		final Rectangle r = new Rectangle(p.roundX() - radius.roundX(),
 				p.roundY() - radius.roundY(), radius.roundX() * 2,
 				radius.roundY() * 2);
-		r.x += MARGIN;
-		r.y += MARGIN;
+		r.x += MARGIN_X;
+		r.y += MARGIN_Y;
 		if (isPort) {
 			gc.fillOval(r.x, r.y, r.width, r.height);
 			gc.drawOval(r.x, r.y, r.width, r.height);
 		} else {
-			gc.fillRoundRectangle(r.x, r.y, r.width, r.height, 8, 8);
-			gc.drawRoundRectangle(r.x, r.y, r.width, r.height, 8, 8);
+			gc.fillRoundRectangle(r.x, r.y, r.width, r.height,
+					VERTEX_ARC_WIDTH, VERTEX_ARC_HEIGHT);
+			gc.drawRoundRectangle(r.x, r.y, r.width, r.height,
+					VERTEX_ARC_WIDTH, VERTEX_ARC_HEIGHT);
 		}
 	}
 
@@ -248,9 +279,10 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 				r.y = round(p_cand.y - 0.5f * extent.y - 0.5f * extent.y
 						* (float) cos(angle));
 				angle += (direction * 2 * PI / angles);
-				if (r.x < -MARGIN || r.x + r.width > layout.getWidth() + MARGIN
-						|| r.y < -MARGIN
-						|| r.y + r.height > layout.getHeight() + MARGIN) {
+				if (r.x < -MARGIN_X
+						|| r.x + r.width > layout.getWidth() + MARGIN_X
+						|| r.y < -MARGIN_Y
+						|| r.y + r.height > layout.getHeight() + MARGIN_Y) {
 					continue;
 				}
 				int intersections = 0;
@@ -289,7 +321,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		final Vector2D delta = p2.delta(p1);
 		final float len = delta.norm();
 		final Transform lineTransform = new Transform(gc.getDevice());
-		lineTransform.translate(p1.x + MARGIN, p1.y + MARGIN);
+		lineTransform.translate(p1.x + MARGIN_X, p1.y + MARGIN_Y);
 		lineTransform.rotate(delta.alpha(true));
 		gc.setTransform(lineTransform);
 		gc.drawLine(v1radius.roundX() + 2, 0, round(len) - extent.y / 2, 0);
@@ -300,7 +332,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		lineTransform.dispose();
 		/* Draw name. */
 		gc.setAlpha(255);
-		gc.drawString(name, x + MARGIN, y + MARGIN, true);
+		gc.drawString(name, x + MARGIN_X, y + MARGIN_Y, true);
 	}
 
 	private void paintDirectedEdge(GC gc, Node v1, Node v2) {
@@ -320,7 +352,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 
 		/* Draw edge's line as rotated cubic curve. */
 		final Transform lineTransform = new Transform(gc.getDevice());
-		lineTransform.translate(p1.x + MARGIN, p1.y + MARGIN);
+		lineTransform.translate(p1.x + MARGIN_X, p1.y + MARGIN_Y);
 
 		lineTransform.rotate(alpha);
 		gc.setTransform(lineTransform);
@@ -333,7 +365,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 
 		/* Draw edge's arrow as rotated polygon. */
 		final Transform arrowTransform = new Transform(gc.getDevice());
-		arrowTransform.translate(p2.x + MARGIN, p2.y + MARGIN);
+		arrowTransform.translate(p2.x + MARGIN_X, p2.y + MARGIN_Y);
 		// final float beta = (float) (180.0 / PI * atan2(bend, (center + 0.05f)
 		// * len));
 
