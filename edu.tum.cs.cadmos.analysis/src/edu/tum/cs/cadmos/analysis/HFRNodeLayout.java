@@ -31,7 +31,8 @@ public class HFRNodeLayout {
 	private final Graph graph;
 	final Set<Node> inbound = new LinkedHashSet<>();
 	final Set<Node> outbound = new LinkedHashSet<>();
-	final Set<Node> innerPorts = new LinkedHashSet<>();
+	final Set<Node> innerInboundPorts = new LinkedHashSet<>();
+	final Set<Node> innerOutboundPorts = new LinkedHashSet<>();
 	final Set<Node> innerComponents = new LinkedHashSet<>();
 	private final Map<Node, Vector2D> pos = new HashMap<>();
 	private final Map<Node, Vector2D> disp = new HashMap<>();
@@ -74,7 +75,11 @@ public class HFRNodeLayout {
 					outbound.add(node);
 				}
 			} else {
-				innerPorts.add(node);
+				if (p.getDirection() == PortDirection.INBOUND) {
+					innerInboundPorts.add(node);
+				} else {
+					innerOutboundPorts.add(node);
+				}
 			}
 		}
 		innerComponents.addAll(NodeUtils.filterBySemanticObject(
@@ -82,7 +87,8 @@ public class HFRNodeLayout {
 		// Initialize pos and disp vectors.
 		initVectors(inbound, 0);
 		initVectors(outbound, size.x);
-		initVectors(innerPorts, 0.5f * size.x);
+		initVectors(innerInboundPorts, 0.25f * size.x);
+		initVectors(innerOutboundPorts, 0.75f * size.x);
 		initVectors(innerComponents, 0.5f * size.x);
 	}
 
