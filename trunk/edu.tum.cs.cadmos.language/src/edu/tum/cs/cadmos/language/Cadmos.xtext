@@ -23,10 +23,7 @@ Parameter:
 	name=ID '=' value=INT;
 
 ComponentElement:
-	NamedComponentElement | Channel | Case | Expression;
-
-NamedComponentElement:
-	Port | Embedding | Variable;
+	Port | Embedding | Variable | Channel | Case | Expression;
 
 enum PortDirection:
 	Inbound='in' | Outbound='out';
@@ -115,7 +112,7 @@ ClosureSegment returns Expression:
 	'(' (parameters+=ClosureParameter (',' parameters+=ClosureParameter)* '|')? expression=Expression ')';
 
 ClosureParameter:
-	declaredName=ID;
+	name=ID;
 
 ParenthesizedExpression returns Expression:
 	'(' Expression ')';
