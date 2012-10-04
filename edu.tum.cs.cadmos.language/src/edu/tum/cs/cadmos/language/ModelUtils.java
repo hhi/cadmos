@@ -21,6 +21,7 @@ import edu.tum.cs.cadmos.language.cadmos.ParameterRef;
 import edu.tum.cs.cadmos.language.cadmos.Port;
 import edu.tum.cs.cadmos.language.cadmos.PortDirection;
 import edu.tum.cs.cadmos.language.cadmos.Value;
+import edu.tum.cs.cadmos.language.cadmos.Variable;
 
 public class ModelUtils {
 
@@ -68,6 +69,10 @@ public class ModelUtils {
 
 	public static List<Port> getOutgoingPorts(Component component) {
 		return getPorts(component, PortDirection.OUTBOUND);
+	}
+
+	public static List<Variable> getVariables(Component component) {
+		return getComponentElements(component, Variable.class);
 	}
 
 	public static List<Case> getCases(Component component) {
