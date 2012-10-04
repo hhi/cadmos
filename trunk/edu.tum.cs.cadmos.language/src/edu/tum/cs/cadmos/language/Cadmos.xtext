@@ -23,7 +23,7 @@ Parameter:
 	name=ID '=' value=INT;
 
 ComponentElement:
-	NamedComponentElement | Channel | Case;
+	NamedComponentElement | Channel | Case | Expression;
 
 NamedComponentElement:
 	Port | Embedding | Variable;
@@ -99,7 +99,6 @@ Call returns Expression:
 
 Segment returns Expression:
 	CallableSegment
-	//	| MemberSegment
 	| ClosureSegment;
 
 Callable:
@@ -108,10 +107,8 @@ Callable:
 CallableSegment returns Expression:
 	{CallableSegment} callable=[Callable] ('[' index=Expression ']')?;
 
-	// MemberSegment returns Expression:
-// 	{MemberSegment} member=[Member];
 enum ClosureOperators:
-	For='for' | Exists='exists' | All='all';
+	For='for' | Exists='exists' | All='all' | Select='select' | Collect='collect';
 
 ClosureSegment returns Expression:
 	{ClosureSegment} operator=ClosureOperators
