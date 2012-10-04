@@ -158,6 +158,12 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 						parameterUsed = true;
 						break;
 					}
+					if (assignment.getRight() instanceof ParameterRef
+							&& ((ParameterRef) assignment.getRight())
+									.getParameter() == p) {
+						parameterUsed = true;
+						break;
+					}
 				}
 				if (embedding.getCardinality() instanceof ParameterRef) {
 					final ParameterRef ref = (ParameterRef) embedding
