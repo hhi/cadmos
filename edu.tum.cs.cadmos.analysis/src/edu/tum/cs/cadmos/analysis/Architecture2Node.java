@@ -12,12 +12,12 @@ import edu.tum.cs.cadmos.language.cadmos.Channel;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.ComponentElement;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
-import edu.tum.cs.cadmos.language.cadmos.NamedComponentElement;
 import edu.tum.cs.cadmos.language.cadmos.Parameter;
 import edu.tum.cs.cadmos.language.cadmos.ParameterAssignment;
 import edu.tum.cs.cadmos.language.cadmos.Port;
 import edu.tum.cs.cadmos.language.cadmos.PortRef;
 import edu.tum.cs.cadmos.language.cadmos.Value;
+import edu.tum.cs.cadmos.language.cadmos.Variable;
 
 public class Architecture2Node {
 
@@ -38,9 +38,15 @@ public class Architecture2Node {
 
 	private void translateComponent(Component component, Node parent,
 			List<Parameter> parameters) {
-		// Phase I: translate ports and embeddings
-		for (final ComponentElement element : ListUtils.filter(
-				component.getElements(), NamedComponentElement.class)) {
+		// Phase I: translate ports, variables and embeddings
+		final List<ComponentElement> referencedElements = new ArrayList<>();
+		referencedElements.addAll(ListUtils.filter(component.getElements(),
+				Port.class));
+		referencedElements.addAll(ListUtils.filter(component.getElements(),
+				Variable.class));
+		referencedElements.addAll(ListUtils.filter(component.getElements(),
+				Embedding.class));
+		for (final ComponentElement element : referencedElements) {
 			translateComponentElement(element, parent, parameters);
 		}
 		// Phase II: translate channels, which reference ports and embedded

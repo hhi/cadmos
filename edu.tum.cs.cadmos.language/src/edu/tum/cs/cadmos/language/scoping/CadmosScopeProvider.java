@@ -3,7 +3,10 @@
  */
 package edu.tum.cs.cadmos.language.scoping;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.xtext.EcoreUtil2;
@@ -12,6 +15,11 @@ import org.eclipse.xtext.scoping.Scopes;
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider;
 
 import edu.tum.cs.cadmos.common.ListUtils;
+import edu.tum.cs.cadmos.language.ModelUtils;
+import edu.tum.cs.cadmos.language.cadmos.Callable;
+import edu.tum.cs.cadmos.language.cadmos.CallableSegment;
+import edu.tum.cs.cadmos.language.cadmos.ClosureParameter;
+import edu.tum.cs.cadmos.language.cadmos.ClosureSegment;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
 import edu.tum.cs.cadmos.language.cadmos.ParameterAssignment;
@@ -57,4 +65,33 @@ public class CadmosScopeProvider extends AbstractDeclarativeScopeProvider {
 		return Scopes.scopeFor(component.getParameters());
 	}
 
+	public IScope scope_CallableSegment_callable(CallableSegment segment,
+			EReference ref) {
+		final List<Callable> callables = new ArrayList<>();
+		// Add all callables of container component (parameters, ports,
+		// variables).
+		final Component component = EcoreUtil2.getContainerOfType(segment,
+				Component.class);
+		callables.addAll(component.getParameters());
+		callables.addAll(ModelUtils.getPorts(component));
+		callables.addAll(ModelUtils.getVariables(component));
+		// Add all callable closure parameters.
+		// "Inner names" remain visible if equal "outer names" are present in
+		// scope.
+		final Map<String, ClosureParameter> closureParameters = new HashMap<>();
+		ClosureSegment parentSegment = EcoreUtil2.getContainerOfType(
+				segment.eContainer(), ClosureSegment.class);
+		while (parentSegment != null) {
+			for (final ClosureParameter p : parentSegment.getParameters()) {
+				if (!closureParameters.containsKey(p.getName())) {
+					closureParameters.put(p.getName(), p);
+				}
+			}
+			parentSegment = EcoreUtil2.getContainerOfType(
+					parentSegment.eContainer(), ClosureSegment.class);
+		}
+		callables.addAll(closureParameters.values());
+		System.out.println(callables);
+		return Scopes.scopeFor(callables);
+	}
 }

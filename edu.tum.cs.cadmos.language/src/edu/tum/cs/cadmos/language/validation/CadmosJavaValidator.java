@@ -1,5 +1,6 @@
 package edu.tum.cs.cadmos.language.validation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
@@ -9,21 +10,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.validation.Check;
 
+import edu.tum.cs.cadmos.common.Assert;
+import edu.tum.cs.cadmos.common.ListUtils;
 import edu.tum.cs.cadmos.language.ModelUtils;
 import edu.tum.cs.cadmos.language.cadmos.CadmosPackage;
+import edu.tum.cs.cadmos.language.cadmos.Callable;
 import edu.tum.cs.cadmos.language.cadmos.Channel;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
-import edu.tum.cs.cadmos.language.cadmos.NamedComponentElement;
 import edu.tum.cs.cadmos.language.cadmos.Parameter;
 import edu.tum.cs.cadmos.language.cadmos.ParameterAssignment;
 import edu.tum.cs.cadmos.language.cadmos.ParameterRef;
 import edu.tum.cs.cadmos.language.cadmos.Port;
 import edu.tum.cs.cadmos.language.cadmos.PortDirection;
 import edu.tum.cs.cadmos.language.cadmos.PortRef;
+import edu.tum.cs.cadmos.language.cadmos.Variable;
 
 public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 
@@ -73,8 +79,7 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 			}
 		}
 		warning("Port " + component.getName() + "." + port.getName()
-				+ " is unused",
-				CadmosPackage.Literals.NAMED_COMPONENT_ELEMENT__NAME);
+				+ " is unused", CadmosPackage.Literals.CALLABLE__NAME);
 	}
 
 	@Check
@@ -99,8 +104,7 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 			}
 			if (!linked) {
 				warning("Port " + embedding.getName() + "." + port.getName()
-						+ " is unused",
-						CadmosPackage.Literals.NAMED_COMPONENT_ELEMENT__NAME);
+						+ " is unused", CadmosPackage.Literals.CALLABLE__NAME);
 			}
 		}
 	}
@@ -108,34 +112,36 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 	@Check
 	public void checkUniqueComponentElementNames(Component component) {
 		final Map<String, Integer> names = new HashMap<>();
-		for (final NamedComponentElement e : ModelUtils.getComponentElements(
-				component, NamedComponentElement.class)) {
-			final String name = e.getName();
+		final List<EObject> namedComponentElements = new ArrayList<>();
+		namedComponentElements.addAll(component.getParameters());
+		namedComponentElements.addAll(ListUtils.filter(component.getElements(),
+				Port.class));
+		namedComponentElements.addAll(ListUtils.filter(component.getElements(),
+				Variable.class));
+		namedComponentElements.addAll(ListUtils.filter(component.getElements(),
+				Embedding.class));
+		for (final EObject e : namedComponentElements) {
+			final String name = ModelUtils.getEObjectName(e);
 			if (names.containsKey(name)) {
 				names.put(name, names.get(name) + 1);
 			} else {
 				names.put(name, 1);
 			}
 		}
-		for (final NamedComponentElement e : ModelUtils.getComponentElements(
-				component, NamedComponentElement.class)) {
-			if (names.get(e.getName()) > 1) {
-				error("Element name " + e.getName() + " is already defined", e,
-						CadmosPackage.Literals.NAMED_COMPONENT_ELEMENT__NAME, 0);
-			}
-		}
-	}
-
-	@Check
-	public void checkUniqueComponentParameterNames(Component component) {
-		for (final Parameter p1 : component.getParameters()) {
-			for (final Parameter p2 : component.getParameters()) {
-				if (p1 != p2 && p1.getName().equals(p2.getName())) {
-					error("Parameter name " + p1.getName()
-							+ " is already defined", p1,
-							CadmosPackage.Literals.PARAMETER__NAME, 0);
-					break;
+		for (final EObject e : namedComponentElements) {
+			final String name = ModelUtils.getEObjectName(e);
+			if (names.get(name) > 1) {
+				EStructuralFeature feature;
+				if (e instanceof Callable) {
+					feature = CadmosPackage.Literals.CALLABLE__NAME;
+				} else if (e instanceof Embedding) {
+					feature = CadmosPackage.Literals.EMBEDDING__NAME;
+				} else {
+					feature = null;
+					Assert.fails("Unknown named element's class '%s'", e);
 				}
+				error("Element name " + name + " is already defined", e,
+						feature, 0);
 			}
 		}
 	}
