@@ -38,7 +38,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 
 	protected static final int TIMER_INTERVAL_MILLIS = 33;
 	protected static final int MARGIN = 25;
-	protected static final int POST_PAINTINGS = 10;
+	protected static final int POST_PAINTINGS = 5;
 
 	protected Component component;
 	protected HFRNodeLayout layout;
