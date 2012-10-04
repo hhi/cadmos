@@ -67,7 +67,12 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 	public void checkPortLinked(Port port) {
 		final Component component = EcoreUtil2.getContainerOfType(port,
 				Component.class);
-		for (final Channel channel : ModelUtils.getChannels(component)) {
+		final List<Channel> channels = ModelUtils.getChannels(component);
+		final List<Embedding> embeddings = ModelUtils.getEmbeddings(component);
+		if (channels.isEmpty() && embeddings.isEmpty()) {
+			return; // This is a "leaf" component.
+		}
+		for (final Channel channel : channels) {
 			if (port.getDirection() == PortDirection.INBOUND
 					&& channel.getSource().getPort() == port) {
 				return;
@@ -104,7 +109,7 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 			}
 			if (!linked) {
 				warning("Port " + embedding.getName() + "." + port.getName()
-						+ " is unused", CadmosPackage.Literals.CALLABLE__NAME);
+						+ " is unused", CadmosPackage.Literals.EMBEDDING__NAME);
 			}
 		}
 	}
