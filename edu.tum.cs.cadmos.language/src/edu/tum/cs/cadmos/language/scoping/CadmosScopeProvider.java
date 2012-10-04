@@ -77,7 +77,7 @@ public class CadmosScopeProvider extends AbstractDeclarativeScopeProvider {
 		callables.addAll(ModelUtils.getVariables(component));
 		// Add all callable closure parameters.
 		// "Inner names" remain visible if equal "outer names" are present in
-		// scope.
+		// scope (i.e. "outer names" are shadowed by "inner names").
 		final Map<String, ClosureParameter> closureParameters = new HashMap<>();
 		ClosureSegment parentSegment = EcoreUtil2.getContainerOfType(
 				segment.eContainer(), ClosureSegment.class);
@@ -91,7 +91,7 @@ public class CadmosScopeProvider extends AbstractDeclarativeScopeProvider {
 					parentSegment.eContainer(), ClosureSegment.class);
 		}
 		callables.addAll(closureParameters.values());
-		System.out.println(callables);
 		return Scopes.scopeFor(callables);
 	}
+
 }
