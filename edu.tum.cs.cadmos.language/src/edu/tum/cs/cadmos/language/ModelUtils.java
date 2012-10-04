@@ -131,4 +131,16 @@ public class ModelUtils {
 		}
 		return s.toString();
 	}
+
+	public static <E extends EObject> String getParameterNameValuePairs(
+			List<Parameter> list, String separator) {
+		final StringBuilder s = new StringBuilder();
+		for (int i = 0; i < list.size(); i++) {
+			if (i > 0) {
+				s.append(separator);
+			}
+			s.append(list.get(i).getName() + "=" + list.get(i).getValue());
+		}
+		return s.toString();
+	}
 }
