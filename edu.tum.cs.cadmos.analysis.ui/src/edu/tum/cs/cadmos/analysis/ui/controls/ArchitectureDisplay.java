@@ -41,7 +41,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 	protected static final int TIMER_INTERVAL_MILLIS = 33;
 	protected static final int MARGIN_X = 65;
 	protected static final int MARGIN_Y = 55;
-	protected static final int POST_PAINTINGS = 5;
+	protected static final int POST_PAINTINGS = 3;
 	private static final int VERTEX_ARC_WIDTH = 8;
 	private static final int VERTEX_ARC_HEIGHT = 8;
 
@@ -62,7 +62,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 			}
 			long time = System.nanoTime();
 			if (layout != null && !layout.done()) {
-				for (int i = 0; i < 100; i++) {
+				for (int i = 0; i < 50; i++) {
 					layout.step();
 					if (layout.done()
 							|| (System.nanoTime() - time) / 1_000_000 >= TIMER_INTERVAL_MILLIS / 2) {
@@ -119,8 +119,10 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		final Graph graph = layout.getGraph();
 		final GC gc = new GC(buffer);
 		gc.setAntialias(SWT.ON);
+		gc.setTextAntialias(SWT.ON);
 		if (postPaintings > 1) {
-			gc.setAlpha(40);
+			// Lower alpha means more "fade out" steps.
+			gc.setAlpha(48);
 		}
 		gc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		gc.fillRectangle(getClientArea());
@@ -147,6 +149,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		if (layout.done()) {
 			gc.setAlpha(255);
 		} else {
+			// Lower alpha means more "washed out" look during layout phase.
 			gc.setAlpha(128);
 		}
 
