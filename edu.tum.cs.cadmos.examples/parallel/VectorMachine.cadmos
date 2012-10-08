@@ -1,22 +1,29 @@
 package parallel.algorithms
 
-component VectorMachine(N=1) {
+component VectorMachine(N=4,R=3) {
 	in input
-	out output
+	out output[R]
 	
 	embed Split(N=N) split
 	embed Instruction instruction[N]
-	embed Merge(N=N) merge
+	embed Merge(N=N) merge[R]
 	
 	channel input -> split.input
 	channel split.output[i] -> instruction[i].input
 	channel instruction[i].output -> merge.input[i]
-	channel merge.output -> output
+	channel merge[i].output -> output[i]
 }
 
-component Split(N=1) {
+component Split(N=4) {
 	in input
 	out output[N]
+	
+//	var Integer pos
+//	
+//	case true {
+//		output[pos] = input
+//		pos = (pos + 1) % N
+//	}
 }
 
 component Instruction {
@@ -24,7 +31,15 @@ component Instruction {
 	out output
 }
 
-component Merge(N=1) {
+component Merge(N=4) {
 	in input[N]
 	out output
+
+//	var Integer pos
+//	
+//	case true {
+//		output = input[pos]
+//		pos = (pos + 1) % N
+//	}
 }
+
