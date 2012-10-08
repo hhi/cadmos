@@ -1,0 +1,54 @@
+package automotive.acc
+
+component ACCSystem {
+	in vehicleAheadExists
+	in vehicleAheadDistance
+	in vehicleSpeed
+	in driverCommandSpeed
+	
+	out brakePower
+	out enginePower
+	
+	embed CruiseControl cc
+	embed PCS pcs
+	embed Arbiter arbiter
+	
+	channel vehicleAheadExists -> pcs.vehicleAheadExists
+	channel vehicleAheadDistance -> pcs.vehicleAheadDistance
+ 	channel vehicleSpeed -> cc.vehicleSpeed
+ 	channel vehicleSpeed -> pcs.vehicleSpeed
+	channel driverCommandSpeed -> cc.driverCommandSpeed
+	
+	channel cc.enginePower -> arbiter.inputs
+	channel pcs.suspend -> arbiter.suspend
+	channel arbiter.outputs -> enginePower
+	channel pcs.brakePower -> brakePower 
+}
+
+component CruiseControl {
+	in vehicleSpeed
+	in driverCommandSpeed
+	
+	out enginePower
+}
+
+component PCS {
+	in vehicleAheadExists
+	in vehicleAheadDistance
+	in vehicleSpeed
+	
+	out suspend
+	out brakePower
+}
+
+component Arbiter(N=1) {
+	in inputs[N]
+	in suspend
+	out outputs[N]
+	
+	case !suspend {
+		outputs.forEach([output, index | output = inputs[index]])
+	}
+}
+
+
