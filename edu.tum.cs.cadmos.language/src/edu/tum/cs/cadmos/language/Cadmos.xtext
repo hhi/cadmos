@@ -23,13 +23,19 @@ Parameter:
 	name=ID '=' value=INT;
 
 ComponentElement:
-	Port | Embedding | Variable | Channel | Case | Expression;
+	Port
+	| Embedding
+	| Variable
+	| Channel
+	| Case
+	| Expression;
 
 enum PortDirection:
-	Inbound='in' | Outbound='out';
+	Inbound='in'
+	| Outbound='out';
 
 Port:
-	direction=PortDirection name=ID ('[' cardinality=Value ']')?;
+	direction=PortDirection typeRef=TypeRef? name=ID ('[' cardinality=Value ']')? ('rate' rate=Value)?;
 
 Embedding:
 	'embed' component=[Component]
@@ -43,7 +49,8 @@ PortRef:
 	(embedding=[Embedding] ('[' embeddingIndex=ID ']')? '.')? port=[Port] ('[' portIndex=ID ']')?;
 
 Value:
-	IntegerLiteral | ParameterRef;
+	IntegerLiteral
+	| ParameterRef;
 
 ParameterRef:
 	parameter=[Parameter];
@@ -96,26 +103,37 @@ Call returns Expression:
 
 Segment returns Expression:
 	CallableSegment
-	| ClosureSegment;
+	| ClosureSegment
+	| NativeFunctionSegment;
 
 Callable:
-	Port | Variable | ClosureParameter | Parameter;
+	Port
+	| Variable
+	| ClosureParameter
+	| Parameter;
 
 CallableSegment returns Expression:
-	{CallableSegment} callable=[Callable] ('[' index=Expression ']')?;
+	{CallableSegment} callable=[Callable] ('[' index+=Expression ']')?;
 
 enum ClosureOperators:
-	For='for' | Exists='exists' | All='all' | Select='select' | Collect='collect';
+	ForEach='forEach' | Exists='exists' | All='all' | Select='select' | Collect='collect';
 
 ClosureSegment returns Expression:
 	{ClosureSegment} operator=ClosureOperators
-	'(' (parameters+=ClosureParameter (',' parameters+=ClosureParameter)* '|')? expression=Expression ')';
+	'(' '[' (parameters+=ClosureParameter (',' parameters+=ClosureParameter)* '|')? expression=Expression ']' ')';
 
 ClosureParameter:
 	name=ID;
 
 ParenthesizedExpression returns Expression:
 	'(' Expression ')';
+
+enum NativeFunctionNames:
+	TimedAccess='at';
+
+NativeFunctionSegment returns Expression:
+	{NativeFunctionSegment} name=NativeFunctionNames
+	'(' parameterValues+=Expression (',' parameterValues+=Expression)* ')';
 
 Literal returns Expression:
 	BooleanLiteral | IntegerLiteral | RealLiteral;
@@ -137,7 +155,9 @@ PrimitiveTypeRef:
 	type=PrimitiveTypes;
 
 enum PrimitiveTypes:
-	Boolean | Integer | Real;
+	Boolean='boolean'
+	| Integer='int'
+	| Real='real';
 
 /* TERMINALS AND NAMES */
 QualifiedName:

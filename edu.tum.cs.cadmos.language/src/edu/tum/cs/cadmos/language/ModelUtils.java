@@ -139,8 +139,14 @@ public class ModelUtils {
 			if (i > 0) {
 				s.append(separator);
 			}
-			s.append(list.get(i).getName() + "=" + list.get(i).getValue());
+			s.append(getParameterNameValuePair(list.get(i)));
 		}
 		return s.toString();
 	}
+
+	public static String getParameterNameValuePair(Parameter p) {
+		Assert.assertNotNull(p, "p");
+		return p.getName() + "=" + p.getValue();
+	}
+
 }
