@@ -159,13 +159,14 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 					.getEmbeddings(component)) {
 				for (final ParameterAssignment assignment : embedding
 						.getParameterAssignments()) {
-					if (assignment.getLeft() == p) {
+					final EObject left = assignment.getLeft();
+					final EObject right = assignment.getRight();
+					if (left == p) {
 						parameterUsed = true;
 						break;
 					}
-					if (assignment.getRight() instanceof ParameterRef
-							&& ((ParameterRef) assignment.getRight())
-									.getParameter() == p) {
+					if (right instanceof ParameterRef
+							&& ((ParameterRef) right).getParameter() == p) {
 						parameterUsed = true;
 						break;
 					}
@@ -209,8 +210,13 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 		for (final ParameterAssignment p1 : embedding.getParameterAssignments()) {
 			for (final ParameterAssignment p2 : embedding
 					.getParameterAssignments()) {
-				if (p1 != p2 && p1.getLeft().equals(p2.getLeft())) {
-					error("Parameter " + p1.getLeft().getName()
+				if (p1 == p2) {
+					continue;
+				}
+				final Parameter l1 = p1.getLeft();
+				final Parameter l2 = p2.getLeft();
+				if (l1.equals(l2)) {
+					error("Parameter " + ModelUtils.getEObjectName(l1)
 							+ " is already assigned", p1,
 							CadmosPackage.Literals.PARAMETER_ASSIGNMENT__LEFT,
 							0);
