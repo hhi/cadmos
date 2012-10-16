@@ -3,6 +3,8 @@ package edu.tum.cs.cadmos.analysis;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.common.util.EList;
+
 import edu.tum.cs.cadmos.common.Assert;
 import edu.tum.cs.cadmos.common.ListUtils;
 import edu.tum.cs.cadmos.common.ObjectUtils;
@@ -13,7 +15,6 @@ import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.ComponentElement;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
 import edu.tum.cs.cadmos.language.cadmos.Parameter;
-import edu.tum.cs.cadmos.language.cadmos.ParameterAssignment;
 import edu.tum.cs.cadmos.language.cadmos.Port;
 import edu.tum.cs.cadmos.language.cadmos.PortRef;
 import edu.tum.cs.cadmos.language.cadmos.Value;
@@ -107,26 +108,27 @@ public class Architecture2Node {
 	private List<Parameter> deferEmbeddedParameters(Embedding embedding,
 			List<Parameter> parameters) {
 		final List<Parameter> result = new ArrayList<>();
-		final Component component = embedding.getComponent();
-		if (component == null) {
+		final Component embeddedComponent = embedding.getComponent();
+		if (embeddedComponent == null) {
 			return result;
 		}
-		for (final Parameter parameter : ListUtils.nullIsEmpty(component
-				.getParameters())) {
-			final Parameter embeddedParameter = factory.createParameter();
-			result.add(embeddedParameter);
-			final String name = parameter.getName();
-			embeddedParameter.setName(name);
-			int value = parameter.getValue(); // Begin with default value.
-			for (final ParameterAssignment assignment : embedding
-					.getParameterAssignments()) {
-				if (assignment.getLeft().getName().equals(name)) {
-					// Overwrite default value with assigned value.
-					value = ModelUtils.eval(assignment.getRight(), parameters);
-					break;
-				}
-			}
-			embeddedParameter.setValue(value);
+		final EList<Parameter> embeddedParameters = embeddedComponent
+				.getParameters();
+		final EList<Value> parameterValues = embedding.getParameterValues();
+		if (embeddedParameters.size() != parameterValues.size()) {
+			return result;
+		}
+		int index = 0;
+		for (final Parameter embeddedParameter : ListUtils
+				.nullIsEmpty(embeddedParameters)) {
+			final Parameter resolvedParameter = factory.createParameter();
+			result.add(resolvedParameter);
+			final String name = embeddedParameter.getName();
+			resolvedParameter.setName(name);
+			final int value = ModelUtils.eval(parameterValues.get(index),
+					parameters);
+			resolvedParameter.setValue(value);
+			index++;
 		}
 		return result;
 	}

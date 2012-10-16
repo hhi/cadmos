@@ -62,7 +62,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 			}
 			long time = System.nanoTime();
 			if (layout != null && !layout.done()) {
-				for (int i = 0; i < 50; i++) {
+				for (int i = 0; i < 100; i++) {
 					layout.step();
 					if (layout.done()
 							|| (System.nanoTime() - time) / 1_000_000 >= TIMER_INTERVAL_MILLIS / 2) {
@@ -70,11 +70,11 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 					}
 				}
 				redraw();
-				update();
+				// update();
 				postPaintings = POST_PAINTINGS;
 			} else if (postPaintings-- > 0) {
 				redraw();
-				update();
+				// update();
 			}
 			time = max(0, TIMER_INTERVAL_MILLIS - (System.nanoTime() - time)
 					/ 1_000_000);
@@ -246,8 +246,8 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		final Vector2D v1radius = getRadius(v1);
 		final int angles = 16;
 		final int min_radius = 30;
-		final int max_radius = 70;
-		final int inc_radius = 20;
+		final int max_radius = 190;
+		final int inc_radius = 40;
 		final String name = v1.getLocalId();
 		final Point extent = gc.stringExtent(name);
 		final Rectangle r = new Rectangle(0, 0, extent.x, extent.y);
@@ -292,8 +292,9 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 				for (final Node v2 : layout.getGraph()) {
 					final Vector2D p2 = layout.get(v2);
 					final Vector2D r2 = getRadius(v2);
-					if (r.intersects(p2.roundX() - r2.roundX(), p2.roundY()
-							- r2.roundY(), r2.roundX() * 2, r2.roundY() * 2)) {
+					if (r.intersects(p2.roundX() - r2.roundX() - 4, p2.roundY()
+							- r2.roundY() - 4, r2.roundX() * 2 + 8,
+							r2.roundY() * 2 + 8)) {
 						intersections++;
 					}
 				}
@@ -333,6 +334,10 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		// * abs(cos(alpha)) - extent.y * 0.5 * abs(sin(alpha))) - 2, 0);
 		gc.setTransform(null);
 		lineTransform.dispose();
+		/* Draw background box. */
+		gc.setAlpha(128);
+		gc.fillRoundRectangle(x + MARGIN_X - 6, y + MARGIN_Y - 2,
+				extent.x + 12, extent.y + 4, 6, 6);
 		/* Draw name. */
 		gc.setAlpha(255);
 		gc.drawString(name, x + MARGIN_X, y + MARGIN_Y, true);
