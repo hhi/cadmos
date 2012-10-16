@@ -24,11 +24,11 @@ import edu.tum.cs.cadmos.language.cadmos.Channel;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
 import edu.tum.cs.cadmos.language.cadmos.Parameter;
-import edu.tum.cs.cadmos.language.cadmos.ParameterAssignment;
 import edu.tum.cs.cadmos.language.cadmos.ParameterRef;
 import edu.tum.cs.cadmos.language.cadmos.Port;
 import edu.tum.cs.cadmos.language.cadmos.PortDirection;
 import edu.tum.cs.cadmos.language.cadmos.PortRef;
+import edu.tum.cs.cadmos.language.cadmos.Value;
 import edu.tum.cs.cadmos.language.cadmos.Variable;
 
 public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
@@ -157,16 +157,9 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 			boolean parameterUsed = false;
 			for (final Embedding embedding : ModelUtils
 					.getEmbeddings(component)) {
-				for (final ParameterAssignment assignment : embedding
-						.getParameterAssignments()) {
-					final EObject left = assignment.getLeft();
-					final EObject right = assignment.getRight();
-					if (left == p) {
-						parameterUsed = true;
-						break;
-					}
-					if (right instanceof ParameterRef
-							&& ((ParameterRef) right).getParameter() == p) {
+				for (final Value value : embedding.getParameterValues()) {
+					if (value instanceof ParameterRef
+							&& ((ParameterRef) value).getParameter() == p) {
 						parameterUsed = true;
 						break;
 					}
@@ -206,23 +199,21 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 	}
 
 	@Check
-	public void checkUniqueParameterAssignments(Embedding embedding) {
-		for (final ParameterAssignment p1 : embedding.getParameterAssignments()) {
-			for (final ParameterAssignment p2 : embedding
-					.getParameterAssignments()) {
-				if (p1 == p2) {
-					continue;
-				}
-				final Parameter l1 = p1.getLeft();
-				final Parameter l2 = p2.getLeft();
-				if (l1.equals(l2)) {
-					error("Parameter " + ModelUtils.getEObjectName(l1)
-							+ " is already assigned", p1,
-							CadmosPackage.Literals.PARAMETER_ASSIGNMENT__LEFT,
-							0);
-					break;
-				}
-			}
+	public void checkNumberOfParameterValues(Embedding embedding) {
+		final Component component = embedding.getComponent();
+		final int actualParameters = embedding.getParameterValues().size();
+		if (component == null) {
+			return;
+		}
+		final int expectedParameters = component.getParameters().size();
+		if (actualParameters != expectedParameters) {
+			final String expectedNames = ModelUtils.getEObjectNames(
+					component.getParameters(), ", ");
+			final String actualNames = ModelUtils.getValueNames(
+					embedding.getParameterValues(), ", ");
+			error("Illegal number of parameters. Expected signature ("
+					+ expectedNames + "), but was (" + actualNames + ")",
+					CadmosPackage.Literals.EMBEDDING__COMPONENT);
 		}
 	}
 

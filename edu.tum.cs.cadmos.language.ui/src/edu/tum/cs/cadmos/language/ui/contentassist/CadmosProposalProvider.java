@@ -60,28 +60,22 @@ public class CadmosProposalProvider extends AbstractCadmosProposalProvider {
 	}
 
 	@Override
-	public void completeEmbedding_ParameterAssignments(EObject model,
+	public void completeEmbedding_ParameterValues(EObject model,
 			Assignment assignment, ContentAssistContext context,
 			ICompletionProposalAcceptor acceptor) {
-		super.completeEmbedding_ParameterAssignments(model, assignment,
-				context, acceptor);
+		super.completeEmbedding_ParameterValues(model, assignment, context,
+				acceptor);
 		final Embedding embedding = (Embedding) model;
 		final Component component = embedding.getComponent();
 		if (component == null) {
 			return;
 		}
-		for (final Parameter parameter : component.getParameters()) {
-			final String valueProposal = parameter.getName() + "="
-					+ parameter.getValue();
-			acceptor.accept(createCompletionProposal(valueProposal, context));
-			final Component containerComponent = EcoreUtil2.getContainerOfType(
-					embedding, Component.class);
-			for (final Parameter containerComponentParameter : containerComponent
-					.getParameters()) {
-				final String nameProposal = parameter.getName() + "="
-						+ containerComponentParameter.getName();
-				acceptor.accept(createCompletionProposal(nameProposal, context));
-			}
+		final Component containerComponent = EcoreUtil2.getContainerOfType(
+				embedding, Component.class);
+		for (final Parameter containerComponentParameter : containerComponent
+				.getParameters()) {
+			final String nameProposal = containerComponentParameter.getName();
+			acceptor.accept(createCompletionProposal(nameProposal, context));
 		}
 	}
 }

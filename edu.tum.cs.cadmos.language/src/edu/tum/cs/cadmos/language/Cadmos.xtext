@@ -39,7 +39,7 @@ Port:
 
 Embedding:
 	'embed' component=[Component]
-	('(' (parameterAssignments+=ParameterAssignment (',' parameterAssignments+=ParameterAssignment)*)? ')')?
+	('(' (parameterValues+=Value (',' parameterValues+=Value)*)? ')')?
 	name=ID ('[' cardinality=Value ']')?;
 
 Channel:
@@ -54,9 +54,6 @@ Value:
 
 ParameterRef:
 	parameter=[Parameter];
-
-ParameterAssignment:
-	left=[Parameter] '=' right=Value;
 
 Variable:
 	'var' typeRef=TypeRef name=ID ('=' initializer=Expression)?;
@@ -120,7 +117,7 @@ enum ClosureOperators:
 
 ClosureSegment returns Expression:
 	{ClosureSegment} operator=ClosureOperators
-	'(' '[' (parameters+=ClosureParameter (',' parameters+=ClosureParameter)* '|')? expression=Expression ']' ')';
+	'(' (parameters+=ClosureParameter (',' parameters+=ClosureParameter)* '|')? expression=Expression ')';
 
 ClosureParameter:
 	name=ID;

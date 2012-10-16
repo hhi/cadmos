@@ -22,7 +22,6 @@ import edu.tum.cs.cadmos.language.cadmos.ClosureParameter;
 import edu.tum.cs.cadmos.language.cadmos.ClosureSegment;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
-import edu.tum.cs.cadmos.language.cadmos.ParameterAssignment;
 import edu.tum.cs.cadmos.language.cadmos.Port;
 import edu.tum.cs.cadmos.language.cadmos.PortRef;
 
@@ -49,20 +48,6 @@ public class CadmosScopeProvider extends AbstractDeclarativeScopeProvider {
 		final List<Port> ports = ListUtils.filter(component.getElements(),
 				Port.class);
 		return Scopes.scopeFor(ports);
-	}
-
-	public IScope scope_ParameterAssignment_left(
-			ParameterAssignment assignment, EReference ref) {
-		final Embedding embedding = EcoreUtil2.getContainerOfType(assignment,
-				Embedding.class);
-		if (embedding == null) {
-			return IScope.NULLSCOPE;
-		}
-		final Component component = embedding.getComponent();
-		if (component == null) {
-			return IScope.NULLSCOPE;
-		}
-		return Scopes.scopeFor(component.getParameters());
 	}
 
 	public IScope scope_CallableSegment_callable(CallableSegment segment,

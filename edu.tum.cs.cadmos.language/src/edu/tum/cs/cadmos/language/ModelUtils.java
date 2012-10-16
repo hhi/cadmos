@@ -99,6 +99,24 @@ public class ModelUtils {
 				String.format("Parameter '%s' not found", name));
 	}
 
+	public static String getValueName(Value value) {
+		if (value instanceof IntegerLiteral) {
+			return String.valueOf(((IntegerLiteral) value).getValue());
+		}
+		Assert.assertInstanceOf(value, ParameterRef.class, "value");
+		final Parameter parameter = ((ParameterRef) value).getParameter();
+		return parameter.getName();
+	}
+
+	public static String getValueNames(List<Value> list, String separator) {
+		final StringBuilder s = new StringBuilder();
+		for (int i = 0; i < list.size(); i++) {
+			s.append(i > 0 ? separator : "");
+			s.append(getValueName(list.get(i)));
+		}
+		return s.toString();
+	}
+
 	@SuppressWarnings("rawtypes")
 	public static String getEObjectName(EObject eObject) {
 		Assert.assertNotNull(eObject, "eObject");
@@ -136,9 +154,7 @@ public class ModelUtils {
 			List<Parameter> list, String separator) {
 		final StringBuilder s = new StringBuilder();
 		for (int i = 0; i < list.size(); i++) {
-			if (i > 0) {
-				s.append(separator);
-			}
+			s.append(i > 0 ? separator : "");
 			s.append(getParameterNameValuePair(list.get(i)));
 		}
 		return s.toString();
