@@ -6,10 +6,67 @@ package edu.tum.cs.cadmos.language.generator
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.IGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess
+import edu.tum.cs.cadmos.language.cadmos.Component
+import com.google.inject.Inject
+import org.eclipse.xtext.naming.IQualifiedNameProvider
+import edu.tum.cs.cadmos.language.cadmos.Model
+import org.eclipse.xtext.EcoreUtil2
+import edu.tum.cs.cadmos.language.cadmos.ComponentElement
+import edu.tum.cs.cadmos.language.cadmos.Port
+import edu.tum.cs.cadmos.language.cadmos.Callable
+import edu.tum.cs.cadmos.language.cadmos.PrimitiveTypeRef
+import edu.tum.cs.cadmos.language.cadmos.PrimitiveTypes
+import edu.tum.cs.cadmos.language.cadmos.TypeRef
 
 class CadmosGenerator implements IGenerator {
 	
+	@Inject extension IQualifiedNameProvider
+	
 	override void doGenerate(Resource resource, IFileSystemAccess fsa) {
-		//TODO implement me
+		for(c: resource.allContents.toIterable.filter(typeof(Component))) {
+			fsa.generateFile(c.fullyQualifiedName.toString("/") + ".java", c.compile)
+		}
+	}
+	
+	
+	def String compile(Component c) '''
+		package «c.model.fullyQualifiedName.toString(".")»;
+		public class «c.name» {
+			«FOR e : c.elements»
+				«e.compile»
+			«ENDFOR»
+		}
+	'''
+	
+	def Model model(Component c) {
+		EcoreUtil2::getContainerOfType(c, typeof(Model))
+	}
+	
+	def String compile(ComponentElement e) {
+		switch e {
+			Port : e.compile 
+		}
+	}
+	
+	def String compile(Port p) '''
+		public Port<«p.typeRef.typeName»> «p.identifier» = new Port<>();
+	'''
+	
+	def String identifier(Callable c) {
+		c.name
+	}
+	
+	def String typeName(TypeRef ref) {
+		switch ref {
+			PrimitiveTypeRef : ref.type.primitiveTypeName
+		}
+	}
+
+	def String primitiveTypeName(PrimitiveTypes t) {
+		switch t {
+			case PrimitiveTypes::BOOLEAN : "Boolean"
+			case PrimitiveTypes::INTEGER : "Integer"
+			case PrimitiveTypes::REAL : "Float"
+		}
 	}
 }
