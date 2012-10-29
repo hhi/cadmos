@@ -13,7 +13,6 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
@@ -48,7 +47,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 	protected Component component;
 	protected HFRNodeLayout layout;
 
-	protected Vector2D componentRadius = new Vector2D(10, 10);
+	protected Vector2D componentRadius = new Vector2D(11, 11);
 	protected Vector2D portRadius = new Vector2D(5, 5);
 
 	protected Image buffer;
@@ -230,15 +229,15 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 				radius.roundY() * 2);
 		r.x += MARGIN_X;
 		r.y += MARGIN_Y;
-		if (isPort) {
-			gc.fillOval(r.x, r.y, r.width, r.height);
-			gc.drawOval(r.x, r.y, r.width, r.height);
-		} else {
-			gc.fillRoundRectangle(r.x, r.y, r.width, r.height,
-					VERTEX_ARC_WIDTH, VERTEX_ARC_HEIGHT);
-			gc.drawRoundRectangle(r.x, r.y, r.width, r.height,
-					VERTEX_ARC_WIDTH, VERTEX_ARC_HEIGHT);
-		}
+		// if (isPort) {
+		gc.fillOval(r.x, r.y, r.width, r.height);
+		gc.drawOval(r.x, r.y, r.width, r.height);
+		// } else {
+		// gc.fillRoundRectangle(r.x, r.y, r.width, r.height,
+		// VERTEX_ARC_WIDTH, VERTEX_ARC_HEIGHT);
+		// gc.drawRoundRectangle(r.x, r.y, r.width, r.height,
+		// VERTEX_ARC_WIDTH, VERTEX_ARC_HEIGHT);
+		// }
 	}
 
 	private void paintVertexName(GC gc, Node v1, List<Rectangle> textBoxes) {
@@ -352,7 +351,7 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 		final Vector2D v2radius = getRadius(v2);
 
 		/* Pre-calculate geometric variables. */
-		final Path line = new Path(gc.getDevice());
+		// final Path line = new Path(gc.getDevice());
 		final float dX = p2.x - p1.x;
 		final float dY = p2.y - p1.y;
 		final float len = (float) sqrt(dX * dX + dY * dY);
@@ -364,12 +363,13 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 
 		lineTransform.rotate(alpha);
 		gc.setTransform(lineTransform);
-		line.moveTo(v1radius.x, 0);
-		line.quadTo(center * len, bend, len - v2radius.x, 0);
-		gc.drawPath(line);
+		// line.moveTo(v1radius.x, 0);
+		// line.quadTo(center * len, bend, len - v2radius.x, 0);
+		// gc.drawPath(line);
+		gc.drawLine(v1radius.roundX(), 0, round(len - v2radius.x), 0);
 		gc.setTransform(null);
 		lineTransform.dispose();
-		line.dispose();
+		// line.dispose();
 
 		/* Draw edge's arrow as rotated polygon. */
 		final Transform arrowTransform = new Transform(gc.getDevice());
