@@ -17,40 +17,104 @@ import edu.tum.cs.cadmos.language.cadmos.Callable
 import edu.tum.cs.cadmos.language.cadmos.PrimitiveTypeRef
 import edu.tum.cs.cadmos.language.cadmos.PrimitiveTypes
 import edu.tum.cs.cadmos.language.cadmos.TypeRef
+import java.awt.CardLayout$Card
+import org.eclipse.emf.ecore.EPackage
+import org.eclipse.emf.ecore.EcorePackage
+import org.eclipse.emf.ecore.impl.EPackageImpl
 
 class CadmosGenerator implements IGenerator {
 	
 	@Inject extension IQualifiedNameProvider
 	
 	override void doGenerate(Resource resource, IFileSystemAccess fsa) {
+		generatePortClass(fsa);
 		for(c: resource.allContents.toIterable.filter(typeof(Component))) {
 			fsa.generateFile(c.fullyQualifiedName.toString("/") + ".java", c.compile)
 		}
 	}
 	
+	def generatePortClass(IFileSystemAccess access) { 
+		access.generateFile("utils/Port.java", compilePort());
+	}
+	
+	def String compilePort() '''
+		package utils;
+		
+		import java.util.LinkedList;
+		
+		public class Port<T> {
+		
+			private final LinkedList<T> buffer;
+		
+			public Port() {
+				buffer = new LinkedList<>();
+			}
+		
+			public synchronized void push(T e) {
+				buffer.add(e);
+			}
+		
+			public synchronized T pop() {
+				if (buffer.size() == 0) {
+					return null;
+				}
+				
+				T e = buffer.getFirst();
+				buffer.removeFirst();
+				return e;
+			}
+
+		}
+	'''
+	
 	
 	def String compile(Component c) '''
 		package «c.model.fullyQualifiedName.toString(".")»;
+		
+		import utils.*;
+		
 		public class «c.name» {
+			
 			«FOR e : c.elements»
-				«e.compile»
+				«switch e {
+					Port : e.compile
+				}»
 			«ENDFOR»
+			
+			public «c.name» () {
+				«FOR e : c.elements»
+					«switch e {
+					Port : e.compileInstantiation
+					}»
+				«ENDFOR»
+			}
 		}
+	'''
+	
+	def compileInstantiation(Port p) '''
+		«if(p.eIsSet(p.eClass.getEStructuralFeature("cardinality"))) {
+			'''
+			for(int i = 0; i < 3; ++ i)
+				«p.identifier»[i] = new Port<«p.typeRef.typeName»>();
+			'''
+		} else {
+			'''
+			«p.identifier» = new Port<«p.typeRef.typeName»>();
+			'''
+		}»
 	'''
 	
 	def Model model(Component c) {
 		EcoreUtil2::getContainerOfType(c, typeof(Model))
 	}
 	
-	def String compile(ComponentElement e) {
-		switch e {
-			Port : e.compile 
-		}
-	}
-	
 	def String compile(Port p) '''
-		public Port<«p.typeRef.typeName»> «p.identifier» = new Port<>();
-	'''
+		«if(p.eIsSet(p.eClass.getEStructuralFeature("cardinality"))) {
+			'''public Port<«p.typeRef.typeName»>[] «p.identifier» = new Port[3];'''
+		} else {
+			'''public Port<«p.typeRef.typeName»> «p.identifier»;'''
+		}»
+	'''	
 	
 	def String identifier(Callable c) {
 		c.name
@@ -59,6 +123,7 @@ class CadmosGenerator implements IGenerator {
 	def String typeName(TypeRef ref) {
 		switch ref {
 			PrimitiveTypeRef : ref.type.primitiveTypeName
+			default: "Object"
 		}
 	}
 
