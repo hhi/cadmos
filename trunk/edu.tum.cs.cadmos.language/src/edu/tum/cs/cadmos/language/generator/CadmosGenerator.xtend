@@ -21,6 +21,13 @@ import java.awt.CardLayout$Card
 import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.EcorePackage
 import org.eclipse.emf.ecore.impl.EPackageImpl
+import org.eclipse.emf.common.util.EList
+import edu.tum.cs.cadmos.language.cadmos.Parameter
+import edu.tum.cs.cadmos.language.cadmos.Embedding
+import edu.tum.cs.cadmos.language.cadmos.Value
+import edu.tum.cs.cadmos.language.cadmos.IntegerLiteral
+import edu.tum.cs.cadmos.language.cadmos.IntegerLiteral
+import edu.tum.cs.cadmos.language.cadmos.ParameterRef
 
 class CadmosGenerator implements IGenerator {
 	
@@ -77,24 +84,98 @@ class CadmosGenerator implements IGenerator {
 			
 			«FOR e : c.elements»
 				«switch e {
-					Port : e.compile
+					Port : e.compileDecl
+					Embedding : e.compileDecl
 				}»
 			«ENDFOR»
+			«c.parameters.compileDecl»
 			
-			public «c.name» () {
+			«IF c.parameters.size > 0 »
+			/**
+			 * Constructor for embedding this component.
+			 */
+			public «c.name» («c.parameters.compileDeclArgument») {
+				«c.parameters.compileInit»
+				
 				«FOR e : c.elements»
 					«switch e {
-					Port : e.compileInstantiation
+						Port : e.compileInstantiation
+						Embedding : e.compileInstantiation
+					}»
+				«ENDFOR»
+			}
+			«ENDIF»
+			
+			/**
+			 * Default constructor.
+			 */
+			public «c.name» () {
+				«c.parameters.compileInitDefault»
+				
+				«FOR e : c.elements»
+					«switch e {
+						Port : e.compileInstantiation
+						Embedding : e.compileInstantiation
 					}»
 				«ENDFOR»
 			}
 		}
 	'''
 	
+	def compileInstantiation(Embedding e) '''
+		«if(e.eIsSet(e.eClass.getEStructuralFeature("cardinality"))) {
+			'''
+			«e.name» = new «e.component.name»[«e.cardinality.compile»];
+			for(int i = 0; i < «e.cardinality.compile»; ++ i)
+				«e.name»[i] = new «e.component.name»(«FOR v : e.parameterValues SEPARATOR ", "»«v.compile»«ENDFOR»);
+			'''
+		} else {
+			'''
+			«e.name» = new «e.component.name»(«FOR v : e.parameterValues SEPARATOR ", "»«v.compile»«ENDFOR»);
+			'''
+		}»
+	'''
+	def compile(Value v) {
+		if (v instanceof IntegerLiteral) {
+			var IntegerLiteral il = v as IntegerLiteral
+			'''«il.value»'''
+		} else if (v instanceof ParameterRef) {
+			var ParameterRef pr = v as ParameterRef
+			'''«pr.parameter.name»'''
+		}
+	}
+
+
+	def String compileDecl(Embedding e) '''
+		«if(e.eIsSet(e.eClass.getEStructuralFeature("cardinality"))) {
+			'''private final «e.component.name»[] «e.name»;'''
+		} else {
+			'''private final «e.component.name» «e.name»;'''
+		}»
+	'''
+
+	
+	def compileDecl(EList<Parameter> list) { 
+		'''«FOR p : list BEFORE "private final int " SEPARATOR "\nprivate final int "»«p.name»;«ENDFOR»'''
+	}
+
+	def compileInitDefault(EList<Parameter> list) {
+		'''«FOR p : list BEFORE "this." SEPARATOR "\nthis."»«p.name» = «p.value»;«ENDFOR»'''
+	}
+
+	def compileInit(EList<Parameter> list) { 
+		'''«FOR p : list BEFORE "this." SEPARATOR "\nthis."»«p.name» = «p.name»;«ENDFOR»'''
+	}
+
+	def compileDeclArgument(EList<Parameter> list) { 
+		'''«FOR p : list BEFORE "int " SEPARATOR ", int "»«p.name»«ENDFOR»'''
+	}
+	
 	def compileInstantiation(Port p) '''
 		«if(p.eIsSet(p.eClass.getEStructuralFeature("cardinality"))) {
 			'''
-			for(int i = 0; i < 3; ++ i)
+			«p.identifier» = new Port[«p.cardinality.compile»];
+			for(int i = 0; i < «p.cardinality.compile»; ++ i)
 				«p.identifier»[i] = new Port<«p.typeRef.typeName»>();
 			'''
 		} else {
@@ -108,11 +189,11 @@ class CadmosGenerator implements IGenerator {
 		EcoreUtil2::getContainerOfType(c, typeof(Model))
 	}
 	
-	def String compile(Port p) '''
+	def String compileDecl(Port p) '''
 		«if(p.eIsSet(p.eClass.getEStructuralFeature("cardinality"))) {
-			'''public Port<«p.typeRef.typeName»>[] «p.identifier» = new Port[3];'''
+			'''public final Port<«p.typeRef.typeName»>[] «p.identifier»;'''
 		} else {
-			'''public Port<«p.typeRef.typeName»> «p.identifier»;'''
+			'''public final Port<«p.typeRef.typeName»> «p.identifier»;'''
 		}»
 	'''	
 	
