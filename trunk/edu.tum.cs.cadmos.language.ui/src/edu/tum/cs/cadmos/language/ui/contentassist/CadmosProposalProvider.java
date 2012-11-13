@@ -12,7 +12,6 @@ import org.eclipse.xtext.scoping.IScope;
 import org.eclipse.xtext.ui.editor.contentassist.ContentAssistContext;
 import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor;
 
-import edu.tum.cs.cadmos.common.StringUtils;
 import edu.tum.cs.cadmos.language.ModelUtils;
 import edu.tum.cs.cadmos.language.cadmos.CadmosPackage;
 import edu.tum.cs.cadmos.language.cadmos.Component;
@@ -27,17 +26,17 @@ import edu.tum.cs.cadmos.language.cadmos.Port;
  */
 public class CadmosProposalProvider extends AbstractCadmosProposalProvider {
 
-	@Override
-	public void completeEmbedding_Name(EObject model, Assignment assignment,
-			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
-		super.completeEmbedding_Name(model, assignment, context, acceptor);
-		final Embedding embedding = (Embedding) model;
-		final String name = embedding.getComponent().getName();
-		acceptor.accept(createCompletionProposal(
-				StringUtils.toFeatureName(name), context));
-		acceptor.accept(createCompletionProposal(
-				StringUtils.toCCAbbreviatedFeatureName(name), context));
-	}
+	// @Override
+	// public void completeEmbedding_Name(EObject model, Assignment assignment,
+	// ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+	// super.completeEmbedding_Name(model, assignment, context, acceptor);
+	// final Embedding embedding = (Embedding) model;
+	// final String name = embedding.getComponent().getName();
+	// acceptor.accept(createCompletionProposal(
+	// StringUtils.toFeatureName(name), context));
+	// acceptor.accept(createCompletionProposal(
+	// StringUtils.toCCAbbreviatedFeatureName(name), context));
+	// }
 
 	@Override
 	public void complete_PortRef(EObject model, RuleCall ruleCall,
