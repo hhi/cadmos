@@ -3,10 +3,7 @@
  */
 package edu.tum.cs.cadmos.language.scoping;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.xtext.EcoreUtil2;
@@ -15,13 +12,10 @@ import org.eclipse.xtext.scoping.Scopes;
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider;
 
 import edu.tum.cs.cadmos.common.ListUtils;
-import edu.tum.cs.cadmos.language.ModelUtils;
-import edu.tum.cs.cadmos.language.cadmos.Callable;
-import edu.tum.cs.cadmos.language.cadmos.CallableSegment;
-import edu.tum.cs.cadmos.language.cadmos.ClosureParameter;
-import edu.tum.cs.cadmos.language.cadmos.ClosureSegment;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
+import edu.tum.cs.cadmos.language.cadmos.EnumDecl;
+import edu.tum.cs.cadmos.language.cadmos.EnumElementCall;
 import edu.tum.cs.cadmos.language.cadmos.Port;
 import edu.tum.cs.cadmos.language.cadmos.PortRef;
 
@@ -50,33 +44,54 @@ public class CadmosScopeProvider extends AbstractDeclarativeScopeProvider {
 		return Scopes.scopeFor(ports);
 	}
 
-	public IScope scope_CallableSegment_callable(CallableSegment segment,
+	public IScope scope_EnumElementCall_element(EnumElementCall call,
 			EReference ref) {
-		final List<Callable> callables = new ArrayList<>();
-		// Add all callables of container component (parameters, ports,
-		// variables).
-		final Component component = EcoreUtil2.getContainerOfType(segment,
-				Component.class);
-		callables.addAll(component.getParameters());
-		callables.addAll(ModelUtils.getPorts(component));
-		callables.addAll(ModelUtils.getVariables(component));
-		// Add all callable closure parameters.
-		// "Inner names" remain visible if equal "outer names" are present in
-		// scope (i.e. "outer names" are shadowed by "inner names").
-		final Map<String, ClosureParameter> closureParameters = new HashMap<>();
-		ClosureSegment parentSegment = EcoreUtil2.getContainerOfType(
-				segment.eContainer(), ClosureSegment.class);
-		while (parentSegment != null) {
-			for (final ClosureParameter p : parentSegment.getParameters()) {
-				if (!closureParameters.containsKey(p.getName())) {
-					closureParameters.put(p.getName(), p);
-				}
-			}
-			parentSegment = EcoreUtil2.getContainerOfType(
-					parentSegment.eContainer(), ClosureSegment.class);
+		final EnumDecl enumDecl = call.getEnumDecl();
+		if (enumDecl == null) {
+			return IScope.NULLSCOPE;
 		}
-		callables.addAll(closureParameters.values());
-		return Scopes.scopeFor(callables);
+		return Scopes.scopeFor(enumDecl.getElements());
 	}
+
+	// public IScope scope_CallableSegment_callable(CallableSegment segment,
+	// EReference ref) {
+	// final List<EObject> callables = new ArrayList<>();
+	// // Add all callables of container component (parameters, ports,
+	// // variables).
+	// final Component component = EcoreUtil2.getContainerOfType(segment,
+	// Component.class);
+	// callables.addAll(component.getParameters());
+	// callables.addAll(ModelUtils.getPorts(component));
+	// callables.addAll(ModelUtils.getVariables(component));
+	// // Add all callable closure parameters.
+	// // "Inner names" remain visible if equal "outer names" are present in
+	// // scope (i.e. "outer names" are shadowed by "inner names").
+	// final Map<String, ClosureParameter> closureParameters = new HashMap<>();
+	// ClosureSegment parentSegment = EcoreUtil2.getContainerOfType(
+	// segment.eContainer(), ClosureSegment.class);
+	// while (parentSegment != null) {
+	// for (final ClosureParameter p : parentSegment.getParameters()) {
+	// if (!closureParameters.containsKey(p.getName())) {
+	// closureParameters.put(p.getName(), p);
+	// }
+	// }
+	// parentSegment = EcoreUtil2.getContainerOfType(
+	// parentSegment.eContainer(), ClosureSegment.class);
+	// }
+	// callables.addAll(closureParameters.values());
+	// // Add callable EnumDecl and EnumElement to scope.
+	// for (final IEObjectDescription description : getScope(component,
+	// CadmosPackage.Literals.ENUM_TYPE_REF__TYPE).getAllElements()) {
+	// final EObject obj = description.getEObjectOrProxy();
+	// callables.add(obj);
+	// if (obj instanceof EnumDecl) {
+	// final EnumDecl enumDecl = (EnumDecl) obj;
+	// for (final EnumElement element : enumDecl.getElements()) {
+	// callables.add(element);
+	// }
+	// }
+	// }
+	// return Scopes.scopeFor(callables);
+	// }
 
 }

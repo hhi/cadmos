@@ -1,5 +1,6 @@
 grammar edu.tum.cs.cadmos.language.Cadmos with org.eclipse.xtext.common.Terminals
 
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 generate cadmos "http://www.tum.edu/cs/cadmos/language/Cadmos"
 
 /* MODEL ELEMENTS */
@@ -12,7 +13,7 @@ Import:
 	'import' importedNamespace=QualifiedNameWithWildcard;
 
 ModelElement:
-	Component;
+	Component | EnumDecl;
 
 Component:
 	'component' name=ID
@@ -27,39 +28,46 @@ ComponentElement:
 	| Embedding
 	| Variable
 	| Channel
-	| Case
-	| Expression;
+	| Case;
+
+EnumDecl:
+	'enum' name=ID '{' elements+=EnumElement (',' elements+=EnumElement)* '}';
+
+EnumElement:
+	name=ID;
 
 enum PortDirection:
 	Inbound='in'
 	| Outbound='out';
 
 Port:
-	direction=PortDirection typeRef=TypeRef? name=ID ('[' cardinality=Value ']')? ('rate' rate=Value)?;
+	direction=PortDirection name=ID ('[' cardinality=Value ']')? (':' typeRef=TypeRef)? ('rate' rate=Value)?;
 
 Embedding:
-	'embed' component=[Component]
-	('(' (parameterValues+=Value (',' parameterValues+=Value)*)? ')')?
-	name=ID ('[' cardinality=Value ']')?;
+	'embed' name=ID ('[' cardinality=Value ']')? ':'
+	component=[Component] ('(' (parameterValues+=Value (',' parameterValues+=Value)*)? ')')?;
 
 Channel:
-	'channel' source=PortRef '->' destination=PortRef;
+	'channel' (channelVariables+=ChannelVariable (',' channelVariables+=ChannelVariable)* '|')?
+	source=PortRef '->' destination=PortRef;
+
+ChannelVariable:
+	name=ID '=' fromIndex=Expression (=> '..' toIndex=Expression);
 
 PortRef:
 	(embedding=[Embedding] ('[' embeddingIndex=ID ']')? '.')? port=[Port] ('[' portIndex=ID ']')?;
 
 Value:
-	IntegerLiteral
-	| ParameterRef;
+	IntegerLiteral | ParameterRef;
 
 ParameterRef:
 	parameter=[Parameter];
 
 Variable:
-	'var' typeRef=TypeRef name=ID ('=' initializer=Expression)?;
+	'var' name=ID (':' typeRef=TypeRef)? ('=' initializer=Expression)?;
 
 Case:
-	'case' guard=Expression '{' (subcases+=Case | actions+=Expression)* '}';
+	(('case' guard=Expression) | isDefault?='default') '{' (subcases+=Case | actions+=Expression)* '}';
 
 /* EXPRESSIONS */
 Expression returns Expression:
@@ -87,50 +95,34 @@ MultiplicativeExpression returns Expression:
 	UnaryExpression (=> ({BinaryExpression.left=current} op=('*' | '**' | '/' | '%')) right=UnaryExpression)*;
 
 UnaryExpression returns Expression:
-	{UnaryExpression} op=('!' | '+' | '-') operand=PrimaryExpression
-	| PrimaryExpression;
+	{UnaryExpression} op=('!' | '+' | '-') operand=PrimaryExpression | PrimaryExpression;
 
 PrimaryExpression returns Expression:
-	Call
-	| ParenthesizedExpression
-	| Literal;
+	Call | ParenthesizedExpression | Literal;
 
 Call returns Expression:
-	Segment (=> ({BinaryExpression.left=current} op='.') right=Segment)*;
+	LocalCall | EnumElementCall;
 
-Segment returns Expression:
-	CallableSegment
-	| ClosureSegment
-	| NativeFunctionSegment;
+Local:
+	Parameter | Port | Variable | ClosureParameter;
 
-Callable:
-	Port
-	| Variable
-	| ClosureParameter
-	| Parameter;
+LocalCall returns Expression:
+	{LocalCall} local=[Local]
+	('.' member=NativeFunctions
+	'(' (closureParameters+=ClosureParameter (',' closureParameters+=ClosureParameter)* '|')?
+	(parameterValues+=Expression (',' parameterValues+=Expression)*)? ')')?;
 
-CallableSegment returns Expression:
-	{CallableSegment} callable=[Callable] ('[' index+=Expression ']')?;
+EnumElementCall returns Expression:
+	{EnumElementCall} enumDecl=[EnumDecl] '.' element=[EnumElement];
 
-enum ClosureOperators:
-	ForEach='forEach' | Exists='exists' | All='all' | Select='select' | Collect='collect';
-
-ClosureSegment returns Expression:
-	{ClosureSegment} operator=ClosureOperators
-	'(' (parameters+=ClosureParameter (',' parameters+=ClosureParameter)* '|')? expression=Expression ')';
+enum NativeFunctions:
+	ForEach='forEach' | Exists='exists' | All='all' | Select='select' | Collect='collect' | TimedAccess='at';
 
 ClosureParameter:
 	name=ID;
 
 ParenthesizedExpression returns Expression:
 	'(' Expression ')';
-
-enum NativeFunctionNames:
-	TimedAccess='at';
-
-NativeFunctionSegment returns Expression:
-	{NativeFunctionSegment} name=NativeFunctionNames
-	'(' parameterValues+=Expression (',' parameterValues+=Expression)* ')';
 
 Literal returns Expression:
 	BooleanLiteral | IntegerLiteral | RealLiteral;
@@ -146,7 +138,7 @@ RealLiteral returns Expression:
 
 /* TYPE SYSTEM */
 TypeRef:
-	PrimitiveTypeRef;
+	PrimitiveTypeRef | EnumTypeRef;
 
 PrimitiveTypeRef:
 	type=PrimitiveTypes;
@@ -155,6 +147,9 @@ enum PrimitiveTypes:
 	Boolean='boolean'
 	| Integer='int'
 	| Real='real';
+
+EnumTypeRef:
+	type=[EnumDecl];
 
 /* TERMINALS AND NAMES */
 QualifiedName:
