@@ -1,0 +1,58 @@
+package parallel.platforms
+
+component DistributedMulticoreNetwork(CPUs=6, Cores=4) {
+	in net_in
+	out net_out
+
+	embed cpus[CPUs] : SharedMemoryMulticore(Cores) 
+	embed fieldbus : Bus(CPUs) 
+	
+	channel cpus[i].network_out -> fieldbus.member_in[i]
+	channel fieldbus.member_out[i] -> cpus[i].network_in
+
+	embed gateway : Gateway
+
+	channel gateway.local_out -> fieldbus.gateway_in
+	channel fieldbus.gateway_out -> gateway.local_in
+	channel net_in -> gateway.network_in
+	channel gateway.network_out -> net_out
+}
+
+component SharedMemoryMulticore(Cores=8) {
+	in network_in
+	out network_out
+	
+	embed core[Cores] : Core
+	embed bus : Bus(Cores)
+	
+	channel core[i].bus_out -> bus.member_in[i]
+	channel bus.member_out[i] -> core[i].bus_in
+	
+	embed networkController : Gateway 
+	
+	channel networkController.local_out -> bus.gateway_in
+	channel bus.gateway_out -> networkController.local_in
+	channel network_in -> networkController.network_in
+	channel networkController.network_out -> network_out
+}
+
+component Core {
+	in bus_in
+	out bus_out
+}
+
+component Bus(Members=1) {
+	in member_in[Members]
+	out member_out[Members]
+	
+	in gateway_in
+	out gateway_out
+}
+
+component Gateway {
+	in network_in
+	out network_out
+
+	in local_in
+	out local_out
+}

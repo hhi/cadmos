@@ -1,0 +1,46 @@
+package automotive.acc
+
+import automotive.commons.*
+
+component AdaptiveCruiseControlSystem {
+	in vehicleAheadExists
+	in vehicleAheadDistance
+	in vehicleSpeed
+	in driverCommandSpeed
+	
+	out brakePower
+	out enginePower
+	
+	embed cruiseControl : CruiseControl 
+	embed preCrashSafety : PCS
+	embed activationArbiter : Arbiter(1)
+	
+	channel vehicleAheadExists -> preCrashSafety.vehicleAheadExists
+	channel vehicleAheadDistance -> preCrashSafety.vehicleAheadDistance
+ 	channel vehicleSpeed -> cruiseControl.vehicleSpeed
+ 	channel vehicleSpeed -> preCrashSafety.vehicleSpeed
+	channel driverCommandSpeed -> cruiseControl.driverCommandSpeed
+	
+	channel cruiseControl.enginePower -> activationArbiter.inputs
+	channel preCrashSafety.suspend -> activationArbiter.suspend
+	channel activationArbiter.outputs -> enginePower
+	channel preCrashSafety.brakePower -> brakePower 
+}
+
+component CruiseControl {
+	in vehicleSpeed
+	in driverCommandSpeed
+	
+	out enginePower
+}
+
+component PCS {
+	in vehicleAheadExists
+	in vehicleAheadDistance
+	in vehicleSpeed
+	
+	out suspend
+	out brakePower
+}
+
+
