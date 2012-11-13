@@ -3,31 +3,26 @@
  */
 package edu.tum.cs.cadmos.language.generator
 
-import org.eclipse.emf.ecore.resource.Resource
-import org.eclipse.xtext.generator.IGenerator
-import org.eclipse.xtext.generator.IFileSystemAccess
-import edu.tum.cs.cadmos.language.cadmos.Component
 import com.google.inject.Inject
+import edu.tum.cs.cadmos.language.cadmos.Component
+import edu.tum.cs.cadmos.language.cadmos.Embedding
+import edu.tum.cs.cadmos.language.cadmos.IntegerLiteral
+import edu.tum.cs.cadmos.language.cadmos.Parameter
+import edu.tum.cs.cadmos.language.cadmos.ParameterRef
+import edu.tum.cs.cadmos.language.cadmos.Port
+import edu.tum.cs.cadmos.language.cadmos.Value
+import org.eclipse.emf.common.util.EList
+import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.xtext.generator.IFileSystemAccess
+import org.eclipse.xtext.generator.IGenerator
 import org.eclipse.xtext.naming.IQualifiedNameProvider
+import org.eclipse.emf.ecore.EObject
 import edu.tum.cs.cadmos.language.cadmos.Model
 import org.eclipse.xtext.EcoreUtil2
-import edu.tum.cs.cadmos.language.cadmos.ComponentElement
-import edu.tum.cs.cadmos.language.cadmos.Port
-import edu.tum.cs.cadmos.language.cadmos.Callable
+import edu.tum.cs.cadmos.common.Assert
 import edu.tum.cs.cadmos.language.cadmos.PrimitiveTypeRef
-import edu.tum.cs.cadmos.language.cadmos.PrimitiveTypes
 import edu.tum.cs.cadmos.language.cadmos.TypeRef
-import java.awt.CardLayout$Card
-import org.eclipse.emf.ecore.EPackage
-import org.eclipse.emf.ecore.EcorePackage
-import org.eclipse.emf.ecore.impl.EPackageImpl
-import org.eclipse.emf.common.util.EList
-import edu.tum.cs.cadmos.language.cadmos.Parameter
-import edu.tum.cs.cadmos.language.cadmos.Embedding
-import edu.tum.cs.cadmos.language.cadmos.Value
-import edu.tum.cs.cadmos.language.cadmos.IntegerLiteral
-import edu.tum.cs.cadmos.language.cadmos.IntegerLiteral
-import edu.tum.cs.cadmos.language.cadmos.ParameterRef
+import edu.tum.cs.cadmos.language.cadmos.PrimitiveTypes
 
 class CadmosGenerator implements IGenerator {
 	
@@ -76,7 +71,13 @@ class CadmosGenerator implements IGenerator {
 	
 	
 	def String compile(Component c) '''
-		package «c.model.fullyQualifiedName.toString(".")»;
+		«val packageName = c.model.fullyQualifiedName»
+		«IF packageName != null»
+			package «packageName.toString(".")»;
+		«ENDIF»
+		
+		import utils.*;
+		
 		
 		import utils.*;
 		
@@ -197,8 +198,10 @@ class CadmosGenerator implements IGenerator {
 		}»
 	'''	
 	
-	def String identifier(Callable c) {
-		c.name
+	def String identifier(EObject obj) {
+		val nameFeature = obj.eClass.getEStructuralFeature("name")
+		Assert::assertNotNull(nameFeature, "nameFeature")
+		obj.eGet(nameFeature) as String
 	}
 	
 	def String typeName(TypeRef ref) {
