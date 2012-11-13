@@ -1,0 +1,53 @@
+package publications.sae2013
+
+component S {
+	in x1
+	in x2
+	out y1
+	out y2
+	out y3
+	embed C : C
+	embed B : B
+	embed A : A
+	channel x1 -> A.x
+	channel x2 -> B.x
+	channel A.y -> C.x
+	channel C.y1 -> y1
+	channel C.y2 -> y2
+	channel B.y -> y3
+}
+
+component A {
+	in x
+	out y
+}
+
+component B {
+	in x
+	out y
+}
+
+component C {
+	in x
+	out y1
+	out y2
+	embed D : D
+	embed E : E
+	channel x -> D.x2
+	channel x -> E.x
+	channel D.y1 -> D.x1
+	channel D.y2 -> y1
+	channel E.y -> y2
+}
+
+component D {
+	in x1
+	in x2
+	out y1
+	out y2
+}
+
+component E {
+	in x
+	out y
+}
