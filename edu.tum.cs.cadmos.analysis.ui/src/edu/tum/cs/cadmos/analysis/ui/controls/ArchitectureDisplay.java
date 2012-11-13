@@ -47,8 +47,8 @@ public class ArchitectureDisplay extends Canvas implements PaintListener,
 	protected Component component;
 	protected HFRNodeLayout layout;
 
-	protected Vector2D componentRadius = new Vector2D(11, 11);
-	protected Vector2D portRadius = new Vector2D(5, 5);
+	protected Vector2D componentRadius = new Vector2D(7, 7);
+	protected Vector2D portRadius = new Vector2D(3, 3);
 
 	protected Image buffer;
 	protected int postPaintings;
