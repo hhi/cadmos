@@ -19,10 +19,10 @@ import edu.tum.cs.cadmos.common.Assert;
 import edu.tum.cs.cadmos.common.ListUtils;
 import edu.tum.cs.cadmos.language.ModelUtils;
 import edu.tum.cs.cadmos.language.cadmos.CadmosPackage;
-import edu.tum.cs.cadmos.language.cadmos.Callable;
 import edu.tum.cs.cadmos.language.cadmos.Channel;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
+import edu.tum.cs.cadmos.language.cadmos.Local;
 import edu.tum.cs.cadmos.language.cadmos.Parameter;
 import edu.tum.cs.cadmos.language.cadmos.ParameterRef;
 import edu.tum.cs.cadmos.language.cadmos.Port;
@@ -84,7 +84,7 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 			}
 		}
 		warning("Port " + component.getName() + "." + port.getName()
-				+ " is unused", CadmosPackage.Literals.CALLABLE__NAME);
+				+ " is unused", CadmosPackage.Literals.LOCAL__NAME);
 	}
 
 	@Check
@@ -137,14 +137,26 @@ public class CadmosJavaValidator extends AbstractCadmosJavaValidator {
 			final String name = ModelUtils.getEObjectName(e);
 			if (names.get(name) > 1) {
 				EStructuralFeature feature;
-				if (e instanceof Callable) {
-					feature = CadmosPackage.Literals.CALLABLE__NAME;
+				if (e instanceof Local) {
+					feature = CadmosPackage.Literals.LOCAL__NAME;
 				} else if (e instanceof Embedding) {
 					feature = CadmosPackage.Literals.EMBEDDING__NAME;
 				} else {
 					feature = null;
 					Assert.fails("Unknown named element's class '%s'", e);
 				}
+				// if (e instanceof Parameter) {
+				// feature = CadmosPackage.Literals.PARAMETER__NAME;
+				// } else if (e instanceof Port) {
+				// feature = CadmosPackage.Literals.PORT__NAME;
+				// } else if (e instanceof Variable) {
+				// feature = CadmosPackage.Literals.VARIABLE__NAME;
+				// } else if (e instanceof Embedding) {
+				// feature = CadmosPackage.Literals.EMBEDDING__NAME;
+				// } else {
+				// feature = null;
+				// Assert.fails("Unknown named element's class '%s'", e);
+				// }
 				error("Element name " + name + " is already defined", e,
 						feature, 0);
 			}

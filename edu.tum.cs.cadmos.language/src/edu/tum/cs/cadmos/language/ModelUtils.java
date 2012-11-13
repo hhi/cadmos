@@ -14,7 +14,6 @@ import edu.tum.cs.cadmos.language.cadmos.Channel;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.ComponentElement;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
-import edu.tum.cs.cadmos.language.cadmos.Expression;
 import edu.tum.cs.cadmos.language.cadmos.IntegerLiteral;
 import edu.tum.cs.cadmos.language.cadmos.Parameter;
 import edu.tum.cs.cadmos.language.cadmos.ParameterRef;
@@ -77,10 +76,6 @@ public class ModelUtils {
 
 	public static List<Case> getCases(Component component) {
 		return getComponentElements(component, Case.class);
-	}
-
-	public static List<Expression> getActions(Component component) {
-		return getComponentElements(component, Expression.class);
 	}
 
 	public static int eval(Value value, List<Parameter> parameters) {
