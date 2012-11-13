@@ -189,4 +189,12 @@ public class HFRNodeLayout {
 		return size.y;
 	}
 
+	public boolean isRootLevelInboundPort(Node node) {
+		return inbound.contains(node);
+	}
+
+	public boolean isRootLevelOutboundPort(Node node) {
+		return outbound.contains(node);
+	}
+
 }
