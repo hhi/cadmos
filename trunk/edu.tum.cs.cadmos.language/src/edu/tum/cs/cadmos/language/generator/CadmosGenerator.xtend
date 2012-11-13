@@ -91,11 +91,14 @@ class CadmosGenerator implements IGenerator {
 			«ENDFOR»
 			«c.parameters.compileDecl»
 			
-			«IF c.parameters.size > 0 »
 			/**
-			 * Constructor for embedding this component.
+			 * Constructor for embedding «c.name.article» <i>«c.name»</i>«IF !c.parameters.isEmpty» with arbitrary parameters«ENDIF».
+			 «FOR p : c.parameters SEPARATOR "\n"»* @param «p.name» where «p.name» &ge; 0«ENDFOR»
 			 */
-			public «c.name» («c.parameters.compileDeclArgument») {
+			public «c.name»(«c.parameters.compileDeclArgument») {
+				«FOR p : c.parameters»
+					assert «p.name» >= 0;
+				«ENDFOR»
 				«c.parameters.compileInit»
 				
 				«FOR e : c.elements»
@@ -105,21 +108,18 @@ class CadmosGenerator implements IGenerator {
 					}»
 				«ENDFOR»
 			}
-			«ENDIF»
 			
+			«IF !c.parameters.empty »
 			/**
-			 * Default constructor.
+			 * Default constructor for using «c.name.article» <i>«c.name»</i> with default parameters.
+			 * <ul>
+			 «FOR p : c.parameters SEPARATOR "\n"»*   <li> «p.name» = «p.value»«ENDFOR»
+			 * </ul>
 			 */
-			public «c.name» () {
-				«c.parameters.compileInitDefault»
-				
-				«FOR e : c.elements»
-					«switch e {
-						Port : e.compileInstantiation
-						Embedding : e.compileInstantiation
-					}»
-				«ENDFOR»
+			public «c.name»() {
+				this(«FOR p : c.parameters SEPARATOR ", "»«p.value»«ENDFOR»);
 			}
+			«ENDIF»
 		}
 	'''
 	
@@ -204,6 +204,19 @@ class CadmosGenerator implements IGenerator {
 		obj.eGet(nameFeature) as String
 	}
 	
+	def String article(String name) {
+		if (name.startsWithVocal()) {
+			return "an"
+		}
+		return "a"
+	} 
+	
+	def boolean startsWithVocal(String s) {
+		if (s.length == 0) return false
+		val c = s.substring(0, 1).toLowerCase
+		return (c.equals("a") || c.equals("e") || c.equals("i") || c.equals("o") || c.equals("u"))
+	}
+	
 	def String typeName(TypeRef ref) {
 		switch ref {
 			PrimitiveTypeRef : ref.type.primitiveTypeName
@@ -218,4 +231,5 @@ class CadmosGenerator implements IGenerator {
 			case PrimitiveTypes::REAL : "Float"
 		}
 	}
+	
 }
