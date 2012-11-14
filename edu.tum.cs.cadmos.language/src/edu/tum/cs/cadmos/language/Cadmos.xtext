@@ -107,7 +107,7 @@ Local:
 	Parameter | Port | Variable | ClosureParameter;
 
 LocalCall returns Expression:
-	{LocalCall} local=[Local]
+	{LocalCall} local=[Local] ('[' index=Expression ']')?
 	('.' member=NativeFunctions
 	'(' (closureParameters+=ClosureParameter (',' closureParameters+=ClosureParameter)* '|')?
 	(parameterValues+=Expression (',' parameterValues+=Expression)*)? ')')?;
