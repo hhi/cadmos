@@ -3,8 +3,12 @@
  */
 package edu.tum.cs.cadmos.language.scoping;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.scoping.IScope;
@@ -12,10 +16,12 @@ import org.eclipse.xtext.scoping.Scopes;
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider;
 
 import edu.tum.cs.cadmos.common.ListUtils;
+import edu.tum.cs.cadmos.language.ModelUtils;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
 import edu.tum.cs.cadmos.language.cadmos.EnumDecl;
 import edu.tum.cs.cadmos.language.cadmos.EnumElementCall;
+import edu.tum.cs.cadmos.language.cadmos.LocalCall;
 import edu.tum.cs.cadmos.language.cadmos.Port;
 import edu.tum.cs.cadmos.language.cadmos.PortRef;
 
@@ -53,45 +59,38 @@ public class CadmosScopeProvider extends AbstractDeclarativeScopeProvider {
 		return Scopes.scopeFor(enumDecl.getElements());
 	}
 
-	// public IScope scope_CallableSegment_callable(CallableSegment segment,
-	// EReference ref) {
-	// final List<EObject> callables = new ArrayList<>();
-	// // Add all callables of container component (parameters, ports,
-	// // variables).
-	// final Component component = EcoreUtil2.getContainerOfType(segment,
-	// Component.class);
-	// callables.addAll(component.getParameters());
-	// callables.addAll(ModelUtils.getPorts(component));
-	// callables.addAll(ModelUtils.getVariables(component));
-	// // Add all callable closure parameters.
-	// // "Inner names" remain visible if equal "outer names" are present in
-	// // scope (i.e. "outer names" are shadowed by "inner names").
-	// final Map<String, ClosureParameter> closureParameters = new HashMap<>();
-	// ClosureSegment parentSegment = EcoreUtil2.getContainerOfType(
-	// segment.eContainer(), ClosureSegment.class);
-	// while (parentSegment != null) {
-	// for (final ClosureParameter p : parentSegment.getParameters()) {
-	// if (!closureParameters.containsKey(p.getName())) {
-	// closureParameters.put(p.getName(), p);
-	// }
-	// }
-	// parentSegment = EcoreUtil2.getContainerOfType(
-	// parentSegment.eContainer(), ClosureSegment.class);
-	// }
-	// callables.addAll(closureParameters.values());
-	// // Add callable EnumDecl and EnumElement to scope.
-	// for (final IEObjectDescription description : getScope(component,
-	// CadmosPackage.Literals.ENUM_TYPE_REF__TYPE).getAllElements()) {
-	// final EObject obj = description.getEObjectOrProxy();
-	// callables.add(obj);
-	// if (obj instanceof EnumDecl) {
-	// final EnumDecl enumDecl = (EnumDecl) obj;
-	// for (final EnumElement element : enumDecl.getElements()) {
-	// callables.add(element);
-	// }
-	// }
-	// }
-	// return Scopes.scopeFor(callables);
-	// }
+	public IScope scope_LocalCall_local(LocalCall call, EReference ref) {
+		final Map<String, EObject> locals = new HashMap<>();
+		// Add all callable closure parameters declared by parent calls.
+		// "Inner names" remain visible if equal "outer names" are present in
+		// scope (i.e. "outer names" are shadowed by "inner names").
+		LocalCall parentCall = EcoreUtil2.getContainerOfType(call.eContainer(),
+				LocalCall.class);
+		while (parentCall != null) {
+			// First (== inner) declarations of names remains visible.
+			extendScopeAndKeepExisting(locals,
+					parentCall.getClosureParameters());
+			parentCall = EcoreUtil2.getContainerOfType(parentCall.eContainer(),
+					LocalCall.class);
+		}
+		// Add all local callables of container component (parameters, ports,
+		// variables).
+		final Component component = EcoreUtil2.getContainerOfType(call,
+				Component.class);
+		extendScopeAndKeepExisting(locals, ModelUtils.getVariables(component));
+		extendScopeAndKeepExisting(locals, ModelUtils.getPorts(component));
+		extendScopeAndKeepExisting(locals, component.getParameters());
+		return Scopes.scopeFor(locals.values());
+	}
 
+	private static void extendScopeAndKeepExisting(
+			Map<String, EObject> existingScope,
+			Collection<? extends EObject> newItems) {
+		for (final EObject item : newItems) {
+			final String name = ModelUtils.getEObjectName(item, false);
+			if (!existingScope.containsKey(name)) {
+				existingScope.put(name, item);
+			}
+		}
+	}
 }

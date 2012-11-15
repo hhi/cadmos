@@ -112,13 +112,22 @@ public class ModelUtils {
 		return s.toString();
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static String getEObjectName(EObject eObject) {
+		return getEObjectName(eObject, true);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static String getEObjectName(EObject eObject,
+			boolean generateSyntheticNameIfNecessary) {
 		Assert.assertNotNull(eObject, "eObject");
 		final EClass eClass = eObject.eClass();
 		final EStructuralFeature nameFeature = eClass
 				.getEStructuralFeature("name");
 		if (nameFeature == null) {
+			Assert.assertTrue(
+					generateSyntheticNameIfNecessary,
+					"EObject '%s' does not have a 'name'-feature and synthetic name generation is not allowed",
+					eObject);
 			if (eObject.eContainer() != null) {
 				final EObject eContainer = eObject.eContainer();
 				final Object eContainingFeature = eContainer.eGet(eObject
