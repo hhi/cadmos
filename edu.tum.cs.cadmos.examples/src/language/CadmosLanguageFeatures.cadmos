@@ -7,9 +7,9 @@ package language
 component Scoping(Param=1) {
 	in x[Param]
 	out y[Param]
-	var count
+	var i
 	default {
 		x.forEach(x, i | y[i] = x.select(x | x > 5))
-		count = count + 1
+		i = i + 1
 	}
 }
