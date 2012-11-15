@@ -1,0 +1,15 @@
+package language
+
+/**
+ * This component demonstrates basic scoping of parameters, ports,
+ * variables and closure parameters.
+ */
+component Scoping(Param=1) {
+	in x[Param]
+	out y[Param]
+	var count
+	default {
+		x.forEach(x, i | y[i] = x.select(x | x > 5))
+		count = count + 1
+	}
+}
