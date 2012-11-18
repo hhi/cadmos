@@ -23,10 +23,14 @@ import edu.tum.cs.cadmos.common.Assert
 import edu.tum.cs.cadmos.language.cadmos.PrimitiveTypeRef
 import edu.tum.cs.cadmos.language.cadmos.TypeRef
 import edu.tum.cs.cadmos.language.cadmos.PrimitiveTypes
+import java.util.HashSet
+import java.util.Set
 
 class CadmosGenerator implements IGenerator {
 	
 	@Inject extension IQualifiedNameProvider
+	
+	Set<String> imports = new HashSet<String>
 	
 	override void doGenerate(Resource resource, IFileSystemAccess fsa) {
 		generatePortClass(fsa);
@@ -70,16 +74,20 @@ class CadmosGenerator implements IGenerator {
 	'''
 	
 	
-	def String compile(Component c) '''
+	def String compile(Component c) {
+		imports.add(c.model.fullyQualifiedName.toString(".")) 
+		'''
 		«val packageName = c.model.fullyQualifiedName»
 		«IF packageName != null»
 			package «packageName.toString(".")»;
 		«ENDIF»
 		
 		import utils.*;
-		
-		
-		import utils.*;
+		«FOR e : c.elements»
+				«switch e {
+					Embedding : e.addImport
+				}»
+		«ENDFOR»
 		
 		public class «c.name» {
 			
@@ -122,6 +130,17 @@ class CadmosGenerator implements IGenerator {
 			«ENDIF»
 		}
 	'''
+	}
+	
+	
+	def String addImport(Embedding e) {
+		val s = "import " + e.component.model.fullyQualifiedName.toString(".") + ";"
+		if (!imports.contains(s)) {
+			imports.add(s)
+			return s
+		}
+	}
+
 	
 	def compileInstantiation(Embedding e) '''
 		«if(e.eIsSet(e.eClass.getEStructuralFeature("cardinality"))) {
