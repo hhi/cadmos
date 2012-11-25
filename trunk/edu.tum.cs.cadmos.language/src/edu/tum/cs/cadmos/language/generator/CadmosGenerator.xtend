@@ -76,31 +76,72 @@ class CadmosGenerator implements IGenerator {
 	
 	def String compilePort() '''
 		package utils;
-		
-		import java.util.LinkedList;
+
+		import java.util.ArrayList;
 		
 		public class Port<T> {
 		
-			private final LinkedList<T> buffer;
+			/** The maximal number of elements the buffer can contain. */
+			private static final int MAX_NR_OF_ELEMENTS = 1<<16;
+			
+			/** The buffer where the elements are stored. */
+			private final ArrayList<T> buffer;
+			
+			/** The index to the first position in the current window. */
+			private int first;
+			
+			/** The index to the last position in the current window. */
+			private int last;
+			
+			/** The number of elements in a window. */
+			private final int capacity;
+			
+			/** The rate of execution for this port. */
+			private final int rate;
 		
-			public Port() {
-				buffer = new LinkedList<>();
-			}
-		
-			public synchronized void push(T e) {
-				buffer.add(e);
-			}
-		
-			public synchronized T pop() {
-				if (buffer.size() == 0) {
-					return null;
-				}
+			/**
+			 * The default constructor of a {@link Port} containing its maximal
+			 * causality and rate of execution.
+			 */
+			public Port(int causality, int rate) {
+				buffer = new ArrayList<>(MAX_NR_OF_ELEMENTS);
+				first = 0;
+				last = causality;
+				capacity = causality;
 				
-				T e = buffer.getFirst();
-				buffer.removeFirst();
-				return e;
+				this.rate = rate;
 			}
-
+			
+			/**
+			 * Steps over to the next execution.
+			 */
+			public synchronized void doStep() {
+				first = (first + rate) % MAX_NR_OF_ELEMENTS;
+				last = (last + rate) % MAX_NR_OF_ELEMENTS;
+			}
+			
+			/**
+			 * Gets the element in position <i>ind</i> in the current window.
+			 * @param ind where ind &ge; 0 and ind &lt; capacity
+			 */
+			public synchronized T getElement(int ind) {
+				assert ind >= 0 && ind < capacity;
+				
+				int index = (first + ind) % MAX_NR_OF_ELEMENTS;
+				return buffer.get(index);
+			}
+		
+			/**
+			 * Adds the element to the <i>ind</i>-th position in the next window.
+			 * @param ind where ind &ge; 0 and ind &lt; capacity
+			 */
+			public synchronized void addElement(T element, int ind) {
+				assert ind >= 0 && ind < capacity;
+				
+				int index = (first + rate + ind) % MAX_NR_OF_ELEMENTS;
+				buffer.add(index, element);
+			}
+		
 		}
 	'''
 	
