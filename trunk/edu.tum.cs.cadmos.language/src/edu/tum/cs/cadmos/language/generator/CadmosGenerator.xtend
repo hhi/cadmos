@@ -34,7 +34,8 @@ class CadmosGenerator implements IGenerator {
 	Set<String> imports = new HashSet<String>
 	
 	override void doGenerate(Resource resource, IFileSystemAccess fsa) {
-		generatePortClass(fsa);
+		generateComponentBase(fsa)
+		generatePortClass(fsa)
 		for(c: resource.allContents.toIterable.filter(typeof(Component))) {
 			fsa.generateFile(c.fullyQualifiedName.toString("/") + ".java", c.compile)
 			imports.clear()
@@ -42,9 +43,66 @@ class CadmosGenerator implements IGenerator {
 	}
 	
 	
-	def generatePortClass(IFileSystemAccess access) { 
-		access.generateFile("utils/Port.java", compilePort());
+	def generateComponentBase(IFileSystemAccess access) { 
+		access.generateFile("components/ComponentBase.java", compileComponentBase())
 	}
+	
+	def String compileComponentBase() '''
+		package components;
+		
+		import utils.Port;
+		
+		public abstract class ComponentBase {
+			
+			/**
+			 * Sends the next message of {@link Port} <i>src</i> to the {@link Port} <i>dst</i>.
+			 * If <i>src</i> doesn't have a message to send, nothing will happen.
+			 */
+			protected <T> void executeChannel(Port<T> src, Port<T> dst) {
+				T element = src.pop();
+				
+				if (element != null)
+					dst.push(element);
+			}
+			
+		}
+	'''
+	
+	
+	def generatePortClass(IFileSystemAccess access) { 
+		access.generateFile("utils/Port.java", compilePort())
+	}
+	
+	
+	def String compilePort() '''
+		package utils;
+		
+		import java.util.LinkedList;
+		
+		public class Port<T> {
+		
+			private final LinkedList<T> buffer;
+		
+			public Port() {
+				buffer = new LinkedList<>();
+			}
+		
+			public synchronized void push(T e) {
+				buffer.add(e);
+			}
+		
+			public synchronized T pop() {
+				if (buffer.size() == 0) {
+					return null;
+				}
+				
+				T e = buffer.getFirst();
+				buffer.removeFirst();
+				return e;
+			}
+
+		}
+	'''
 	
 	
 	def Model model(Component c) {
@@ -174,37 +232,6 @@ class CadmosGenerator implements IGenerator {
 	}
 
 	
-	def String compilePort() '''
-		package utils;
-		
-		import java.util.LinkedList;
-		
-		public class Port<T> {
-		
-			private final LinkedList<T> buffer;
-		
-			public Port() {
-				buffer = new LinkedList<>();
-			}
-		
-			public synchronized void push(T e) {
-				buffer.add(e);
-			}
-		
-			public synchronized T pop() {
-				if (buffer.size() == 0) {
-					return null;
-				}
-				
-				T e = buffer.getFirst();
-				buffer.removeFirst();
-				return e;
-			}
-
-		}
-	'''
-	
-	
 	def String compile(Component c) {
 		imports.add(c.model.fullyQualifiedName.toString(".") + "." + c.name) 
 		'''
@@ -214,13 +241,14 @@ class CadmosGenerator implements IGenerator {
 		«ENDIF»
 		
 		import utils.*;
+		import components.ComponentBase;
 		«FOR e : c.elements»
 				«switch e {
 					Embedding : e.addImport
 				}»
 		«ENDFOR»
 		
-		public class «c.name» {
+		public class «c.name» extends ComponentBase {
 			
 			«FOR e : c.elements»
 				«switch e {
