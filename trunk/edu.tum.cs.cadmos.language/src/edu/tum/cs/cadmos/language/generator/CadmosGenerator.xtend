@@ -59,10 +59,10 @@ class CadmosGenerator implements IGenerator {
 			 * If <i>src</i> doesn't have a message to send, nothing will happen.
 			 */
 			protected <T> void executeChannel(Port<T> src, Port<T> dst) {
-				T element = src.pop();
+				T element = src.getElement(0);
 				
 				if (element != null)
-					dst.push(element);
+					dst.addElement(element, 0);
 			}
 			
 		}
@@ -216,11 +216,11 @@ class CadmosGenerator implements IGenerator {
 			'''
 			«p.identifier» = new Port[«p.cardinality.compile»];
 			for(int i = 0; i < «p.cardinality.compile»; ++ i)
-				«p.identifier»[i] = new Port<«p.typeRef.typeName»>();
+				«p.identifier»[i] = new Port<«p.typeRef.typeName»>(1, 1);
 			'''
 		} else {
 			'''
-			«p.identifier» = new Port<«p.typeRef.typeName»>();
+			«p.identifier» = new Port<«p.typeRef.typeName»>(1, 1);
 			'''
 		}»
 	'''
