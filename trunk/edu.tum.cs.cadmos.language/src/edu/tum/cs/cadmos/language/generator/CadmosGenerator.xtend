@@ -25,6 +25,7 @@ import edu.tum.cs.cadmos.language.cadmos.TypeRef
 import edu.tum.cs.cadmos.language.cadmos.PrimitiveTypes
 import java.util.HashSet
 import java.util.Set
+import edu.tum.cs.cadmos.language.cadmos.EnumTypeRef
 
 class CadmosGenerator implements IGenerator {
 	
@@ -36,12 +37,142 @@ class CadmosGenerator implements IGenerator {
 		generatePortClass(fsa);
 		for(c: resource.allContents.toIterable.filter(typeof(Component))) {
 			fsa.generateFile(c.fullyQualifiedName.toString("/") + ".java", c.compile)
+			imports.clear()
 		}
 	}
+	
 	
 	def generatePortClass(IFileSystemAccess access) { 
 		access.generateFile("utils/Port.java", compilePort());
 	}
+	
+	
+	def Model model(Component c) {
+		EcoreUtil2::getContainerOfType(c, typeof(Model))
+	}
+	
+	
+	def String primitiveTypeName(PrimitiveTypes t) {
+		switch t {	
+			case PrimitiveTypes::BOOLEAN : "Boolean"
+			case PrimitiveTypes::INTEGER : "Integer"
+			case PrimitiveTypes::REAL : "Float"
+		}
+	}
+	
+	
+	def String typeName(TypeRef ref) {
+		switch ref {
+			PrimitiveTypeRef : ref.type.primitiveTypeName
+			EnumTypeRef : ref.type.name
+			default: "Object"
+		}
+	}
+	
+	
+	def String identifier(EObject obj) {
+		val nameFeature = obj.eClass.getEStructuralFeature("name")
+		Assert::assertNotNull(nameFeature, "nameFeature")
+		obj.eGet(nameFeature) as String
+	}
+	
+	
+	def String compileDecl(Port p) '''
+	«if(p.eIsSet(p.eClass.getEStructuralFeature("cardinality"))) {
+		'''public final Port<«p.typeRef.typeName»>[] «p.identifier»;'''
+	} else {
+		'''public final Port<«p.typeRef.typeName»> «p.identifier»;'''
+	}»
+	'''	
+	
+	
+	def String compileDecl(Embedding e) '''
+		«if(e.eIsSet(e.eClass.getEStructuralFeature("cardinality"))) {
+			'''private final «e.component.name»[] «e.name»;'''
+		} else {
+			'''private final «e.component.name» «e.name»;'''
+		}»
+	'''
+
+
+	def compileDecl(EList<Parameter> list) { 
+		'''«FOR p : list BEFORE "private final int " SEPARATOR "\nprivate final int "»«p.name»;«ENDFOR»'''
+	}
+
+	def compileInitDefault(EList<Parameter> list) {
+		'''«FOR p : list BEFORE "this." SEPARATOR "\nthis."»«p.name» = «p.value»;«ENDFOR»'''
+	}
+
+	def compileInit(EList<Parameter> list) { 
+		'''«FOR p : list BEFORE "this." SEPARATOR "\nthis."»«p.name» = «p.name»;«ENDFOR»'''
+	}
+
+	def compileDeclArgument(EList<Parameter> list) { 
+		'''«FOR p : list BEFORE "int " SEPARATOR ", int "»«p.name»«ENDFOR»'''
+	}
+	
+	
+	def compileInstantiation(Port p) '''
+		«if(p.eIsSet(p.eClass.getEStructuralFeature("cardinality"))) {
+			'''
+			«p.identifier» = new Port[«p.cardinality.compile»];
+			for(int i = 0; i < «p.cardinality.compile»; ++ i)
+				«p.identifier»[i] = new Port<«p.typeRef.typeName»>();
+			'''
+		} else {
+			'''
+			«p.identifier» = new Port<«p.typeRef.typeName»>();
+			'''
+		}»
+	'''
+	
+	
+	def String article(String name) {
+		if (name.startsWithVocal()) {
+			return "an"
+		}
+		return "a"
+	} 
+	
+	def boolean startsWithVocal(String s) {
+		if (s.length == 0) return false
+		val c = s.substring(0, 1).toLowerCase
+		return (c.equals("a") || c.equals("e") || c.equals("i") || c.equals("o") || c.equals("u"))
+	}
+	
+	
+	def String addImport(Embedding e) {
+		val s = "import " + e.component.model.fullyQualifiedName.toString(".") +  "." + e.component.name + ";"
+		if (!imports.contains(e.component.model.fullyQualifiedName.toString(".") +  "." + e.component.name)) {
+			imports.add(e.component.model.fullyQualifiedName.toString(".") +  "." + e.component.name)
+			return s
+		}
+	}
+
+	
+	def compileInstantiation(Embedding e) '''
+		«if(e.eIsSet(e.eClass.getEStructuralFeature("cardinality"))) {
+			'''
+			«e.name» = new «e.component.name»[«e.cardinality.compile»];
+			for(int i = 0; i < «e.cardinality.compile»; ++ i)
+				«e.name»[i] = new «e.component.name»(«FOR v : e.parameterValues SEPARATOR ", "»«v.compile»«ENDFOR»);
+			'''
+		} else {
+			'''
+			«e.name» = new «e.component.name»(«FOR v : e.parameterValues SEPARATOR ", "»«v.compile»«ENDFOR»);
+			'''
+		}»
+	'''
+	def compile(Value v) {
+		if (v instanceof IntegerLiteral) {
+			var IntegerLiteral il = v as IntegerLiteral
+			'''«il.value»'''
+		} else if (v instanceof ParameterRef) {
+			var ParameterRef pr = v as ParameterRef
+			'''«pr.parameter.name»'''
+		}
+	}
+
 	
 	def String compilePort() '''
 		package utils;
@@ -75,7 +206,7 @@ class CadmosGenerator implements IGenerator {
 	
 	
 	def String compile(Component c) {
-		imports.add(c.model.fullyQualifiedName.toString(".")) 
+		imports.add(c.model.fullyQualifiedName.toString(".") + "." + c.name) 
 		'''
 		«val packageName = c.model.fullyQualifiedName»
 		«IF packageName != null»
@@ -130,125 +261,6 @@ class CadmosGenerator implements IGenerator {
 			«ENDIF»
 		}
 	'''
-	}
-	
-	
-	def String addImport(Embedding e) {
-		val s = "import " + e.component.model.fullyQualifiedName.toString(".") + ";"
-		if (!imports.contains(s)) {
-			imports.add(s)
-			return s
-		}
-	}
-
-	
-	def compileInstantiation(Embedding e) '''
-		«if(e.eIsSet(e.eClass.getEStructuralFeature("cardinality"))) {
-			'''
-			«e.name» = new «e.component.name»[«e.cardinality.compile»];
-			for(int i = 0; i < «e.cardinality.compile»; ++ i)
-				«e.name»[i] = new «e.component.name»(«FOR v : e.parameterValues SEPARATOR ", "»«v.compile»«ENDFOR»);
-			'''
-		} else {
-			'''
-			«e.name» = new «e.component.name»(«FOR v : e.parameterValues SEPARATOR ", "»«v.compile»«ENDFOR»);
-			'''
-		}»
-	'''
-	def compile(Value v) {
-		if (v instanceof IntegerLiteral) {
-			var IntegerLiteral il = v as IntegerLiteral
-			'''«il.value»'''
-		} else if (v instanceof ParameterRef) {
-			var ParameterRef pr = v as ParameterRef
-			'''«pr.parameter.name»'''
-		}
-	}
-
-
-	def String compileDecl(Embedding e) '''
-		«if(e.eIsSet(e.eClass.getEStructuralFeature("cardinality"))) {
-			'''private final «e.component.name»[] «e.name»;'''
-		} else {
-			'''private final «e.component.name» «e.name»;'''
-		}»
-	'''
-
-	
-	def compileDecl(EList<Parameter> list) { 
-		'''«FOR p : list BEFORE "private final int " SEPARATOR "\nprivate final int "»«p.name»;«ENDFOR»'''
-	}
-
-	def compileInitDefault(EList<Parameter> list) {
-		'''«FOR p : list BEFORE "this." SEPARATOR "\nthis."»«p.name» = «p.value»;«ENDFOR»'''
-	}
-
-	def compileInit(EList<Parameter> list) { 
-		'''«FOR p : list BEFORE "this." SEPARATOR "\nthis."»«p.name» = «p.name»;«ENDFOR»'''
-	}
-
-	def compileDeclArgument(EList<Parameter> list) { 
-		'''«FOR p : list BEFORE "int " SEPARATOR ", int "»«p.name»«ENDFOR»'''
-	}
-	
-	def compileInstantiation(Port p) '''
-		«if(p.eIsSet(p.eClass.getEStructuralFeature("cardinality"))) {
-			'''
-			«p.identifier» = new Port[«p.cardinality.compile»];
-			for(int i = 0; i < «p.cardinality.compile»; ++ i)
-				«p.identifier»[i] = new Port<«p.typeRef.typeName»>();
-			'''
-		} else {
-			'''
-			«p.identifier» = new Port<«p.typeRef.typeName»>();
-			'''
-		}»
-	'''
-	
-	def Model model(Component c) {
-		EcoreUtil2::getContainerOfType(c, typeof(Model))
-	}
-	
-	def String compileDecl(Port p) '''
-		«if(p.eIsSet(p.eClass.getEStructuralFeature("cardinality"))) {
-			'''public final Port<«p.typeRef.typeName»>[] «p.identifier»;'''
-		} else {
-			'''public final Port<«p.typeRef.typeName»> «p.identifier»;'''
-		}»
-	'''	
-	
-	def String identifier(EObject obj) {
-		val nameFeature = obj.eClass.getEStructuralFeature("name")
-		Assert::assertNotNull(nameFeature, "nameFeature")
-		obj.eGet(nameFeature) as String
-	}
-	
-	def String article(String name) {
-		if (name.startsWithVocal()) {
-			return "an"
-		}
-		return "a"
-	} 
-	
-	def boolean startsWithVocal(String s) {
-		if (s.length == 0) return false
-		val c = s.substring(0, 1).toLowerCase
-		return (c.equals("a") || c.equals("e") || c.equals("i") || c.equals("o") || c.equals("u"))
-	}
-	
-	def String typeName(TypeRef ref) {
-		switch ref {
-			PrimitiveTypeRef : ref.type.primitiveTypeName
-			default: "Object"
-		}
-	}
-
-	def String primitiveTypeName(PrimitiveTypes t) {
-		switch t {
-			case PrimitiveTypes::BOOLEAN : "Boolean"
-			case PrimitiveTypes::INTEGER : "Integer"
-			case PrimitiveTypes::REAL : "Float"
-		}
 	}
 	
 }
