@@ -27,6 +27,8 @@ import java.util.HashSet
 import java.util.Set
 import edu.tum.cs.cadmos.language.cadmos.EnumTypeRef
 
+import static extension edu.tum.cs.cadmos.language.ModelUtils.*
+
 class CadmosGenerator implements IGenerator {
 	
 	@Inject extension IQualifiedNameProvider
@@ -195,11 +197,7 @@ class CadmosGenerator implements IGenerator {
 
 
 	def compileDecl(EList<Parameter> list) { 
-		'''«FOR p : list BEFORE "private final int " SEPARATOR "\nprivate final int "»«p.name»;«ENDFOR»'''
-	}
-
-	def compileInitDefault(EList<Parameter> list) {
-		'''«FOR p : list BEFORE "this." SEPARATOR "\nthis."»«p.name» = «p.value»;«ENDFOR»'''
+		'''«FOR p : list BEFORE "public final int " SEPARATOR "\npublic final int "»«p.name»;«ENDFOR»'''
 	}
 
 	def compileInit(EList<Parameter> list) { 
@@ -211,11 +209,17 @@ class CadmosGenerator implements IGenerator {
 	}
 	
 	
+	// TODO(WS -> VP): ports and embeddings should always be generated as arrays.
+	// If "cardinality" is not set, it defaults to 1 and code accesses this
+	// single instance by "[0]".
+	// This would save a lot of "if...else..." branching in code that accesses (reads/writes)
+	// ports and embeddings from expressions.  
 	def compileInstantiation(Port p) '''
-		«if(p.eIsSet(p.eClass.getEStructuralFeature("cardinality"))) {
+		«if(p.isSet("cardinality")) {
 			'''
-			«p.identifier» = new Port[«p.cardinality.compile»];
-			for(int i = 0; i < «p.cardinality.compile»; ++ i)
+			«val cardinality = p.cardinality.compile»
+			«p.identifier» = new Port[«cardinality»];
+			for(int i = 0; i < «cardinality»; ++ i)
 				«p.identifier»[i] = new Port<«p.typeRef.typeName»>(1, 1);
 			'''
 		} else {
@@ -224,6 +228,10 @@ class CadmosGenerator implements IGenerator {
 			'''
 		}»
 	'''
+	
+	def isSet(EObject object, String featureName) {
+		object.eIsSet(object.eClass.getEStructuralFeature(featureName))
+	}
 	
 	
 	def String article(String name) {
@@ -241,9 +249,10 @@ class CadmosGenerator implements IGenerator {
 	
 	
 	def String addImport(Embedding e) {
-		val s = "import " + e.component.model.fullyQualifiedName.toString(".") +  "." + e.component.name + ";"
-		if (!imports.contains(e.component.model.fullyQualifiedName.toString(".") +  "." + e.component.name)) {
-			imports.add(e.component.model.fullyQualifiedName.toString(".") +  "." + e.component.name)
+		val qid = e.component.fullyQualifiedName.toString(".")
+		val s = "import " + qid + ";"
+		if (!imports.contains(qid)) {
+			imports.add(qid)
 			return s
 		}
 	}
@@ -274,7 +283,7 @@ class CadmosGenerator implements IGenerator {
 
 	
 	def String compile(Component c) {
-		imports.add(c.model.fullyQualifiedName.toString(".") + "." + c.name) 
+		imports.add(c.fullyQualifiedName.toString(".")) 
 		'''
 		«val packageName = c.model.fullyQualifiedName»
 		«IF packageName != null»
@@ -283,10 +292,8 @@ class CadmosGenerator implements IGenerator {
 		
 		import utils.*;
 		import components.ComponentBase;
-		«FOR e : c.elements»
-				«switch e {
-					Embedding : e.addImport
-				}»
+		«FOR e : c.embeddings»
+			«e.addImport»
 		«ENDFOR»
 		
 		public class «c.name» extends ComponentBase {
