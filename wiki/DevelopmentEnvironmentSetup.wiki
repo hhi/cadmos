@@ -39,7 +39,7 @@ http://www4.in.tum.de/~schwitze/cadmos/utf8.png
 Cadmos uses SVN for version control, which is supported by several client integrations for eclipse.
 We use a eclipse SVN client called *subclipse*.
 
-You can use this eclipse update manager url to install subclipse 1.8.x: [http://subclipse.tigris.org/update_1.8.x]
+You can use this eclipse update manager url to install subclipse 1.10.x: [http://subclipse.tigris.org/update_1.10.x]
 
 <a href="http://subclipse.tigris.org/">http://subclipse.tigris.org/branding/images/logo.gif</a>
 
