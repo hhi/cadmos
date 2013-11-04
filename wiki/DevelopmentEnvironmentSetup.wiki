@@ -19,10 +19,10 @@ Cadmos is developed using new Java 7 language features like inferred type parame
 <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">http://www.oracle.com/ocom/groups/public/@otn/documents/webcontent/347320.gif</a>
 
 
-= Install Eclipse Juno 4.2 (including Xtext) =
+= Install Eclipse 4.3 (including Xtext) =
 Cadmos makes use of Xtext and Java 7 language features
 which is fully supported starting from Eclipse version 3.7.1.
-A pre-built Eclipse Juno 4.2 release including all necessary Xtext features can be downloaded and installed for many platforms and operating systems from [http://www.eclipse.org/Xtext/download.html] (*Full Eclipse* recommended).
+A pre-built Eclipse 4.3 release including all necessary Xtext features can be downloaded and installed for many platforms and operating systems from [http://www.eclipse.org/Xtext/download.html] (*Full Eclipse* recommended).
 
 <wiki:comment>
 <a href="http://www.eclipse.org/Xtext/download.html">http://www.eclipse.org/eclipse.org-common/themes/Nova/images/eclipse.png</a> 
