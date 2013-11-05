@@ -1,0 +1,18 @@
+component Parent(N=10) {
+	
+	in x
+	out y[N]
+
+	embed Child child[N]
+	
+	channel x -> child.x
+	channel child[i].y -> y[i]
+	
+}
+
+component Child {
+	
+	in x
+	out y
+	
+}

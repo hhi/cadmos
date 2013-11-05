@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Cadmos Runtime Examples
-Bundle-SymbolicName: edu.tum.cs.cadmos.examples
-Bundle-Version: 1.0
-Bundle-Vendor: http://www4.in.tum.de/
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
