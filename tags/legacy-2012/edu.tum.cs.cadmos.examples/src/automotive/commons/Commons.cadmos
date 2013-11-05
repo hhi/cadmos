@@ -1,0 +1,13 @@
+package automotive.commons
+
+component Arbiter(N=1) {
+	in inputs[N]
+	in suspend
+	out outputs[N]
+	
+	case !suspend {
+		outputs.forEach(output, index | output = inputs[index])
+	}
+
+}
+
