@@ -1,0 +1,52 @@
+grammar edu.tum.cs.cadmos.language.Cadmos with org.eclipse.xtext.xbase.Xbase
+
+generate cadmos "http://www.tum.edu/cs/cadmos/language/Cadmos"
+import "http://www.eclipse.org/xtext/xbase/Xbase" as xbase
+
+Model:
+	('package' name=QualifiedName)?
+	importSection=XImportSection?
+	elements+=Element*;
+
+Element:
+	Component;
+
+Component:
+	'component' name=ValidID
+	(=> '<' (typeParams+=JvmTypeParameter (',' typeParams+=JvmTypeParameter)*)? '>')?
+	(=> '(' (params+=FullJvmFormalParameter (',' params+=FullJvmFormalParameter)*)? ')')?
+	'{' (features+=Feature)* '}';
+
+Feature:
+	Port | Embedding | Channel | ForScope | Transition | Variable;
+
+Port:
+	(inbound?='in' | 'out')
+	type=JvmTypeReference name=ValidID
+	(=> '[' multiplicity=XExpression ']')?;
+
+Embedding:
+	'embed' component=[Component|QualifiedName]
+	(=> '<' typeArgs+=JvmArgumentTypeReference (',' typeArgs+=JvmArgumentTypeReference)* '>')?
+	(=> '(' (args+=XExpression (',' args+=XExpression)*)? ')')?
+	name=ValidID
+	(=> '[' multiplicity=XExpression ']')?
+	((=> 'delay' delay=XExpression)? &
+	(=> 'rate' rate=XExpression)?);
+
+Channel:
+	'channel' src=PortRef '->' snk=PortRef ('init' initializer=XExpression)?;
+
+ForScope:
+	'for' '(' name=ValidID ':' range=XExpression ')'
+	(=> ('{' (channels+=Channel | subScopes+=ForScope)* '}') | channels+=Channel | subScopes+=ForScope);
+
+Transition:
+	(default?='default' | ('on' '(' condition=XExpression ')')) action=XExpression;
+
+PortRef:
+	=> (embedding=[Embedding] ('[' subIndex=XExpression ']')? '.' port=[Port] ('[' portIndex=XExpression ']')?) |
+	(port=[Port] ('[' portIndex=XExpression ']')?);
+
+Variable:
+	(writeable?='var' | 'val') type=JvmTypeReference name=ValidID ('=' initializer=XExpression)?;
