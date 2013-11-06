@@ -9,44 +9,51 @@ Model:
 	elements+=Element*;
 
 Element:
-	Component;
+	Component | Deployment;
 
 Component:
 	'component' name=ValidID
-	(=> '<' (typeParams+=JvmTypeParameter (',' typeParams+=JvmTypeParameter)*)? '>')?
-	(=> '(' (params+=FullJvmFormalParameter (',' params+=FullJvmFormalParameter)*)? ')')?
 	'{' (features+=Feature)* '}';
 
 Feature:
-	Port | Embedding | Channel | ForScope | Transition | Variable;
+	Port | Embedding | Channel;
 
 Port:
-	(inbound?='in' | 'out')
-	type=JvmTypeReference name=ValidID
-	(=> '[' multiplicity=XExpression ']')?;
+	(inbound?='in' | 'out') name=ValidID;
 
 Embedding:
-	'embed' component=[Component|QualifiedName]
-	(=> '<' typeArgs+=JvmArgumentTypeReference (',' typeArgs+=JvmArgumentTypeReference)* '>')?
-	(=> '(' (args+=XExpression (',' args+=XExpression)*)? ')')?
-	name=ValidID
-	(=> '[' multiplicity=XExpression ']')?
-	((=> 'delay' delay=XExpression)? &
-	(=> 'rate' rate=XExpression)?);
+	'embed' component=[Component|QualifiedName] name=ValidID;
 
 Channel:
-	'channel' src=PortRef '->' snk=PortRef ('init' initializer=XExpression)?;
-
-ForScope:
-	'for' '(' name=ValidID ':' range=XExpression ')'
-	(=> ('{' (channels+=Channel | subScopes+=ForScope)* '}') | channels+=Channel | subScopes+=ForScope);
-
-Transition:
-	(default?='default' | ('on' '(' condition=XExpression ')')) action=XExpression;
+	'channel' src=PortRef '->' snk=PortRef;
 
 PortRef:
-	=> (embedding=[Embedding] ('[' subIndex=XExpression ']')? '.' port=[Port] ('[' portIndex=XExpression ']')?) |
-	(port=[Port] ('[' portIndex=XExpression ']')?);
+	(embedding=[Embedding] '.')? port=[Port];
 
-Variable:
-	(writeable?='var' | 'val') type=JvmTypeReference name=ValidID ('=' initializer=XExpression)?;
+Deployment:
+	'deployment'
+	'{' elements+=DeploymentElement* '}';
+
+DeploymentElement:
+	Constraint | Property;
+
+Constraint:
+	AllocationConstraint | AdditiveConstraint;
+
+AdditiveConstraint:
+	MemoryConsumption;
+
+MemoryConsumption:
+	'memoryConsumption' value=INT 'if' src=[Component] 'on' target=[Component] ;
+
+
+AllocationConstraint:
+	'allocate' source=[Component] 'to' '{' targets+=[Component] (',' targets+=[Component])* '}';
+
+Property:
+	AvailableMemory
+;
+
+AvailableMemory:
+	'memory' value=INT 'on' component=[Component] 
+;

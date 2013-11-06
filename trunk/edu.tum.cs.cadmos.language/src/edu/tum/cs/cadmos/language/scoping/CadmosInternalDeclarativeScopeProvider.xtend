@@ -24,14 +24,14 @@ class CadmosInternalDeclarativeScopeProvider extends AbstractDeclarativeScopePro
 	def IScope scope_PortRef_port(PortRef portRef, EReference ref) {
 		val embedding = portRef.embedding
 		val component = if (embedding == null) {
-				EcoreUtil2::getContainerOfType(portRef, Component);
+				EcoreUtil2.getContainerOfType(portRef, Component);
 			} else {
 				embedding.component;
 			}
 		if (component == null) {
-			return IScope::NULLSCOPE;
+			return IScope.NULLSCOPE;
 		}
-		return Scopes::scopeFor(component.ports);
+		return Scopes.scopeFor(component.ports);
 	}
 
 }
