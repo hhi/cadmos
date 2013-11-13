@@ -18,7 +18,7 @@ Component:
 	'{' (features+=Feature)* '}';
 
 Feature:
-	Port | Embedding | Channel;
+	Port | Embedding | Channel | ComponentProperty;
 
 Port:
 	(inbound?='in' | 'out') name=ID ('rate' rate=INT)?;
@@ -28,6 +28,9 @@ Embedding:
 
 Channel:
 	'channel' src=PortRef '->' snk=PortRef ('delay' delay=INT)?;
+
+ComponentProperty:
+	'property' key=ID '=' value=STRING;
 
 PortRef:
 	(embedding=[Embedding] '.')? port=[Port];

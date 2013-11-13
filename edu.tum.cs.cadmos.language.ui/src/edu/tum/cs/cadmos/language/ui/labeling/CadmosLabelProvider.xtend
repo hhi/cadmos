@@ -6,6 +6,7 @@ package edu.tum.cs.cadmos.language.ui.labeling
 import com.google.inject.Inject
 import edu.tum.cs.cadmos.language.cadmos.Channel
 import edu.tum.cs.cadmos.language.cadmos.PortRef
+import edu.tum.cs.cadmos.language.cadmos.ComponentProperty
 
 /**
  * Provides labels for a EObjects.
@@ -26,6 +27,10 @@ class CadmosLabelProvider extends org.eclipse.xtext.ui.label.DefaultEObjectLabel
 	def text(PortRef p) {
 		val s = if (p.embedding != null) p.embedding.name + "." else ""
 		s + p.port.name
+	}
+	
+	def text(ComponentProperty p) {
+		p.key + " = " + p.value
 	}
 
 // Example for returning an image:
