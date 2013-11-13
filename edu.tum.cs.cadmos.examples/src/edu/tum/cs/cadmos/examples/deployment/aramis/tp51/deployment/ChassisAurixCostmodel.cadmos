@@ -1,0 +1,29 @@
+package edu.tum.cs.cadmos.examples.deployment.aramis.tp51.deployment
+
+import edu.tum.cs.cadmos.examples.deployment.aramis.tp51.software.*
+import edu.tum.cs.cadmos.examples.deployment.aramis.tp51.platform.*
+
+costmodel Chassis_on_AurixTC275T {
+	
+	ChassisFunction1 {
+		TriCore16P {
+			WCET = 1500
+			ACET = 500
+			BCET = 400
+			SRAM = 50000
+		}
+		TriCore16PLockStep {
+			WCET = 1700
+			ACET = 700
+			BCET = 600
+			SRAM = 50000
+		}
+		TriCore16ELockStep {
+			WCET = 2500
+			ACET = 2400
+			BCET = 2300
+			SRAM = 35000
+		}
+	}
+	
+}
