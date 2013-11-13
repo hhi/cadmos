@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: edu.tum.cs.cadmos.language.ui
-Bundle-Vendor: My Company
-Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: http.//www4.in.tum.de/
+Bundle-Version: 1.0.0
 Bundle-SymbolicName: edu.tum.cs.cadmos.language.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: edu.tum.cs.cadmos.language;visibility:=reexport,
@@ -18,7 +18,7 @@ Require-Bundle: edu.tum.cs.cadmos.language;visibility:=reexport,
  org.eclipse.compare
 Import-Package: org.apache.log4j,
  org.eclipse.xtext.xbase.lib
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: edu.tum.cs.cadmos.language.ui.quickfix,
  edu.tum.cs.cadmos.language.ui.contentassist,
  edu.tum.cs.cadmos.language.ui.contentassist.antlr,
