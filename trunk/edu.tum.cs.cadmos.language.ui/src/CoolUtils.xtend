@@ -1,7 +1,0 @@
-class CoolUtils {
-	
-	def foo() {
-		
-	}
-	
-}
