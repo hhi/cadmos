@@ -11,11 +11,10 @@ Import:
 	'import' importedNamespace=QualifiedNameWithWildcard;
 
 Element:
-	Component;
+	Component | Costmodel;
 
 Component:
-	'component' name=ID
-	'{' (features+=Feature)* '}';
+	'component' name=ID '{' features+=Feature* '}';
 
 Feature:
 	Port | Embedding | Channel | ComponentProperty;
@@ -29,11 +28,23 @@ Embedding:
 Channel:
 	'channel' src=PortRef '->' snk=PortRef ('delay' delay=INT)?;
 
+PortRef:
+	(embedding=[Embedding] '.')? port=[Port];
+
 ComponentProperty:
 	'property' key=ID '=' value=STRING;
 
-PortRef:
-	(embedding=[Embedding] '.')? port=[Port];
+Costmodel:
+	'costmodel' name=ID '{' mappings+=Mapping* '}';
+
+Mapping:
+	component=[Component] ('.' port=[Port])? '{' targetCosts+=TargetCost* '}';
+
+TargetCost:
+	component=[Component] '{' costs+=Cost* '}';
+
+Cost:
+	key=ID '=' value=INT;
 
 QualifiedName:
 	ID ('.' ID)*;

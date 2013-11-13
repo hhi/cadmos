@@ -12,6 +12,7 @@ import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.scoping.IScope
 import org.eclipse.xtext.scoping.Scopes
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider
+import edu.tum.cs.cadmos.language.cadmos.Mapping
 
 /**
  * This class contains custom scoping description.
@@ -35,6 +36,13 @@ class CadmosScopeProvider extends AbstractDeclarativeScopeProvider {
 			return IScope.NULLSCOPE;
 		}
 		return Scopes.scopeFor(component.ports);
+	}
+
+	def IScope scope_Mapping_port(Mapping mapping, EReference ref) {
+		if (mapping.component == null) {
+			return IScope.NULLSCOPE;
+		}
+		return Scopes.scopeFor(mapping.component.ports);
 	}
 
 }
