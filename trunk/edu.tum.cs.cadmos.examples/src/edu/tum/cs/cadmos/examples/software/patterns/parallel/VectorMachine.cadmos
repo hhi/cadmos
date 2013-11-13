@@ -1,0 +1,27 @@
+package edu.tum.cs.cadmos.examples.software.patterns.parallel
+
+import edu.tum.cs.cadmos.examples.software.patterns.flowcontrol.*
+
+component DataParallelOperation {
+	in x
+	out y
+}
+
+component VectorMachine {
+	in x
+	out y
+	
+	embed Demultiplexer split
+	embed DataParallelOperation op1
+	embed DataParallelOperation op2
+	embed Multiplexer merge
+	
+	channel x -> split.x
+	
+	channel split.o1 -> op1.x
+	channel split.o2 -> op2.x
+	channel op1.y -> merge.x1
+	channel op2.y -> merge.x2
+	
+	channel merge.y -> y
+}
