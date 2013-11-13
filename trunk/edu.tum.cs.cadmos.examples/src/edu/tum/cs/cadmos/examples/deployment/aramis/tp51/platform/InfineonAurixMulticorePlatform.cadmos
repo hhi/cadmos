@@ -1,0 +1,54 @@
+package edu.tum.cs.cadmos.examples.deployment.aramis.tp51.platform
+
+component InfineonAurixTC275T {
+	embed SRICrossBar ipc
+	embed TriCore16P perfCore
+	embed TriCore16PLockStep perfSafetyCore
+	embed TriCore16ELockStep safetyCore
+
+	channel ipc.core1Out -> perfCore.busIn
+	channel perfCore.busOut -> ipc.core1In
+
+	channel ipc.core2Out -> perfSafetyCore.busIn
+	channel perfSafetyCore.busOut -> ipc.core2In
+
+	channel ipc.core3Out -> safetyCore.busIn
+	channel safetyCore.busOut -> ipc.core3In
+	
+	property SRAM = '472000'
+}
+
+component TriCore16P {
+	in busIn
+	out busOut
+	
+	property SIL_MIN = '1'
+	property SIL_MAX = '2'
+}
+
+component TriCore16PLockStep {
+	in busIn
+	out busOut
+	
+	property SIL_MIN = '2'
+	property SIL_MAX = '3'
+}
+
+component TriCore16ELockStep {
+	in busIn
+	out busOut
+	
+	property SIL_MIN = '4'
+	property SIL_MAX = '4'
+}
+
+component SRICrossBar {
+	in core1In	
+	in core2In	
+	in core3In	
+	out core1Out	
+	out core2Out	
+	out core3Out
+	
+	property BusType = 'CrossBarBus'
+}

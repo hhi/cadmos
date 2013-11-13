@@ -26,7 +26,7 @@ component FlexRayReader {
 	out output2
 	out output3
 	
-	property sil = 4
+	property SIL = '4'
 }
 
 component FlexRayWriter {
@@ -35,26 +35,26 @@ component FlexRayWriter {
 	in input3
 	out output
 
-	property sil = 4
+	property SIL = '4'
 }
 
 component ChassisFunction1 {
 	in input
 	out output
 
-	property sil = 1
+	property SIL = '1'
 }
 
 component ChassisFunction2 {
 	in input
 	out output
 	
-	property sil = 2
+	property SIL = '2'
 }
 
 component ChassisFunction3 {
 	in input
 	out output
 	
-	property sil = 3
+	property SIL = '3'
 }
