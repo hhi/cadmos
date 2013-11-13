@@ -1,2 +1,60 @@
 package edu.tum.cs.cadmos.examples.deployment.aramis.tp51.software
 
+component ChassisControlFunctions {
+	in input
+	out output
+	
+	embed FlexRayReader reader
+	embed ChassisFunction1 f1
+	embed ChassisFunction2 f2
+	embed ChassisFunction3 f3
+	embed FlexRayWriter writer
+	
+	channel input -> reader.input
+	channel reader.output1 -> f1.input
+	channel reader.output2 -> f2.input
+	channel reader.output3 -> f3.input
+	channel f1.output -> writer.input1
+	channel f2.output -> writer.input2
+	channel f3.output -> writer.input3
+	channel writer.output -> output
+}
+
+component FlexRayReader {
+	in input
+	out output1
+	out output2
+	out output3
+	
+	property sil = 4
+}
+
+component FlexRayWriter {
+	in input1
+	in input2
+	in input3
+	out output
+
+	property sil = 4
+}
+
+component ChassisFunction1 {
+	in input
+	out output
+
+	property sil = 1
+}
+
+component ChassisFunction2 {
+	in input
+	out output
+	
+	property sil = 2
+}
+
+component ChassisFunction3 {
+	in input
+	out output
+	
+	property sil = 3
+}
