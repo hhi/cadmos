@@ -1,6 +1,19 @@
 package edu.tum.cs.cadmos.examples.deployment.aramis.tp51.platform
 
-component InfineonAurixTC275T {
+/*
+ * A 3-core processor (actually 5-cores are on-chip) with crossbar interconnect,
+ * with the following parallel 32-bit cores.
+ * <ul>
+ * <li> TriCore 1.6P performance core without lockstep capability
+ * <li> TriCore 1.6P performance core with lockstep capability
+ * <li> TriCore 1.6E core with lockstep capability
+ * </ul>
+ * See also the
+ * <a href="http://www.infineon.com/export/sites/default/media/products/Microcontrollers/32bit/BlockDiagram-TC27xT.png">
+ * processor block diagram
+ * </a>.
+ */
+component InfineonAurixTC27xT {
 	embed SRICrossBar ipc
 	embed TriCore16P perfCore
 	embed TriCore16PLockStep perfSafetyCore
@@ -18,6 +31,11 @@ component InfineonAurixTC275T {
 	property SRAM = '472000'
 }
 
+/*
+ * TriCore 1.6P performance core without lockstep capability.
+ * <br>
+ * Used for computation-intensive tasks with lower safety levels.
+ */
 component TriCore16P {
 	in busIn
 	out busOut
@@ -26,19 +44,29 @@ component TriCore16P {
 	property SIL_MAX = '2'
 }
 
+/*
+ * TriCore 1.6P performance core with lockstep capability.
+ * <br>
+ * Used for computation-intensive tasks with low to high safety levels.
+ */
 component TriCore16PLockStep {
 	in busIn
 	out busOut
 	
-	property SIL_MIN = '2'
+	property SIL_MIN = '1'
 	property SIL_MAX = '3'
 }
 
+/*
+ * TriCore 1.6E core with lockstep capability.
+ * <br>
+ * Used for tasks with high safety levels.
+ */
 component TriCore16ELockStep {
 	in busIn
 	out busOut
 	
-	property SIL_MIN = '4'
+	property SIL_MIN = '2'
 	property SIL_MAX = '4'
 }
 
