@@ -13,7 +13,7 @@ package edu.tum.cs.cadmos.examples.deployment.aramis.tp51.platform
  * processor block diagram
  * </a>.
  */
-component InfineonAurixTC27xT {
+processing component InfineonAurixTC27xT {
 	embed SRICrossBar ipc
 	embed TriCore16P perfCore
 	embed TriCore16PLockStep perfSafetyCore
@@ -36,7 +36,7 @@ component InfineonAurixTC27xT {
  * <br>
  * Used for computation-intensive tasks with lower safety levels.
  */
-component TriCore16P {
+processing component TriCore16P {
 	in busIn
 	out busOut
 	
@@ -49,7 +49,7 @@ component TriCore16P {
  * <br>
  * Used for computation-intensive tasks with low to high safety levels.
  */
-component TriCore16PLockStep {
+processing component TriCore16PLockStep {
 	in busIn
 	out busOut
 	
@@ -62,7 +62,7 @@ component TriCore16PLockStep {
  * <br>
  * Used for tasks with high safety levels.
  */
-component TriCore16ELockStep {
+processing component TriCore16ELockStep {
 	in busIn
 	out busOut
 	
@@ -70,7 +70,7 @@ component TriCore16ELockStep {
 	property SIL_MAX = '4'
 }
 
-component SRICrossBar {
+bus component SRICrossBar {
 	in core1In	
 	in core2In	
 	in core3In	
