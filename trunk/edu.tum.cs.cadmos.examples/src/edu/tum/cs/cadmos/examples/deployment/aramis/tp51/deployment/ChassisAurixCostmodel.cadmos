@@ -7,22 +7,37 @@ costmodel Chassis_on_AurixTC275T {
 	
 	ChassisFunction1 {
 		TriCore16P {
-			WCET = 1500
-			ACET = 500
-			BCET = 400
-			SRAM = 50000
+			WCET = 1500	ACET = 500	BCET = 400	SRAM = 50000
 		}
 		TriCore16PLockStep {
-			WCET = 1700
-			ACET = 700
-			BCET = 600
-			SRAM = 50000
+			WCET = 1700	ACET = 700	BCET = 600	SRAM = 50000
 		}
 		TriCore16ELockStep {
-			WCET = 2500
-			ACET = 2400
-			BCET = 2300
-			SRAM = 35000
+			WCET = 2500	ACET = 2400	BCET = 2300	SRAM = 35000
+		}
+	}
+
+	ChassisFunction2 {
+		TriCore16P {
+			WCET = 1000	ACET = 500	BCET = 400	SRAM = 10000
+		}
+		TriCore16PLockStep {
+			WCET = 1200	ACET = 900	BCET = 600	SRAM = 10000
+		}
+		TriCore16ELockStep {
+			WCET = 1500	ACET = 1400	BCET = 1300	SRAM = 8000
+		}
+	}
+	
+	ChassisFunction3 {
+		TriCore16P {
+			WCET = 100	ACET = 80	BCET = 60	SRAM = 20000
+		}
+		TriCore16PLockStep {
+			WCET = 120	ACET = 90	BCET = 60	SRAM = 20000
+		}
+		TriCore16ELockStep {
+			WCET = 150	ACET = 140	BCET = 130	SRAM = 18000
 		}
 	}
 	
