@@ -1,13 +1,13 @@
-package edu.tum.cs.cadmos.examples.software.patterns.parallel
+package edu.tum.cs.cadmos.examples.^software.patterns.parallel
 
-import edu.tum.cs.cadmos.examples.software.patterns.flowcontrol.*
+import edu.tum.cs.cadmos.examples.^software.patterns.flowcontrol.*
 
-component DataParallelOperation {
+software component DataParallelOperation {
 	in x
 	out y
 }
 
-component VectorMachine {
+software component VectorMachine {
 	in x
 	out y
 	

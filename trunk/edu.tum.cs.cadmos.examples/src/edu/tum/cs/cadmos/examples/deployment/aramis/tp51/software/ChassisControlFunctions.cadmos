@@ -1,6 +1,6 @@
-package edu.tum.cs.cadmos.examples.deployment.aramis.tp51.software
+package edu.tum.cs.cadmos.examples.deployment.aramis.tp51.^software
 
-component ChassisControlFunctions {
+software component ChassisControlFunctions {
 	in input
 	out output
 	
@@ -24,7 +24,7 @@ component ChassisControlFunctions {
  * Fetches data from the bus in time, which is highly safety critical,
  * but has little execution time and memory consumption.
  */
-component FlexRayReader {
+software component FlexRayReader {
 	in input
 	out output1
 	out output2
@@ -37,7 +37,7 @@ component FlexRayReader {
  * Provides data to the bus in time, which is highly safety critical,
  * but has little execution time and memory consumption.
  */
-component FlexRayWriter {
+software component FlexRayWriter {
 	in input1
 	in input2
 	in input3
@@ -50,7 +50,7 @@ component FlexRayWriter {
  * A lowly safety critical function (SIL 1) with significant execution
  * time and memory consumption.
  */
-component ChassisFunction1 {
+software component ChassisFunction1 {
 	in input
 	out output
 
@@ -61,7 +61,7 @@ component ChassisFunction1 {
  * A moderately safety critical function (SIL 2) with average execution
  * time and memory consumption.
  */
-component ChassisFunction2 {
+software component ChassisFunction2 {
 	in input
 	out output
 	
@@ -72,7 +72,7 @@ component ChassisFunction2 {
  * A highly safety critical function (SIL 3) with low execution time, but
  * which uses a lot of memory (e.g. for lookup tables).
  */
-component ChassisFunction3 {
+software component ChassisFunction3 {
 	in input
 	out output
 	

@@ -1,23 +1,23 @@
-package edu.tum.cs.cadmos.examples.software.composition
+package edu.tum.cs.cadmos.examples.^software.composition
 
-component StageA {
+software component StageA {
 	in x
 	out y
 }
 
-component StageB {
+software component StageB {
 	in x
 	out y
 }
 
-component StageC {
+software component StageC {
 	in x1
 	in x2
 	out y1
 	out y2
 }
 
-component TemporallyParallelPipeline {
+software component TemporallyParallelPipeline {
 	in x
 	out y
 	embed StageA stageA
@@ -27,7 +27,7 @@ component TemporallyParallelPipeline {
 	channel stageB.y -> y delay 1
 }
 
-component SequentialPipeline {
+software component SequentialPipeline {
 	in x
 	out y
 	embed StageA stageA
@@ -37,7 +37,7 @@ component SequentialPipeline {
 	channel stageB.y -> y
 }
 
-component SpatialParallelism {
+software component SpatialParallelism {
 	in x1
 	in x2
 	out y1
@@ -50,7 +50,7 @@ component SpatialParallelism {
 	channel stageB.y -> y2
 }
 
-component FeedbackLoop {
+software component FeedbackLoop {
 	in x
 	out y
 	
@@ -62,7 +62,7 @@ component FeedbackLoop {
 	channel s.y2 -> s.x2 delay 1
 }
 
-component MutualFeedback {
+software component MutualFeedback {
 	in x1
 	in x2
 	out y1
