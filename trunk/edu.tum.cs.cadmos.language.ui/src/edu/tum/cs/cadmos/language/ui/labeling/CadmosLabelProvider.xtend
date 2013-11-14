@@ -7,6 +7,9 @@ import com.google.inject.Inject
 import edu.tum.cs.cadmos.language.cadmos.Channel
 import edu.tum.cs.cadmos.language.cadmos.PortRef
 import edu.tum.cs.cadmos.language.cadmos.ComponentProperty
+import edu.tum.cs.cadmos.language.cadmos.Mapping
+import edu.tum.cs.cadmos.language.cadmos.TargetCost
+import edu.tum.cs.cadmos.language.cadmos.Cost
 
 /**
  * Provides labels for a EObjects.
@@ -31,6 +34,18 @@ class CadmosLabelProvider extends org.eclipse.xtext.ui.label.DefaultEObjectLabel
 	
 	def text(ComponentProperty p) {
 		p.key + " = " + p.value
+	}
+	
+	def text(Mapping m) {
+		m.component.name + if (m.port != null) "." + m.port.name else ""
+	}
+	
+	def text(TargetCost c) {
+		"→ " + c.component.name
+	}
+	
+	def text (Cost c) {
+		c.key + " = " + c.value
 	}
 
 // Example for returning an image:
