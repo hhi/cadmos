@@ -87,6 +87,10 @@ class CadmosLabelProvider extends org.eclipse.xtext.ui.label.DefaultEObjectLabel
 		"channel.gif"
 	}
 
+	def image(PortRef p) {
+		"port.gif"
+	}
+
 	def image(ComponentProperty p) {
 		"component_property.png"
 	}
