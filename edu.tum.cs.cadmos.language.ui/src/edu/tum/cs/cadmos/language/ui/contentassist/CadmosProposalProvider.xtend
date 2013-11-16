@@ -32,7 +32,7 @@ class CadmosProposalProvider extends AbstractCadmosProposalProvider {
 		switch model {
 			ComponentProperty: {
 				switch model.key {
-					case EComponentProperties.BusType.name: {
+					case EComponentProperties.BUS_TYPE.name: {
 						for (t : EBusTypes.values) {
 							acceptor.accept(createCompletionProposal("'" + t.name + "'", context));
 						}
