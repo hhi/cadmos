@@ -7,6 +7,10 @@ import org.eclipse.xtext.validation.Check
 import edu.tum.cs.cadmos.language.cadmos.Mapping
 import edu.tum.cs.cadmos.language.cadmos.Role
 import edu.tum.cs.cadmos.language.cadmos.CadmosPackage
+import edu.tum.cs.cadmos.language.cadmos.TargetCost
+import org.eclipse.xtext.EcoreUtil2
+import com.google.inject.Inject
+import edu.tum.cs.cadmos.language.extensions.ModelExtensions
 
 //import org.eclipse.xtext.validation.Check
 /**
@@ -16,10 +20,34 @@ import edu.tum.cs.cadmos.language.cadmos.CadmosPackage
  */
 class CadmosValidator extends AbstractCadmosValidator {
 
+	@Inject extension ModelExtensions
+
 	@Check
-	def checkMappingsStartWithSoftwareComonent(Mapping m) {
+	def checkMappingsStartWithSoftwareComonentAndOutPort(Mapping m) {
 		if (m.component != null && m.component.role != Role.SOFTWARE) {
 			error('Mapped component must be a software component', CadmosPackage.Literals.MAPPING__COMPONENT)
+		}
+		if (m.component != null && m.port != null && m.port.inbound) {
+			error('Mapped port must be an "out" port', CadmosPackage.Literals.MAPPING__PORT)
+		}
+	}
+
+	@Check
+	def checkTargetCostsHaveMatchingPlatformComponent(TargetCost c) {
+		if(c.component == null) return void
+		if (c.component.role == Role.SOFTWARE) {
+			error('Target component must be a platform component (processing or bus)',
+				CadmosPackage.Literals.TARGET_COST__COMPONENT)
+		}
+		val mapping = EcoreUtil2.getContainerOfType(c, Mapping)
+		if(mapping == null) return void
+		if (mapping.componentMapping && c.component.role == Role.BUS) {
+			error('Target component for a software component mapping must have a "processing" role',
+				CadmosPackage.Literals.TARGET_COST__COMPONENT)
+		}
+		if (mapping.portMapping && c.component.role == Role.PROCESSING) {
+			error('Target component for a software port mapping must have a "bus" role',
+				CadmosPackage.Literals.TARGET_COST__COMPONENT)
 		}
 	}
 /*
