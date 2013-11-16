@@ -5,6 +5,7 @@ package edu.tum.cs.cadmos.language.scoping
 
 import com.google.inject.Inject
 import edu.tum.cs.cadmos.language.cadmos.Component
+import edu.tum.cs.cadmos.language.cadmos.Mapping
 import edu.tum.cs.cadmos.language.cadmos.PortRef
 import edu.tum.cs.cadmos.language.extensions.ModelExtensions
 import org.eclipse.emf.ecore.EReference
@@ -12,7 +13,6 @@ import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.scoping.IScope
 import org.eclipse.xtext.scoping.Scopes
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider
-import edu.tum.cs.cadmos.language.cadmos.Mapping
 
 /**
  * This class contains custom scoping description.
