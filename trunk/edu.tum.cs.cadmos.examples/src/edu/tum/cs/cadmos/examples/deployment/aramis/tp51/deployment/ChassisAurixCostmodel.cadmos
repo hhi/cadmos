@@ -16,6 +16,12 @@ costmodel Chassis_on_AurixTC275T {
 			WCET = 2500	ACET = 2400	BCET = 2300	SRAM = 35000
 		}
 	}
+	
+	ChassisFunction1.output {
+		SRICrossBar {
+			TRANSMISSION_LATENCY = 100	TRANSMISSION_DURATION = 10
+		}
+	}
 
 	ChassisFunction2 {
 		TriCore16P {
@@ -26,6 +32,12 @@ costmodel Chassis_on_AurixTC275T {
 		}
 		TriCore16ELockStep {
 			WCET = 1500	ACET = 1400	BCET = 1300	SRAM = 8000
+		}
+	}
+
+	ChassisFunction2.output {
+		SRICrossBar {
+			TRANSMISSION_LATENCY = 100	TRANSMISSION_DURATION = 10
 		}
 	}
 	
@@ -41,12 +53,36 @@ costmodel Chassis_on_AurixTC275T {
 		}
 	}
 	
+	ChassisFunction3.output {
+		SRICrossBar {
+			TRANSMISSION_LATENCY = 100	TRANSMISSION_DURATION = 10
+		}
+	}
+	
 	FlexRayReader {
 		TriCore16PLockStep {
 			WCET = 200	ACET = 170	BCET = 160	SRAM = 5000
 		}
 		TriCore16ELockStep {
 			WCET = 250	ACET = 240	BCET = 230	SRAM = 5000
+		}
+	}
+	
+	FlexRayReader.output1 {
+		SRICrossBar {
+			TRANSMISSION_LATENCY = 100	TRANSMISSION_DURATION = 30
+		}
+	}
+
+	FlexRayReader.output2 {
+		SRICrossBar {
+			TRANSMISSION_LATENCY = 100	TRANSMISSION_DURATION = 20
+		}
+	}
+
+	FlexRayReader.output3 {
+		SRICrossBar {
+			TRANSMISSION_LATENCY = 100	TRANSMISSION_DURATION = 10
 		}
 	}
 	

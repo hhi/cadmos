@@ -8,10 +8,9 @@ package edu.tum.cs.cadmos.examples.deployment.aramis.tp51.platform
  * <li> TriCore 1.6P performance core with lockstep capability
  * <li> TriCore 1.6E core with lockstep capability
  * </ul>
- * See also the
- * <a href="http://www.infineon.com/export/sites/default/media/products/Microcontrollers/32bit/BlockDiagram-TC27xT.png">
- * processor block diagram
- * </a>.
+ * See also the processor block diagram:
+ * <p>
+ * <img height=300 src="http://www.infineon.com/export/sites/default/media/products/Microcontrollers/32bit/BlockDiagram-TC27xT.png">
  */
 processing component InfineonAurixTC27xT {
 	embed SRICrossBar ipc
