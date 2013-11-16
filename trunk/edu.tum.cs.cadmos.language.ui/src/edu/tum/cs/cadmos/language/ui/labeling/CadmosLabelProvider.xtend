@@ -10,6 +10,13 @@ import edu.tum.cs.cadmos.language.cadmos.ComponentProperty
 import edu.tum.cs.cadmos.language.cadmos.Mapping
 import edu.tum.cs.cadmos.language.cadmos.TargetCost
 import edu.tum.cs.cadmos.language.cadmos.Cost
+import edu.tum.cs.cadmos.language.cadmos.Component
+import edu.tum.cs.cadmos.language.cadmos.Role
+import edu.tum.cs.cadmos.language.cadmos.Port
+import edu.tum.cs.cadmos.language.cadmos.Embedding
+import edu.tum.cs.cadmos.language.cadmos.Import
+import edu.tum.cs.cadmos.language.cadmos.Model
+import edu.tum.cs.cadmos.language.cadmos.Costmodel
 
 /**
  * Provides labels for a EObjects.
@@ -23,34 +30,83 @@ class CadmosLabelProvider extends org.eclipse.xtext.ui.label.DefaultEObjectLabel
 		super(delegate);
 	}
 
-	def text(Channel c) {
-		c.src.text + " → " + c.snk.text + if (c.delay > 0) " (δ = " + c.delay + ")" else ""
+	def text(Embedding e) {
+		e.name + if(e.component != null) " (" + e.component.name + ")" else ""
 	}
-	
+
+	def text(Channel c) {
+		c.src.text + " → " + c.snk.text + if(c.delay > 0) " (δ = " + c.delay + ")" else ""
+	}
+
 	def text(PortRef p) {
-		val s = if (p.embedding != null) p.embedding.name + "." else ""
+		val s = if(p.embedding != null) p.embedding.name + "." else ""
 		s + p.port.name
 	}
-	
+
 	def text(ComponentProperty p) {
 		p.key + " = " + p.value
 	}
-	
+
 	def text(Mapping m) {
-		m.component.name + if (m.port != null) "." + m.port.name else ""
+		m.component.name + if(m.port != null) "." + m.port.name else ""
 	}
-	
+
 	def text(TargetCost c) {
 		"→ " + c.component.name
 	}
-	
-	def text (Cost c) {
+
+	def text(Cost c) {
 		c.key + " = " + c.value
 	}
 
-// Example for returning an image:
-//
-//	def image(Greeting ele) {
-//		'Greeting.gif'
-//	}
+	def image(Model m) {
+		"model.gif"
+	}
+
+	def image(Import i) {
+		"import.gif"
+	}
+
+	def image(Component c) {
+		switch c.role {
+			case Role.SOFTWARE: "software_component.gif"
+			case Role.PROCESSING: "processing_component.png"
+			case Role.BUS: "bus_component.gif"
+		}
+	}
+
+	def image(Port p) {
+		"port.gif"
+	}
+
+	def image(Embedding e) {
+		image(e.component)
+	}
+
+	def image(Channel c) {
+		"channel.gif"
+	}
+
+	def image(ComponentProperty p) {
+		"component_property.png"
+	}
+
+	def image(Costmodel c) {
+		"costmodel.gif"
+	}
+
+	def image(Mapping m) {
+		if(m.port == null) "software_component.gif" else "port.gif"
+	}
+
+	def image(TargetCost c) {
+		switch c.component.role {
+			case Role.PROCESSING: "processing_component.png"
+			case Role.BUS: "bus_component.gif"
+		}
+	}
+
+	def image(Cost c) {
+		"component_property.png"
+	}
 }
