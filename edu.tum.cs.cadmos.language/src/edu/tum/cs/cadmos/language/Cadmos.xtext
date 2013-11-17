@@ -11,7 +11,7 @@ Import:
 	'import' importedNamespace=QualifiedNameWithWildcard;
 
 Element:
-	Component | Costmodel;
+	Component | Costmodel | Requirements;
 
 Component:
 	role=Role 'component' name=ID '{' features+=Feature* '}';
@@ -35,7 +35,7 @@ PortRef:
 	(embedding=[Embedding] '.')? port=[Port];
 
 ComponentProperty:
-	'property' key=ID '=' value=STRING;
+	'property' name=ID '=' value=STRING;
 
 Costmodel:
 	'costmodel' name=ID '{' mappings+=Mapping* '}';
@@ -49,6 +49,8 @@ TargetCost:
 Cost:
 	key=ID '=' value=INT;
 
+Requirements:
+	'requirements' name=ID; //'{' requirements+=Requirement* '}';
 QualifiedName:
 	ID ('.' ID)*;
 

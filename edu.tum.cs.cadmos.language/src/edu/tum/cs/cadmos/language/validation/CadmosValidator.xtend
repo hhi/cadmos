@@ -3,14 +3,18 @@
  */
 package edu.tum.cs.cadmos.language.validation
 
-import org.eclipse.xtext.validation.Check
+import com.google.inject.Inject
+import edu.tum.cs.cadmos.language.cadmos.CadmosPackage
+import edu.tum.cs.cadmos.language.cadmos.Cost
+import edu.tum.cs.cadmos.language.cadmos.Costmodel
 import edu.tum.cs.cadmos.language.cadmos.Mapping
 import edu.tum.cs.cadmos.language.cadmos.Role
-import edu.tum.cs.cadmos.language.cadmos.CadmosPackage
 import edu.tum.cs.cadmos.language.cadmos.TargetCost
-import org.eclipse.xtext.EcoreUtil2
-import com.google.inject.Inject
 import edu.tum.cs.cadmos.language.extensions.ModelExtensions
+import java.util.HashMap
+import java.util.List
+import org.eclipse.xtext.EcoreUtil2
+import org.eclipse.xtext.validation.Check
 
 //import org.eclipse.xtext.validation.Check
 /**
@@ -48,6 +52,26 @@ class CadmosValidator extends AbstractCadmosValidator {
 		if (mapping.portMapping && c.component.role == Role.PROCESSING) {
 			error('Target component for a software port mapping must have a "bus" role',
 				CadmosPackage.Literals.TARGET_COST__COMPONENT)
+		}
+	}
+
+	@Check
+	def checkEachCostIsDefinedOnlyOnceInGivenCostmodel(Costmodel costmodel) {
+		val keyCosts = new HashMap<String, List<Cost>>
+		for (c : costmodel.eAllContents.toIterable.filter(Cost)) {
+			val key = c.qualifiedKey
+			println(key)
+			var costs = keyCosts.get(key)
+			if (costs == null) {
+				costs = newArrayList
+				keyCosts.put(key, costs)
+			}
+			costs.add(c)
+		}
+		for (e : keyCosts.entrySet.filter[value.size > 1]) {
+			for (c : e.value) {
+				error('Multiple definitions for ' + e.key + ' found', c, CadmosPackage.Literals.COST__KEY)
+			}
 		}
 	}
 /*
