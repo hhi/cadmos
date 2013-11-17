@@ -18,9 +18,9 @@ import edu.tum.cs.cadmos.language.ECosts
  */
 class CadmosProposalProvider extends AbstractCadmosProposalProvider {
 
-	override completeComponentProperty_Key(EObject model, Assignment assignment, ContentAssistContext context,
+	override completeComponentProperty_Name(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
-		super.completeComponentProperty_Key(model, assignment, context, acceptor)
+		super.completeComponentProperty_Name(model, assignment, context, acceptor)
 		for (p : EComponentProperties.values) {
 			acceptor.accept(createCompletionProposal(p.name, context));
 		}
@@ -31,7 +31,7 @@ class CadmosProposalProvider extends AbstractCadmosProposalProvider {
 		super.completeComponentProperty_Value(model, assignment, context, acceptor)
 		switch model {
 			ComponentProperty: {
-				switch model.key {
+				switch model.name {
 					case EComponentProperties.BUS_TYPE.name: {
 						for (t : EBusTypes.values) {
 							acceptor.accept(createCompletionProposal("'" + t.name + "'", context));

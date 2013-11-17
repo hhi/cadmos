@@ -44,7 +44,7 @@ class CadmosLabelProvider extends org.eclipse.xtext.ui.label.DefaultEObjectLabel
 	}
 
 	def text(ComponentProperty p) {
-		p.key + " = " + p.value
+		p.name + " = " + p.value
 	}
 
 	def text(Mapping m) {
