@@ -16,7 +16,6 @@ import java.util.List
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.validation.Check
 
-//import org.eclipse.xtext.validation.Check
 /**
  * Custom validation rules. 
  *
@@ -60,7 +59,6 @@ class CadmosValidator extends AbstractCadmosValidator {
 		val keyCosts = new HashMap<String, List<Cost>>
 		for (c : costmodel.eAllContents.toIterable.filter(Cost)) {
 			val key = c.qualifiedKey
-			println(key)
 			var costs = keyCosts.get(key)
 			if (costs == null) {
 				costs = newArrayList
@@ -74,17 +72,5 @@ class CadmosValidator extends AbstractCadmosValidator {
 			}
 		}
 	}
-/*
- * 
- */
-//  public static val INVALID_NAME = 'invalidName'
-//
-//	@Check
-//	def checkGreetingStartsWithCapital(Greeting greeting) {
-//		if (!Character.isUpperCase(greeting.name.charAt(0))) {
-//			warning('Name should start with a capital', 
-//					MyDslPackage.Literals.GREETING__NAME,
-//					INVALID_NAME)
-//		}
-//	}
+
 }
