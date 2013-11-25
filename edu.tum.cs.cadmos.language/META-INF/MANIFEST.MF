@@ -21,14 +21,16 @@ Import-Package: org.apache.log4j,
  org.eclipse.xtext.xbase.lib
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: edu.tum.cs.cadmos.language,
- edu.tum.cs.cadmos.language.services,
  edu.tum.cs.cadmos.language.cadmos,
  edu.tum.cs.cadmos.language.cadmos.impl,
  edu.tum.cs.cadmos.language.cadmos.util,
- edu.tum.cs.cadmos.language.serializer,
+ edu.tum.cs.cadmos.language.common,
+ edu.tum.cs.cadmos.language.extensions,
+ edu.tum.cs.cadmos.language.formatting,
+ edu.tum.cs.cadmos.language.generator,
  edu.tum.cs.cadmos.language.parser.antlr,
  edu.tum.cs.cadmos.language.parser.antlr.internal,
- edu.tum.cs.cadmos.language.validation,
  edu.tum.cs.cadmos.language.scoping,
- edu.tum.cs.cadmos.language.generator,
- edu.tum.cs.cadmos.language.formatting
+ edu.tum.cs.cadmos.language.serializer,
+ edu.tum.cs.cadmos.language.services,
+ edu.tum.cs.cadmos.language.validation
