@@ -5,5 +5,5 @@ Bundle-SymbolicName: edu.tum.cs.cadmos.analysis
 Bundle-Version: 1.0.0
 Bundle-Vendor: http://www4.in.tum.de/
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: edu.tum.cs.cadmos.language;bundle-version="1.0.0"
+Require-Bundle: edu.tum.cs.cadmos.language;bundle-version="1.0.0";visibility:=reexport
 Export-Package: edu.tum.cs.cadmos.analysis
