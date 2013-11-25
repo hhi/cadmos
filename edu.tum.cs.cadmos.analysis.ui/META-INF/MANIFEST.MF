@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Analysis User Interface Components
+Bundle-SymbolicName: edu.tum.cs.cadmos.analysis.ui
+Bundle-Version: 1.0.0
+Bundle-Activator: edu.tum.cs.cadmos.analysis.ui.AnalysisUi
+Bundle-Vendor: http://www4.in.tum.de/
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ edu.tum.cs.cadmos.analysis;bundle-version="1.0.0";visibility:=reexport,
+ edu.tum.cs.cadmos.language.ui;bundle-version="1.0.0";visibility:=reexport
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Export-Package: edu.tum.cs.cadmos.analysis.ui
