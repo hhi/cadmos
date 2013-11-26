@@ -84,6 +84,7 @@ public class ArchitectureViewPart extends ViewPart {
 			final Component component = EcoreUtil2.getContainerOfType(
 					selectedObject, Component.class);
 			getArchitectureControl().setRootComponent(component);
+			getArchitectureControl().setSelectedObject(selectedObject);
 		};
 	};
 
