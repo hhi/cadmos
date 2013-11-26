@@ -31,7 +31,8 @@ public class ArchitectureViewPart extends ViewPart {
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		architectureControl = new ArchitectureControl(container, SWT.NONE);
+		architectureCanvas = new ArchitectureCanvas(container,
+				SWT.DOUBLE_BUFFERED);
 
 		createActions();
 		initializeToolBar();
@@ -83,14 +84,14 @@ public class ArchitectureViewPart extends ViewPart {
 		public void selectionChanged(XtextEditor editor, EObject selectedObject) {
 			final Component component = EcoreUtil2.getContainerOfType(
 					selectedObject, Component.class);
-			getArchitectureControl().setRootComponent(component);
-			getArchitectureControl().setSelectedObject(selectedObject);
+			getArchitectureCanvas().setRootComponent(component);
+			getArchitectureCanvas().setSelectedObject(selectedObject);
 		};
 	};
 
-	private ArchitectureControl architectureControl;
+	private ArchitectureCanvas architectureCanvas;
 
-	public ArchitectureControl getArchitectureControl() {
-		return architectureControl;
+	public ArchitectureCanvas getArchitectureCanvas() {
+		return architectureCanvas;
 	}
 }
