@@ -13,6 +13,6 @@ abstract class Node {
 	def abstract void drawChildren(Point origin)
 	
 	override toString(){
-		this.class.simpleName+": \n"+subnodes.map["\t"+it.toString]
+		this.class.simpleName+": \n"+subnodes.map["\t"+it.toString+"\n"]
 	}
 }
