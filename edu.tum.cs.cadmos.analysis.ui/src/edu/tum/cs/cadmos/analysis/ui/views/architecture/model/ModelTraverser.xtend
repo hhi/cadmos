@@ -10,20 +10,23 @@ class ModelTraverser {
 	
 	
 	
-	var HashSet<Component> visited = new HashSet 
+	var HashSet<Component> visited = new HashSet
+	var Iterable<Channel> channels 
 	var ComponentNode rootNode
 	
 	def traverseRoot(Component root){
 		visited.clear
+		channels = root.eContents.filter(Channel)
 		val firstRow = root.eContents.filter(Channel).filter[sourceComponent == root].map[sinkComponent].toSet
+		root.visit
 		rootNode = new ComponentNode(root);
 		rootNode.addChildren(firstRow.map[traverse])
 		return rootNode
 	}
 	
 	def Node traverse(Component c){
+		c.visit
 		val successors = c.newSuccessors
-		println(successors.size)
 		if(successors.size == 0){
 			return new ComponentNode(c)	
 		}else if(successors.size == 1){
@@ -42,12 +45,10 @@ class ModelTraverser {
 	
 	def Set<Component> getSuccessors(Component c) {
 		//clean up
-		println(c.parentComponent)
-		var test = c.parentComponent.eContents
-		.filter(Channel)
+		channels
 		.filter[sourceComponent == c]
 		.map[sinkComponent].toSet
-		return test
+		
 	}
 	
 	def Set<Component> getNewSuccessors(Component c){
