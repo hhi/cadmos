@@ -3,10 +3,11 @@ package edu.tum.cs.cadmos.examples.deployment.aramis.tp51.deployment
 import edu.tum.cs.cadmos.examples.deployment.aramis.tp51.^software.*
 import edu.tum.cs.cadmos.examples.deployment.aramis.tp51.platform.*
 
-costmodel Chassis_on_AurixTC275T {
+costmodel Chassis_on_AurixTC277T {
 	
 	ChassisFunction1 {
 		TriCore16P {
+			
 			WCET = 1500	ACET = 500	BCET = 400	SRAM = 50000
 		}
 		TriCore16PLockStep {
@@ -15,13 +16,29 @@ costmodel Chassis_on_AurixTC275T {
 		TriCore16ELockStep {
 			WCET = 2500	ACET = 2400	BCET = 2300	SRAM = 35000
 		}
+		
+//		GenericCore {
+//			WCET = 23 * Core.executionPenalty
+//		}
+		
+		
 	}
 	
 	ChassisFunction1.output {
 		SRICrossBar {
-			TRANSMISSION_LATENCY = 100	TRANSMISSION_DURATION = 10
+			//unit: CPU cycles
+			//LMU RAM -> Core
+			TRANSMISSION_LATENCY = 10	TRANSMISSION_DURATION = 1
 		}
+		
+		//Core-> other RAM: shorter!
 	}
+	
+	//penalty RAM access: local < other core < LMU
+	//penalty for many RAM accesses
+	//(distance * frequency)
+	//? penalty concurrent access
+	// only RAM - not ROM
 
 	ChassisFunction2 {
 		TriCore16P {

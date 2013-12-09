@@ -6,6 +6,10 @@ software component DataParallelOperation {
 	in x
 	out y
 }
+software component DataParallelOperation2 {
+	in x
+	out y
+}
 
 software component VectorMachine {
 	in x
