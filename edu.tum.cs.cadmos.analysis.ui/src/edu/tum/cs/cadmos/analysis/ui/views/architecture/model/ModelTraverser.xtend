@@ -5,8 +5,10 @@ import edu.tum.cs.cadmos.language.cadmos.Component
 import java.util.HashSet
 import java.util.Set
 import edu.tum.cs.cadmos.language.cadmos.Embedding
+import org.eclipse.xtext.EcoreUtil2
 
 class ModelTraverser {
+	
 	
 	
 	
@@ -64,6 +66,7 @@ class ModelTraverser {
 	}
 	
 	def Component getParentComponent(Component c){
+		EcoreUtil2.getContainerOfType(c, Component)
 		c.eContainer.eContents.filter(Component).filter[eContents.filter(Embedding).filter[component==c]!=0].get(0)
 	}
 }
