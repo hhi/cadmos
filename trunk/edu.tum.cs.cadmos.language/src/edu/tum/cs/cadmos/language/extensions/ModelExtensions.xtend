@@ -26,6 +26,38 @@ class ModelExtensions {
 	def ports(Component c) {
 		c.features.filter(Port)
 	}
+	
+	
+	def getComponent(Port p){
+		p.eContainer as Component		
+	}
+	
+	def inboundPorts(Component c) {
+		c.features.filter(Port).filter[inbound]
+	}
+	
+	def getTrailingChannels(Port p){
+		(p.eContainer as Component).channels.filter[it.src.port == p]
+	}
+	
+	def connectsToSibling(Channel ch){
+		if (ch.src.embedding == null || ch.snk.embedding == null) {
+			return false
+		}
+		return true		
+	}
+	
+	def isAtomic(Component c) {
+		c.embeddings.empty
+	}
+	
+	def connectsToParent(Channel ch){
+		return ch.src.embedding != null && ch.snk.embedding == null
+	}
+	
+	def connectsToChild(Channel ch){
+		return ch.src.embedding == null && ch.snk.embedding != null
+	}	
 
 	def embeddings(Component c) {
 		c.features.filter(Embedding)
