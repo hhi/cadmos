@@ -15,7 +15,7 @@ class CadmosXtextEditorSelectionChangedListener implements ISelectionChangedList
 	}
 
 	override selectionChanged(SelectionChangedEvent e) {
-		if (e.selection.empty || !(e.selection instanceof ITextSelection)) {
+		if (!(e.selection instanceof ITextSelection)) {
 			return
 		}
 		val selection = e.selection as ITextSelection
