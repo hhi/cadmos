@@ -11,7 +11,7 @@ Import:
 	'import' importedNamespace=QualifiedNameWithWildcard;
 
 Element:
-	Component | Costmodel | Requirements;
+	Component | Costmodel | Requirements | Deployment | Schedule;
 
 Component:
 	role=Role 'component' name=ID '{' features+=Feature* '}';
@@ -50,7 +50,37 @@ Cost:
 	key=ID '=' value=INT;
 
 Requirements:
-	'requirements' name=ID; //'{' requirements+=Requirement* '}';
+	'requirements' name=ID '{' requirements+=Requirement* '}';
+
+Requirement:
+	PeriodicityRequirement | LatencyRequirement /*TODO(WS->VP)*/;
+
+PeriodicityRequirement:
+	'period' component=[Component] '=' period=INT;
+
+LatencyRequirement:
+	'latency' value=INT /*TODO(WS->VP)*/;
+
+Deployment:
+	'deployment' name=ID '{'
+	('swc' swc=[Component] &
+	'plc' plc=[Component] &
+	'cost' cost=[Costmodel] &
+	'req' req=[Requirements])
+	'}';
+
+Schedule:
+	'schedule' name=ID '{' periodicSchedules+=PeriodicSchedule* '}';
+
+PeriodicSchedule:
+	'periodic' period=INT '{' resourceSchedules+=ResourceSchedule* '}';
+
+ResourceSchedule:
+	'resource' resource=[Component] '{' tasks+=Task* '}';
+
+Task:
+	'task' component=[Component] start=INT;
+
 QualifiedName:
 	ID ('.' ID)*;
 
