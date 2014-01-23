@@ -1,4 +1,4 @@
-package edu.tum.cs.cadmos.analysis.ui.views.architecture.model
+package edu.tum.cs.cadmos.analysis.architecture.model
 
 import edu.tum.cs.cadmos.language.cadmos.Channel
 import edu.tum.cs.cadmos.language.cadmos.Component
