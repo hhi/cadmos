@@ -1,4 +1,4 @@
-package edu.tum.cs.cadmos.analysis.ui.views.architecture.model
+package edu.tum.cs.cadmos.analysis.architecture.model
 
 import edu.tum.cs.cadmos.language.cadmos.Channel
 import edu.tum.cs.cadmos.language.cadmos.Component
@@ -29,12 +29,12 @@ class DFGTranslator {
 
 		root.findPathsToAtomicSinksInternally.forEach [
 			//create source vertex
-			val sourceObject = it.pathSource  // should be Port
+			val sourceObject = it.getPathSource  // should be Port
 			val sourceVertex = createVertex(sourceObject, (sourceObject as Port).name)
 			
 			//create sink vertex
-			val sinkObject = it.pathSink	// should be Embedding -> name already covered by path
-			var sinkID = it.ID
+			val sinkObject = it.getPathSink	// should be Embedding -> name already covered by path
+			var sinkID = it.getID
 			val sinkVertex = createVertex(sinkObject, sinkID)
 			
 			//connect
@@ -50,12 +50,12 @@ class DFGTranslator {
 			val c = path.last.component
 			c.findPathsToAtomicSinksTrailing.forEach[
 				//create source vertex
-				val sourceObject = it.pathSource	//should be Embedding -> name already covered by path
+				val sourceObject = it.getPathSource	//should be Embedding -> name already covered by path
 				val sourceID = getID(path, it)
 				val sourceVertex = createVertex(sourceObject, sourceID)
 				
 				//create sink vertex
-				val sinkObject = it.pathSink
+				val sinkObject = it.getPathSink
 				var sinkID = ""
 				if(sinkObject instanceof Port){
 					//context is root - path should be empty
@@ -142,7 +142,7 @@ class DFGTranslator {
 	
 	def List<List<Embedding>> findAtomicEmbeddings(Component c, List<Embedding> path) {
 		val list = new ArrayList<List<Embedding>>
-		if (c.atomic) {
+		if (c.isAtomic) {
 			list.add(path)
 			return list
 		}
@@ -176,11 +176,11 @@ class DFGTranslator {
 
 	def List<List<Channel>> findAtomicSinks(Port p, List<Channel> path) {
 		val list = new ArrayList<List<Channel>>
-		if (p.inbound && p.component.atomic) {
+		if (p.inbound && p.getComponent.isAtomic) {
 			list.add(path)
 			return list
 		}
-		p.trailingChannels.forEach [
+		p.getTrailingChannels.forEach [
 			val pathFurther = path.duplicateCh
 			pathFurther.add(it)
 			it.snk.port.findAtomicSinks(pathFurther)
