@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Cadmos Analysis Datastructures and Algorithms
+Bundle-SymbolicName: edu.tum.cs.cadmos.analysis
+Bundle-Version: 1.0.0
+Bundle-Vendor: http://www4.in.tum.de/
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: edu.tum.cs.cadmos.language;bundle-version="1.0.0";visibility:=reexport
+Export-Package: edu.tum.cs.cadmos.analysis,
+ edu.uci.ics.jung.algorithms.layout,
+ edu.uci.ics.jung.algorithms.layout.util,
+ edu.uci.ics.jung.algorithms.util,
+ edu.uci.ics.jung.graph,
+ edu.uci.ics.jung.graph.util
+Bundle-ClassPath: lib/collections-generic-4.01.jar,
+ lib/colt-1.2.0.jar,
+ lib/jung-algorithms-2.0.1.jar,
+ lib/jung-api-2.0.1.jar,
+ lib/jung-graph-impl-2.0.1.jar,
+ .

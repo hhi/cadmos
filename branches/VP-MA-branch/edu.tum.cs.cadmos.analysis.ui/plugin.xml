@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="edu.tum.cs.cadmos.analysis.ui.views.architecture.ArchitectureViewPart"
+            icon="icons/architecture_browser.gif"
+            id="edu.tum.cs.cadmos.analysis.ui.views.architecture.ArchitectureViewPart"
+            name="Architecture Browser">
+      </view>
+   </extension>
+</plugin>

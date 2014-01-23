@@ -1,0 +1,15 @@
+package edu.tum.cs.cadmos.examples.^software.patterns.flowcontrol
+
+/* Multiplexes 2 message streams into 1 interleaved output stream. */
+software component Multiplexer {
+	in x1
+	in x2
+	out y rate 2
+}
+
+/* Demultiplexes 1 interleaved message stream to 2 output streams. */
+software component Demultiplexer {
+	in x rate 2
+	out o1
+	out o2
+}

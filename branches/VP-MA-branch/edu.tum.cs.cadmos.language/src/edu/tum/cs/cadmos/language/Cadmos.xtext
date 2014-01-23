@@ -1,0 +1,88 @@
+grammar edu.tum.cs.cadmos.language.Cadmos with org.eclipse.xtext.common.Terminals
+
+generate cadmos "http://www.tum.edu/cs/cadmos/language/Cadmos"
+
+Model:
+	('package' name=QualifiedName)?
+	imports+=Import*
+	elements+=Element*;
+
+Import:
+	'import' importedNamespace=QualifiedNameWithWildcard;
+
+Element:
+	Component | Costmodel | Requirements | Deployment | Schedule;
+
+Component:
+	role=Role 'component' name=ID '{' features+=Feature* '}';
+
+enum Role:
+	software | processing | bus;
+
+Feature:
+	Port | Embedding | Channel | ComponentProperty;
+
+Port:
+	(inbound?='in' | 'out') name=ID ('rate' rate=INT)?;
+
+Embedding:
+	'embed' component=[Component] name=ID;
+
+Channel:
+	'channel' src=PortRef '->' snk=PortRef ('delay' delay=INT)?;
+
+PortRef:
+	(embedding=[Embedding] '.')? port=[Port];
+
+ComponentProperty:
+	'property' name=ID '=' value=STRING;
+
+Costmodel:
+	'costmodel' name=ID '{' mappings+=Mapping* '}';
+
+Mapping:
+	component=[Component] ('.' port=[Port])? '{' targetCosts+=TargetCost* '}';
+
+TargetCost:
+	component=[Component] '{' costs+=Cost* '}';
+
+Cost:
+	key=ID '=' value=INT;
+
+Requirements:
+	'requirements' name=ID '{' requirements+=Requirement* '}';
+
+Requirement:
+	PeriodicityRequirement | LatencyRequirement /*TODO(WS->VP)*/;
+
+PeriodicityRequirement:
+	'period' component=[Component] '=' period=INT;
+
+LatencyRequirement:
+	'latency' value=INT /*TODO(WS->VP)*/;
+
+Deployment:
+	'deployment' name=ID '{'
+	('swc' swc=[Component] &
+	'plc' plc=[Component] &
+	'cost' cost=[Costmodel] &
+	'req' req=[Requirements])
+	'}';
+
+Schedule:
+	'schedule' name=ID '{' periodicSchedules+=PeriodicSchedule* '}';
+
+PeriodicSchedule:
+	'periodic' period=INT '{' resourceSchedules+=ResourceSchedule* '}';
+
+ResourceSchedule:
+	'resource' resource=[Component] '{' tasks+=Task* '}';
+
+Task:
+	'task' component=[Component] start=INT;
+
+QualifiedName:
+	ID ('.' ID)*;
+
+QualifiedNameWithWildcard:
+	QualifiedName '.*'?;

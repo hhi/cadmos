@@ -1,0 +1,115 @@
+package edu.tum.cs.cadmos.examples.deployment.aramis.tp51.deployment
+
+import edu.tum.cs.cadmos.examples.deployment.aramis.tp51.^software.*
+import edu.tum.cs.cadmos.examples.deployment.aramis.tp51.platform.*
+
+costmodel Chassis_on_AurixTC277T {
+	
+	ChassisFunction1 {
+		TriCore16P {
+			
+			WCET = 1500	ACET = 500	BCET = 400	SRAM = 50000
+		}
+		TriCore16PLockStep {
+			WCET = 1700	ACET = 700	BCET = 600	SRAM = 50000
+		}
+		TriCore16ELockStep {
+			WCET = 2500	ACET = 2400	BCET = 2300	SRAM = 35000
+		}
+		
+//		GenericCore {
+//			WCET = 23 * Core.executionPenalty
+//		}
+		
+		
+	}
+	
+	ChassisFunction1.output {
+		SRICrossBar {
+			//unit: CPU cycles
+			//LMU RAM -> Core
+			TRANSMISSION_LATENCY = 10	TRANSMISSION_DURATION = 1
+		}
+		
+		//Core-> other RAM: shorter!
+	}
+	
+	//penalty RAM access: local < other core < LMU
+	//penalty for many RAM accesses
+	//(distance * frequency)
+	//? penalty concurrent access
+	// only RAM - not ROM
+
+	ChassisFunction2 {
+		TriCore16P {
+			WCET = 1000	ACET = 500	BCET = 400	SRAM = 10000
+		}
+		TriCore16PLockStep {
+			WCET = 1200	ACET = 900	BCET = 600	SRAM = 10000
+		}
+		TriCore16ELockStep {
+			WCET = 1500	ACET = 1400	BCET = 1300	SRAM = 8000
+		}
+	}
+
+	ChassisFunction2.output {
+		SRICrossBar {
+			TRANSMISSION_LATENCY = 100	TRANSMISSION_DURATION = 10
+		}
+	}
+	
+	ChassisFunction3 {
+		TriCore16P {
+			WCET = 500	ACET = 480	BCET = 460	SRAM = 20000
+		}
+		TriCore16PLockStep {
+			WCET = 520	ACET = 490	BCET = 460	SRAM = 20000
+		}
+		TriCore16ELockStep {
+			WCET = 550	ACET = 540	BCET = 530	SRAM = 18000
+		}
+	}
+	
+	ChassisFunction3.output {
+		SRICrossBar {
+			TRANSMISSION_LATENCY = 100	TRANSMISSION_DURATION = 10
+		}
+	}
+	
+	FlexRayReader {
+		TriCore16PLockStep {
+			WCET = 200	ACET = 170	BCET = 160	SRAM = 5000
+		}
+		TriCore16ELockStep {
+			WCET = 250	ACET = 240	BCET = 230	SRAM = 5000
+		}
+	}
+	
+	FlexRayReader.output1 {
+		SRICrossBar {
+			TRANSMISSION_LATENCY = 100	TRANSMISSION_DURATION = 30
+		}
+	}
+
+	FlexRayReader.output2 {
+		SRICrossBar {
+			TRANSMISSION_LATENCY = 100	TRANSMISSION_DURATION = 20
+		}
+	}
+
+	FlexRayReader.output3 {
+		SRICrossBar {
+			TRANSMISSION_LATENCY = 100	TRANSMISSION_DURATION = 10
+		}
+	}
+	
+	FlexRayWriter {
+		TriCore16PLockStep {
+			WCET = 200	ACET = 170	BCET = 160	SRAM = 5000
+		}
+		TriCore16ELockStep {
+			WCET = 250	ACET = 240	BCET = 230	SRAM = 5000
+		}
+	}
+	
+}
