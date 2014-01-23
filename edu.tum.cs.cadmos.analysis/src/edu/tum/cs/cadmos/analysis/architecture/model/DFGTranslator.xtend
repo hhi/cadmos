@@ -24,17 +24,65 @@ class DFGTranslator {
 	new(Component c) {
 		this.root = c
 	}
+	
+	def getSinkName(Channel ch){
+		if (ch.snk.embedding != null) {
+			ch.snk.embedding.name	
+		} else {
+			ch.snk.port.name
+		}
+	}
+	
+	def getSourceName(Channel ch){
+		if (ch.src.embedding != null) {
+			ch.src.embedding.name	
+		} else {
+			ch.src.port.name
+		}
+	}
+
+	def translateFlatGraphToDFG() {
+		val channels = this.root.eContents.filter(Channel)
+		val embeddings = this.root.eContents.filter(Embedding)
+		val environment = this.root.eContents.filter(Port)
+		visited.clear
+		
+		// add environment input/outputs
+		environment.forEach[
+			val vertex = new Vertex(it.name, it)
+			visited.put(it.name, vertex)
+			g.addVertex(vertex)
+		]
+		
+		// add embeddings
+		embeddings.forEach[
+			val vertex = new Vertex(it.name, it)
+			visited.put(it.name, vertex)
+			g.addVertex(vertex)
+		]
+		
+		//add channels
+		channels.forEach[
+			val srcVertex = visited.get(it.sourceName)
+			val snkVertex = visited.get(it.sinkName)
+			if(srcVertex != null && snkVertex != null) {
+				val edge = new Edge("(" + srcVertex.id + ", " + snkVertex.id + ")", 0)
+				g.addEdge(edge, srcVertex, snkVertex)
+			}
+		]
+		g
+	}
 
 	def translateToDFG() {
 
 		root.findPathsToAtomicSinksInternally.forEach [
 			//create source vertex
-			val sourceObject = it.getPathSource  // should be Port
+			val sourceObject = it.pathSource  // should be Port
 			val sourceVertex = createVertex(sourceObject, (sourceObject as Port).name)
 			
 			//create sink vertex
-			val sinkObject = it.getPathSink	// should be Embedding -> name already covered by path
-			var sinkID = it.getID
+			val sinkObject = it.pathSink	// should be Embedding -> name already covered by path
+			var sinkID = it.ID
 			val sinkVertex = createVertex(sinkObject, sinkID)
 			
 			//connect
@@ -50,12 +98,12 @@ class DFGTranslator {
 			val c = path.last.component
 			c.findPathsToAtomicSinksTrailing.forEach[
 				//create source vertex
-				val sourceObject = it.getPathSource	//should be Embedding -> name already covered by path
+				val sourceObject = it.pathSource	//should be Embedding -> name already covered by path
 				val sourceID = getID(path, it)
 				val sourceVertex = createVertex(sourceObject, sourceID)
 				
 				//create sink vertex
-				val sinkObject = it.getPathSink
+				val sinkObject = it.pathSink
 				var sinkID = ""
 				if(sinkObject instanceof Port){
 					//context is root - path should be empty
@@ -142,7 +190,7 @@ class DFGTranslator {
 	
 	def List<List<Embedding>> findAtomicEmbeddings(Component c, List<Embedding> path) {
 		val list = new ArrayList<List<Embedding>>
-		if (c.isAtomic) {
+		if (c.atomic) {
 			list.add(path)
 			return list
 		}
@@ -176,11 +224,11 @@ class DFGTranslator {
 
 	def List<List<Channel>> findAtomicSinks(Port p, List<Channel> path) {
 		val list = new ArrayList<List<Channel>>
-		if (p.inbound && p.getComponent.isAtomic) {
+		if (p.inbound && p.component.atomic) {
 			list.add(path)
 			return list
 		}
-		p.getTrailingChannels.forEach [
+		p.trailingChannels.forEach [
 			val pathFurther = path.duplicateCh
 			pathFurther.add(it)
 			it.snk.port.findAtomicSinks(pathFurther)
