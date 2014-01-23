@@ -7,6 +7,7 @@ import edu.tum.cs.cadmos.analysis.architecture.model.Vertex
 import edu.tum.cs.cadmos.analysis.architecture.model.Edge
 
 import static extension edu.tum.cs.cadmos.analysis.schedule.ScheduleSMTUtils.*
+import java.util.List
 
 class ScheduleSMTGenerator {
 
@@ -69,9 +70,33 @@ class ScheduleSMTGenerator {
 				(=> (and (distinct x y) (= (mapping x) (mapping y)))
 					(or (<= (finish x) (start y)) 
 						(<= (finish y) (start x))))))
-						
+				
+			; Simplify the start expressions.
+			«simplifyStartTimes(softwareComponentDFG.components)»
+			
+			; Simplify the mapping expressions.
+			«simplifyMapping(softwareComponentDFG.components)»
+			
 			(check-sat)
 			(get-model)
+		'''
+	}
+	
+	private def static simplifyMapping(List<Vertex> vertexList) {
+		'''
+		«FOR sc : vertexList SEPARATOR "\n"»
+		(declare-const mapping«sc.id» platform)
+		(assert (= mapping«sc.id» (mapping «sc.id»)))
+		«ENDFOR»
+		'''
+	}
+	
+	private def static simplifyStartTimes(List<Vertex> vertexList) {
+		'''
+		«FOR sc : vertexList SEPARATOR "\n"»
+		(declare-const start«sc.id» Int)
+		(assert (= start«sc.id» (start «sc.id»)))
+		«ENDFOR»
 		'''
 	}
 
