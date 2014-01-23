@@ -1,6 +1,8 @@
 package edu.tum.cs.cadmos.analysis.schedule;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -48,6 +50,29 @@ public class ScheduleManager {
 			generatedFileName = ScheduleSMTGenerator.doGenerate(
 					outputDirectory, softwareComponentDFG,
 					processingComponentDFG);
+			ProcessBuilder cProcess = null;
+			if (System.getProperty("os.name").equals("Mac OS X")) {
+				cProcess = new ProcessBuilder("./z3  " + generatedFileName);
+				cProcess.directory(outputDirectory);
+			} else if (System.getProperty("os.name").startsWith("Windows")) {
+				cProcess = new ProcessBuilder("cmd", "/C", "z3 "
+						+ generatedFileName);
+				cProcess.directory(outputDirectory);
+			}
+
+			Process process;
+			try {
+				process = cProcess.start();
+				InputStream inputStream = process.getInputStream();
+				int b = 0;
+				String output = "";
+				while ((b = inputStream.read()) >= 0) {
+					output += (char) b;
+				}
+				System.out.println(output);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}
