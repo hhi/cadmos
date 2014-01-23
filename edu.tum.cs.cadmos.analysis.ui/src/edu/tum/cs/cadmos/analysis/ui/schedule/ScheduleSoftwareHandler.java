@@ -103,7 +103,8 @@ public class ScheduleSoftwareHandler extends AbstractHandler implements
 									if (processingCommandState != null
 											&& isSelected
 													.equals(processingCommandState
-															.getValue())) {
+															.getValue())
+											&& isSelected) {
 										System.out.println("Start scheduling!");
 										if (scheduleManager.readyToSchedule()) {
 											scheduleManager.schedule();
