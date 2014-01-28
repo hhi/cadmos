@@ -3,10 +3,13 @@ package edu.tum.cs.cadmos.analysis.schedule;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.xtext.xbase.lib.Pair;
 
 import edu.tum.cs.cadmos.analysis.architecture.model.Edge;
 import edu.tum.cs.cadmos.analysis.architecture.model.Vertex;
@@ -70,6 +73,9 @@ public class ScheduleManager {
 					output += (char) b;
 				}
 				System.out.println(output);
+				final HashMap<EObject, Pair<String, Integer>> schedule = ScheduleSMTParser
+						.parse(output, softwareComponentDFG);
+				System.out.println(schedule);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
