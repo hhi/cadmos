@@ -12,3 +12,5 @@ Require-Bundle: org.eclipse.ui,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: edu.tum.cs.cadmos.analysis.ui
+Bundle-ClassPath: lib/klay_0.10.0.jar,
+ .
