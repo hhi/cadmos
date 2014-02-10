@@ -25,7 +25,7 @@ class DFGTranslator {
 		this.root = c
 	}
 
-	def translateToDFG() {
+	def DirectedSparseMultigraph<Vertex, Edge> translateToDFG() {
 
 		root.findPathsToAtomicSinksInternally.forEach [
 			//create source vertex

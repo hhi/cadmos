@@ -10,6 +10,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 
+import edu.tum.cs.cadmos.analysis.ui.views.architecture.model.DFGTranslator;
 import edu.tum.cs.cadmos.analysis.ui.views.architecture.model.ModelTraverser;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.ui.CadmosUi;
@@ -88,7 +89,8 @@ public class ArchitectureViewPart extends ViewPart {
 			getArchitectureCanvas().setRootComponent(component);
 			getArchitectureCanvas().setSelectedObject(selectedObject);
 			ModelTraverser mt = new ModelTraverser();
-			System.out.println(mt.traverseRoot(component));
+			DFGTranslator dfgt = new DFGTranslator(component);
+			System.out.println(dfgt.translateToDFG());
 		};
 	};
 
