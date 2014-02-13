@@ -56,8 +56,8 @@ public class ScheduleManager {
 			ProcessBuilder cProcess = null;
 			if (System.getProperty("os.name").equals("Mac OS X")) {
 				//FIXME CD: will fix this
-				cProcess = new ProcessBuilder("/Applications/Z3/z3", generatedFileName);
-//				cProcess = new ProcessBuilder("./z3  " + generatedFileName);
+//				cProcess = new ProcessBuilder("/Applications/Z3/z3", generatedFileName);
+				cProcess = new ProcessBuilder("./z3  " + generatedFileName);
 				cProcess.directory(outputDirectory);
 			} else if (System.getProperty("os.name").startsWith("Windows")) {
 				cProcess = new ProcessBuilder("cmd", "/C", "z3 "
