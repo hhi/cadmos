@@ -74,6 +74,9 @@ class DFGTranslator {
 	}
 
 	def translateToDFG() {
+		if(root.embeddings.empty){
+			return g
+		}
 		
 		root.findPathsToAtomicSinksInternally.forEach [
 			//create source vertex
@@ -89,17 +92,13 @@ class DFGTranslator {
 			val candidateId = "(" + sourceVertex.id + "," + sinkVertex.id + ")"
 			var index = candidateId.incrementEdgeMultiplicity
 			val edge = new Edge(candidateId + "[" + index + "]", index)
-			//FIXME
-			println("1:"+candidateId + "[" + index + "]")
 			g.addEdge(edge, sourceVertex, sinkVertex)
 		]
 		
 		
 		root.findAtomicEmbeddings.forEach[
-			println("atomic emb: "+it.last.toString)
 			val path = it
 			findPathsToAtomicSinksTrailing(path).forEach[
-				println("atomic trailing sink: "+it.pathSink)
 				
 				//create source vertex
 				val sourceObject = it.pathSource	//should be Embedding -> name already covered by path
@@ -122,8 +121,6 @@ class DFGTranslator {
 				val candidateId = "(" + sourceVertex.id + "," + sinkVertex.id + ")"
 				var index = candidateId.incrementEdgeMultiplicity
 				val edge = new Edge(candidateId + "[" + index + "]", index)
-				//FIXME
-				println("2:"+candidateId + "[" + index + "]")
 				g.addEdge(edge, sourceVertex, sinkVertex)
 			]
 		]
@@ -144,18 +141,6 @@ class DFGTranslator {
 	}
 	
 	def traverse(List<Embedding> path, Channel ch) {
-		
-//		println(path)
-		
-//		//TODO remove sanity checks
-//		if(path.empty && ch.src.embedding != null){
-//				//should never happen once algorithm works
-//				throw new AssertionError("inconsistent path")
-//		}
-//		if(path.last != ch.src.embedding){
-//				//should never happen once algorithm works
-//				throw new AssertionError("inconsistent path")
-//		}
 		
 		//actual work
 		if(ch.connectsToChild){
@@ -259,6 +244,9 @@ class DFGTranslator {
 				context2.remove(context2.last)
 			} else if(it.connectsToChild){
 				context2.add(it.snk.embedding)
+			} else if (it.connectsToSibling){
+				context2.remove(context2.last)
+				context2.add(it.snk.embedding)
 			}
 			list.addAll(it.snk.port.findAtomicSinks2(context2,pathFurther))
 		]
@@ -267,8 +255,9 @@ class DFGTranslator {
 	
 	//works upwards through embeddings
 	def getTrailingChannels2(Port p, Embedding context){
-		val t =(context.eContainer as Component).channels.filter[it.src.port == p]
-		t
+		var up =(context.eContainer as Component).channels.filter[it.src.port == p].filter[it.src.embedding == context]
+		var down = context.component.channels.filter[it.src.port == p].filter[it.src.embedding == null]
+		return up + down
 	}
 	
 	def createVertex(EObject data, String id) {
