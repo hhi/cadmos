@@ -43,7 +43,7 @@ public class ScheduleManager {
 		final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace()
 				.getRoot();
 		final IPath location = workspaceRoot.getLocation();
-		File outputDirectory = new File(location.toFile(), "SMT Scripts");
+		File outputDirectory = new File(location.toFile(), "SMTScripts");
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdir();
 		}
@@ -55,7 +55,9 @@ public class ScheduleManager {
 					processingComponentDFG);
 			ProcessBuilder cProcess = null;
 			if (System.getProperty("os.name").equals("Mac OS X")) {
-				cProcess = new ProcessBuilder("./z3  " + generatedFileName);
+				//FIXME CD: will fix this
+				cProcess = new ProcessBuilder("/Applications/Z3/z3", generatedFileName);
+//				cProcess = new ProcessBuilder("./z3  " + generatedFileName);
 				cProcess.directory(outputDirectory);
 			} else if (System.getProperty("os.name").startsWith("Windows")) {
 				cProcess = new ProcessBuilder("cmd", "/C", "z3 "

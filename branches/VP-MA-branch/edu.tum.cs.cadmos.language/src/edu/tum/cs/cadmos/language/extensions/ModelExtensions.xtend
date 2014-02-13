@@ -36,9 +36,11 @@ class ModelExtensions {
 		c.features.filter(Port).filter[inbound]
 	}
 	
+	//works only internally
 	def getTrailingChannels(Port p){
 		(p.eContainer as Component).channels.filter[it.src.port == p]
 	}
+	
 	
 	def connectsToSibling(Channel ch){
 		if (ch.src.embedding == null || ch.snk.embedding == null) {
