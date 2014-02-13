@@ -94,10 +94,13 @@ class DFGTranslator {
 			g.addEdge(edge, sourceVertex, sinkVertex)
 		]
 		
+		
 		root.findAtomicEmbeddings.forEach[
+			println("atomic emb: "+it.last.toString)
 			val path = it
-			val c = path.last.component
-			findPathsToAtomicSinksTrailing(path,c).forEach[
+			findPathsToAtomicSinksTrailing(path).forEach[
+				println("atomic trailing sink: "+it.pathSink)
+				
 				//create source vertex
 				val sourceObject = it.pathSource	//should be Embedding -> name already covered by path
 				val sourceID = getID(path, new ArrayList<Channel>)
@@ -119,6 +122,7 @@ class DFGTranslator {
 				val candidateId = "(" + sourceVertex.id + "," + sinkVertex.id + ")"
 				var index = candidateId.incrementEdgeMultiplicity
 				val edge = new Edge(candidateId + "[" + index + "]", index)
+				//FIXME
 				println("2:"+candidateId + "[" + index + "]")
 				g.addEdge(edge, sourceVertex, sinkVertex)
 			]
@@ -219,9 +223,9 @@ class DFGTranslator {
 	}
 	
 	// use starting from atomic components
-	def findPathsToAtomicSinksTrailing(List<Embedding> path, Component c) {
+	def findPathsToAtomicSinksTrailing(List<Embedding> path) {
 		val sinks = new ArrayList<List<Channel>>
-		c.ports.filter[!inbound].forEach [
+		path.last.component.ports.filter[!inbound].forEach [
 			sinks.addAll(it.findAtomicSinks2(path, new ArrayList<Channel>))
 		]
 		return sinks
@@ -246,14 +250,15 @@ class DFGTranslator {
 			list.add(path)
 			return list
 		}
-		getTrailingChannels2(p,context.last).forEach [
+		val t = getTrailingChannels2(p,context.last)
+		t.forEach[
 			val pathFurther = path.duplicateCh
 			pathFurther.add(it)
 			val context2 = context.duplicate
-			if(pathFurther.last.connectsToParent){
+			if(it.connectsToParent){
 				context2.remove(context2.last)
-			} else if(pathFurther.last.connectsToChild){
-				context2.add(pathFurther.last.snk.embedding)
+			} else if(it.connectsToChild){
+				context2.add(it.snk.embedding)
 			}
 			list.addAll(it.snk.port.findAtomicSinks2(context2,pathFurther))
 		]
@@ -262,7 +267,8 @@ class DFGTranslator {
 	
 	//works upwards through embeddings
 	def getTrailingChannels2(Port p, Embedding context){
-		(context.eContainer as Component).channels.filter[it.src.port == p]
+		val t =(context.eContainer as Component).channels.filter[it.src.port == p]
+		t
 	}
 	
 	def createVertex(EObject data, String id) {
