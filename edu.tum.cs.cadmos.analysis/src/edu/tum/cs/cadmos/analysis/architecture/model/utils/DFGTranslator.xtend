@@ -1,4 +1,4 @@
-package edu.tum.cs.cadmos.analysis.architecture.model
+package edu.tum.cs.cadmos.analysis.architecture.model.utils
 
 import edu.tum.cs.cadmos.language.cadmos.Channel
 import edu.tum.cs.cadmos.language.cadmos.Component
@@ -11,6 +11,8 @@ import java.util.HashMap
 import java.util.List
 import java.util.Map
 import org.eclipse.emf.ecore.EObject
+import edu.tum.cs.cadmos.analysis.architecture.model.Vertex
+import edu.tum.cs.cadmos.analysis.architecture.model.Edge
 
 class DFGTranslator {
 

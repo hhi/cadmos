@@ -8,6 +8,7 @@ import edu.tum.cs.cadmos.analysis.architecture.model.Edge
 
 import static extension edu.tum.cs.cadmos.analysis.schedule.ScheduleSMTUtils.*
 import java.util.List
+import edu.tum.cs.cadmos.analysis.architecture.model.DeploymentModel
 
 class ScheduleSMTGenerator {
 
@@ -20,31 +21,29 @@ class ScheduleSMTGenerator {
 		writer.close
 	}
 
-	def static doGenerate(File outputDirectory, DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG,
-		DirectedSparseMultigraph<Vertex, Edge> processingComponentDFG) {
-		val generatedFileName = softwareComponentDFG.componentName + "-" + processingComponentDFG.componentName +
+	def static doGenerate(File outputDirectory, DeploymentModel deploymentModel) {
+		val generatedFileName = deploymentModel.softwareComponentDFG.componentName + "-" + deploymentModel.processingComponentDFG.componentName +
 			".smt2"
 		generateFile(new File(outputDirectory, generatedFileName),
-			softwareComponentDFG.generateComponents(processingComponentDFG))
+			deploymentModel.generateComponents())
 		generatedFileName
 
 	}
 
-	private def static generateComponents(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG,
-		DirectedSparseMultigraph<Vertex, Edge> processingComponentDFG) {
+	private def static generateComponents(DeploymentModel deploymentModel) {
 		'''
 			;Declare the response time.
 			(declare-const T1 Int)
 			(assert (= T1 10))
 			
 			;Declare the possible allocation as a function.
-			(declare-datatypes () ((components «softwareComponentDFG.componentsString»)))
-			(declare-datatypes () ((platform «processingComponentDFG.componentsString»)))
+			(declare-datatypes () ((components «deploymentModel.softwareComponentDFG.componentsString»)))
+			(declare-datatypes () ((platform «deploymentModel.processingComponentDFG.componentsString»)))
 			(declare-fun mapping (components) platform)
 			
 			;Define the duration times of the components on the different processors.
 			(define-fun dR ((c components) (x platform)) Int 
-										«softwareComponentDFG.generateDuration(processingComponentDFG)»
+										«deploymentModel.softwareComponentDFG.generateDuration(deploymentModel.processingComponentDFG)»
 										
 			; Declare the starting and finish times of the components in the schedule.
 			(declare-fun start (components) Int)
@@ -53,7 +52,7 @@ class ScheduleSMTGenerator {
 			; Start lower limit.
 			(assert (forall ((x components)) (>= (start x) 0)))
 			; Finish upper limit.
-			«softwareComponentDFG.generateFinishAssertions»
+			«deploymentModel.softwareComponentDFG.generateFinishAssertions»
 			
 			; TODO: Multirate schedule constant periodicity.
 			
@@ -63,7 +62,7 @@ class ScheduleSMTGenerator {
 			(assert (forall ((x components)) (= (finish x) (+ (start x) (dR x (mapping x))))))
 			
 			; Precedence constraints.
-			«softwareComponentDFG.generatePrecedenceConstraints»
+			«deploymentModel.softwareComponentDFG.generatePrecedenceConstraints»
 			
 			; Overlap constraints.
 			(assert (forall ((x components) (y components)) 
@@ -72,10 +71,10 @@ class ScheduleSMTGenerator {
 						(<= (finish y) (start x))))))
 				
 			; Simplify the start expressions.
-			«simplifyStartTimes(softwareComponentDFG.components)»
+			«simplifyStartTimes(deploymentModel.softwareComponentDFG.components)»
 			
 			; Simplify the mapping expressions.
-			«simplifyMapping(softwareComponentDFG.components)»
+			«simplifyMapping(deploymentModel.softwareComponentDFG.components)»
 			
 			(check-sat)
 			(get-model)
