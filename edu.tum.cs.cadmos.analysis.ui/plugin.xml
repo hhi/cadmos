@@ -54,12 +54,8 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="edu.tum.cs.cadmos.analysis.ui.schedule.ScheduleSoftwareHandler"
-            commandId="edu.tum.cs.cadmos.analysis.ui.ScheduleSoftwareHandler">
-      </handler>
-      <handler
-            class="edu.tum.cs.cadmos.analysis.ui.schedule.ScheduleProcessingHandler"
-            commandId="edu.tum.cs.cadmos.analysis.ui.ScheduleProcessingHandler">
+            class="edu.tum.cs.cadmos.analysis.ui.schedule.ScheduleDeploymentHandler"
+            commandId="edu.tum.cs.cadmos.analysis.ui.SoftwareDeploymentHandler">
       </handler>
    </extension>
    <extension
@@ -68,39 +64,20 @@
             allPopups="false"
             locationURI="popup:#TextEditorContext?after=additions">
          <command
-               commandId="edu.tum.cs.cadmos.analysis.ui.ScheduleSoftwareHandler"
-               label="Schedule Software Component"
-               style="toggle"
-               tooltip="Enques the software component for scheduling.">
-         </command>
-      </menuContribution>
-      <menuContribution
-            allPopups="false"
-            locationURI="popup:#TextEditorContext?after=additions">
-         <command
-               commandId="edu.tum.cs.cadmos.analysis.ui.ScheduleProcessingHandler"
-               label="Schedule Processing Component"
-               style="toggle"
-               tooltip="Enques the processing component for scheduling.">
+               commandId="edu.tum.cs.cadmos.analysis.ui.SoftwareDeploymentHandler"
+               label="Schedule Deployment"
+               style="toggle">
          </command>
       </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
       <command
-            id="edu.tum.cs.cadmos.analysis.ui.ScheduleSoftwareHandler"
-            name="Schedule Software">
+            id="edu.tum.cs.cadmos.analysis.ui.SoftwareDeploymentHandler"
+            name="Schedule Deployment">
          <state
                class="org.eclipse.ui.handlers.RegistryToggleState:false "
-               id="edu.tum.cs.cadmos.analysis.ui.ScheduleSoftwareHandlerState">
-         </state>
-      </command>
-      <command
-            id="edu.tum.cs.cadmos.analysis.ui.ScheduleProcessingHandler"
-            name="Schedule Processing">
-         <state
-               class="org.eclipse.ui.handlers.RegistryToggleState:false "
-               id="edu.tum.cs.cadmos.analysis.ui.ScheduleProcessingHandlerState">
+               id="edu.tum.cs.cadmos.analysis.ui.ScheduleDeploymentHandlerState">
          </state>
       </command>
    </extension>

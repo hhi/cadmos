@@ -26,16 +26,12 @@ import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 import edu.tum.cs.cadmos.analysis.architecture.model.DFGTranslator;
 import edu.tum.cs.cadmos.analysis.schedule.ScheduleManager;
 import edu.tum.cs.cadmos.language.cadmos.Component;
-import edu.tum.cs.cadmos.language.cadmos.Role;
+import edu.tum.cs.cadmos.language.cadmos.Deployment;
 
-public class ScheduleProcessingHandler extends AbstractHandler implements
+public class ScheduleDeploymentHandler extends AbstractHandler implements
 		IElementUpdater {
 
-	private static final String SOFTWARE_COMMAND_STATE = "edu.tum.cs.cadmos.analysis.ui.ScheduleSoftwareHandlerState";
-
-	private static final String PROCESSING_COMMAND_STATE = "edu.tum.cs.cadmos.analysis.ui.ScheduleProcessingHandlerState";
-
-	private static final String SOFTWARE_COMMAND = "edu.tum.cs.cadmos.analysis.ui.ScheduleSoftwareHandler";
+	private static final String DEPLOYMENT_COMMAND_STATE = "edu.tum.cs.cadmos.analysis.ui.ScheduleDeploymentHandlerState";
 
 	private final ScheduleManager scheduleManager = ScheduleManager
 			.getInstance();
@@ -69,40 +65,43 @@ public class ScheduleProcessingHandler extends AbstractHandler implements
 												selection.getOffset());
 								final EObject selectedObject = NodeModelUtils
 										.findActualSemanticObjectFor(leafNode);
-								if (isProcessingComponent(selectedObject)) {
-									Component processingComponent = (Component) selectedObject;
+								if (selectedObject instanceof Deployment) {
+									Deployment deployment = (Deployment) selectedObject;
 									final ICommandService service = (ICommandService) HandlerUtil
 											.getActiveWorkbenchWindowChecked(
 													event).getService(
 													ICommandService.class);
 									final Command command = event.getCommand();
 									final State state = command
-											.getState(PROCESSING_COMMAND_STATE);
+											.getState(DEPLOYMENT_COMMAND_STATE);
 									if (state != null) {
 										isSelected = !(Boolean) state
 												.getValue();
 										state.setValue(isSelected);
 										if (!isSelected) {
 											scheduleManager
+													.deleteSoftwareComponentDFG();
+											scheduleManager
 													.deleteProcessingComponentDFG();
 										} else {
+											final Component softwareComponent = deployment
+													.getSwc();
+											final Component processingComponent = deployment
+													.getPlc();
 											scheduleManager
 													.addProcessingComponentDFG(new DFGTranslator(
 															processingComponent)
+															.translateFlatGraphToDFG());
+											scheduleManager
+													.addSoftwareComponentDFG(new DFGTranslator(
+															softwareComponent)
 															.translateFlatGraphToDFG());
 										}
 									}
 									service.refreshElements(command.getId(),
 											null);
 
-									final State softwareCommandState = service
-											.getCommand(SOFTWARE_COMMAND)
-											.getState(SOFTWARE_COMMAND_STATE);
-									if (softwareCommandState != null
-											&& isSelected
-													.equals(softwareCommandState
-															.getValue())
-											&& isSelected) {
+									if (isSelected) {
 										System.out.println("Start scheduling!");
 										if (scheduleManager.readyToSchedule()) {
 											scheduleManager.schedule();
@@ -117,27 +116,12 @@ public class ScheduleProcessingHandler extends AbstractHandler implements
 																	event)
 															.getShell(),
 													"Can not schedule!",
-													"The selection is not a processing component!");
+													"The selection is not a deployment object!");
 								}
 
 								return null;
 							}
 
-							private boolean isProcessingComponent(
-									EObject selectedObject) {
-								if (!(selectedObject instanceof Component)) {
-									return false;
-								}
-
-								final Component component = (Component) selectedObject;
-								final Role role = component.getRole();
-
-								if (role != Role.PROCESSING) {
-									return false;
-								}
-
-								return true;
-							}
 						});
 			}
 		}
