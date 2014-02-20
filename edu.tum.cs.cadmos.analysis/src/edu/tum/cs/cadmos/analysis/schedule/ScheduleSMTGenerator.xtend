@@ -43,7 +43,7 @@ class ScheduleSMTGenerator {
 			
 			;Define the duration times of the components on the different processors.
 			(define-fun dR ((c components) (x platform)) Int 
-										«deploymentModel.softwareComponentDFG.generateDuration(deploymentModel.processingComponentDFG)»
+										«deploymentModel.generateDuration()»
 										
 			; Declare the starting and finish times of the components in the schedule.
 			(declare-fun start (components) Int)
@@ -108,13 +108,14 @@ class ScheduleSMTGenerator {
 		'''«FOR sc : softwareComponentDFG.components SEPARATOR "\n"»(assert (<= (finish «sc.id») T1))«ENDFOR»'''
 	}
 
-	private def static generateDuration(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG,
-		DirectedSparseMultigraph<Vertex, Edge> processingComponentDFG) {
+	private def static generateDuration(DeploymentModel deploymentModel) {
 		'''
-			«FOR sc : softwareComponentDFG.components SEPARATOR "\n"»(ite (= c «sc.id») «FOR pc : processingComponentDFG.
-				components.tail SEPARATOR " "»(ite (= x «pc.id») «sc.executionTime(pc)»«ENDFOR» «sc.executionTime(
-				processingComponentDFG.components.head)»«closedParanthesis(processingComponentDFG.components.size - 1)»«ENDFOR» 0«closedParanthesis(
-				softwareComponentDFG.components.size + 1)»
+			«FOR sc : deploymentModel.softwareComponentDFG.components SEPARATOR "\n"»(ite (= c «sc.id») «
+				FOR pc : deploymentModel.processingComponentDFG.
+				components.tail SEPARATOR " "»(ite (= x «pc.id») «sc.executionTime(pc, deploymentModel.wcet)»«ENDFOR» «sc.executionTime(
+				deploymentModel.processingComponentDFG.components.head, deploymentModel.wcet)»«closedParanthesis(
+					deploymentModel.processingComponentDFG.components.size - 1)»«ENDFOR» 0«closedParanthesis(
+				deploymentModel.softwareComponentDFG.components.size + 1)»
 		'''
 	}
 
