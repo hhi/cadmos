@@ -4,9 +4,12 @@ import edu.tum.cs.cadmos.analysis.architecture.model.Edge
 import edu.tum.cs.cadmos.analysis.architecture.model.Vertex
 import edu.tum.cs.cadmos.language.cadmos.Component
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
-import java.util.Random
+import java.util.HashMap
+import edu.tum.cs.cadmos.language.cadmos.Embedding
 
 class ScheduleSMTUtils {
+	
+	static val INFINITY = (1<<30)
 	
 	def static componentName(DirectedSparseMultigraph<Vertex, Edge> componentDFG) {
 		val child = componentDFG.vertices.toList.head.data
@@ -25,8 +28,21 @@ class ScheduleSMTUtils {
 		componentDFG.vertices.toList
 	}
 	
-	def static executionTime(Vertex sc, Vertex pc) {
-		val rand = new Random
-		Integer::toString(rand.nextInt(3))
+	def static executionTime(Vertex sc, Vertex pc, HashMap<Pair<String, String>, Integer> execMap) {
+//		val rand = new Random
+//		Integer::toString(rand.nextInt(3))
+
+		if (sc.data instanceof Embedding && pc.data instanceof Embedding) {
+			val typeSc = (sc.data as Embedding).component.name
+			val typePc = (pc.data as Embedding).component.name
+			val execTime = execMap.get(new Pair(typeSc, typePc));
+			
+			if (execTime == null)
+				return INFINITY
+			return execTime
+		}
+		
+		// case of Port
+		0
 	}
 }

@@ -12,8 +12,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.xbase.lib.Pair;
 
 import edu.tum.cs.cadmos.analysis.architecture.model.DeploymentModel;
+import edu.tum.cs.cadmos.analysis.architecture.model.utils.CostmodelUtils;
 import edu.tum.cs.cadmos.analysis.architecture.model.utils.DFGTranslator;
 import edu.tum.cs.cadmos.language.cadmos.Component;
+import edu.tum.cs.cadmos.language.cadmos.Costmodel;
 
 public class ScheduleManager {
 
@@ -33,9 +35,6 @@ public class ScheduleManager {
 	}
 
 	public void schedule() {
-		if (!readyToSchedule()) {
-			return;
-		}
 		final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace()
 				.getRoot();
 		final IPath location = workspaceRoot.getLocation();
@@ -92,11 +91,19 @@ public class ScheduleManager {
 	}
 
 	public void addProcessingComponent(Component processingComponent) {
-		deploymentModel.setSoftwareComponentDFG(new DFGTranslator(
+		deploymentModel.setProcessingComponentDFG(new DFGTranslator(
 				processingComponent).translateFlatGraphToDFG());
 	}
 
 	public void deleteProcessingComponent() {
 		deploymentModel.setProcessingComponentDFG(null);
+	}
+
+	public void addCostmodel(Costmodel costmodel) {
+		deploymentModel.setWcet(CostmodelUtils.translateWCET(costmodel));
+	}
+
+	public void deleteCostmodel() {
+		deploymentModel.setWcet(null);
 	}
 }

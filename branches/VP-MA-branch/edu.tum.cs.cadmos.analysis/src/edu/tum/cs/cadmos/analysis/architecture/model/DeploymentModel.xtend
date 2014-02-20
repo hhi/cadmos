@@ -6,7 +6,7 @@ import java.util.HashMap
 class DeploymentModel {
 	@Property DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG
 	@Property DirectedSparseMultigraph<Vertex, Edge> processingComponentDFG
-	@Property HashMap<Vertex, Vertex> wcet
+	@Property HashMap<Pair<String, String>, Integer> wcet
 	
 	new () {
 		_softwareComponentDFG = null
@@ -16,7 +16,7 @@ class DeploymentModel {
 	
 	new(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
 			DirectedSparseMultigraph<Vertex, Edge> processingComponentDFG,
-			HashMap<Vertex, Vertex> wcet) {
+			HashMap<Pair<String, String>, Integer> wcet) {
 		_softwareComponentDFG = softwareComponentDFG
 		_processingComponentDFG = processingComponentDFG
 		_wcet = wcet
