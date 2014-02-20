@@ -53,13 +53,21 @@ Requirements:
 	'requirements' name=ID '{' requirements+=Requirement* '}';
 
 Requirement:
-	PeriodicityRequirement | LatencyRequirement /*TODO(WS->VP)*/;
+	PeriodicityRequirement | LatencyRequirement | RobustnessRequirement;
+
+RobustnessRequirement:
+	'robustness' '[' fromComponent=[Component] ']' '[' toComponent=[Component] ']' '=' value=INT;
 
 PeriodicityRequirement:
-	'period' component=[Component] '=' period=INT;
+	'period' component=[Component] '=' value=INT;
 
 LatencyRequirement:
-	'latency' value=INT /*TODO(WS->VP)*/;
+	'latency' component1=[Component] '.' port1=[Port] '=>' component2=[Component] '.' port2=[Port] '=' 
+		((value=INT) | interval=Interval);
+
+Interval:
+	'['(fromValue=INT '..' toValue=INT)']'
+;
 
 Deployment:
 	'deployment' name=ID '{'
