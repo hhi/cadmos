@@ -11,16 +11,13 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.xbase.lib.Pair;
 
-import edu.tum.cs.cadmos.analysis.architecture.model.Edge;
-import edu.tum.cs.cadmos.analysis.architecture.model.Vertex;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+import edu.tum.cs.cadmos.analysis.architecture.model.DeploymentModel;
+import edu.tum.cs.cadmos.analysis.architecture.model.utils.DFGTranslator;
+import edu.tum.cs.cadmos.language.cadmos.Component;
 
 public class ScheduleManager {
 
-	private DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG;
-
-	private DirectedSparseMultigraph<Vertex, Edge> processingComponentDFG;
-
+	private DeploymentModel deploymentModel = null;
 	private static final ScheduleManager instance = new ScheduleManager();
 
 	public static ScheduleManager getInstance() {
@@ -28,12 +25,11 @@ public class ScheduleManager {
 	}
 
 	private ScheduleManager() {
-		softwareComponentDFG = null;
-		processingComponentDFG = null;
+		deploymentModel = new DeploymentModel();
 	}
 
 	public boolean readyToSchedule() {
-		return softwareComponentDFG != null && processingComponentDFG != null;
+		return deploymentModel.isReadyToSchedule();
 	}
 
 	public void schedule() {
@@ -51,12 +47,12 @@ public class ScheduleManager {
 		String generatedFileName = "";
 		if (outputDirectory.isDirectory()) {
 			generatedFileName = ScheduleSMTGenerator.doGenerate(
-					outputDirectory, softwareComponentDFG,
-					processingComponentDFG);
+					outputDirectory, deploymentModel);
 			ProcessBuilder cProcess = null;
 			if (System.getProperty("os.name").equals("Mac OS X")) {
-				//FIXME CD: will fix this
-//				cProcess = new ProcessBuilder("/Applications/Z3/z3", generatedFileName);
+				// FIXME CD: will fix this
+				// cProcess = new ProcessBuilder("/Applications/Z3/z3",
+				// generatedFileName);
 				cProcess = new ProcessBuilder("./z3  " + generatedFileName);
 				cProcess.directory(outputDirectory);
 			} else if (System.getProperty("os.name").startsWith("Windows")) {
@@ -76,7 +72,8 @@ public class ScheduleManager {
 				}
 				System.out.println(output);
 				final HashMap<EObject, Pair<String, Integer>> schedule = ScheduleSMTParser
-						.parse(output, softwareComponentDFG);
+						.parse(output,
+								deploymentModel.getSoftwareComponentDFG());
 				System.out.println(schedule);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -85,21 +82,21 @@ public class ScheduleManager {
 
 	}
 
-	public void addSoftwareComponentDFG(
-			DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG) {
-		this.softwareComponentDFG = softwareComponentDFG;
+	public void addSoftwareComponent(Component softwareComponent) {
+		deploymentModel.setSoftwareComponentDFG(new DFGTranslator(
+				softwareComponent).translateFlatGraphToDFG());
 	}
 
-	public void deleteSoftwareComponentDFG() {
-		softwareComponentDFG = null;
+	public void deleteSoftwareComponent() {
+		deploymentModel.setSoftwareComponentDFG(null);
 	}
 
-	public void addProcessingComponentDFG(
-			DirectedSparseMultigraph<Vertex, Edge> processingComponentDFG) {
-		this.processingComponentDFG = processingComponentDFG;
+	public void addProcessingComponent(Component processingComponent) {
+		deploymentModel.setSoftwareComponentDFG(new DFGTranslator(
+				processingComponent).translateFlatGraphToDFG());
 	}
 
-	public void deleteProcessingComponentDFG() {
-		processingComponentDFG = null;
+	public void deleteProcessingComponent() {
+		deploymentModel.setProcessingComponentDFG(null);
 	}
 }

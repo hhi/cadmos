@@ -20,9 +20,9 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 
-import edu.tum.cs.cadmos.analysis.architecture.model.DFGTranslator;
 import edu.tum.cs.cadmos.analysis.architecture.model.Edge;
 import edu.tum.cs.cadmos.analysis.architecture.model.Vertex;
+import edu.tum.cs.cadmos.analysis.architecture.model.utils.DFGTranslator;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.ui.CadmosUi;
 import edu.tum.cs.cadmos.language.ui.ICadmosEditorSelectionChangedListener;
@@ -49,20 +49,19 @@ public class ArchitectureViewPart extends ViewPart {
 			Tree tree = tv.getTree();
 			tree.setHeaderVisible(true);
 			tree.setLinesVisible(true);
-			
-			
-			tv.setContentProvider(new ITreeContentProvider(){
+
+			tv.setContentProvider(new ITreeContentProvider() {
 
 				@Override
 				public void dispose() {
-					//nothing to do
+					// nothing to do
 				}
 
 				@Override
 				public void inputChanged(Viewer viewer, Object oldInput,
 						Object newInput) {
 					//
-					
+
 				}
 
 				@Override
@@ -75,15 +74,14 @@ public class ArchitectureViewPart extends ViewPart {
 				public Object[] getChildren(Object parentElement) {
 					Vertex v = (Vertex) parentElement;
 					Collection<Edge> outEdges = graph.getOutEdges(v);
-					
+
 					ArrayList<Vertex> children = new ArrayList<Vertex>();
-					for(Edge e: outEdges){
+					for (Edge e : outEdges) {
 						children.add(graph.getOpposite(v, e));
 					}
-					
-					
+
 					return children.toArray();
-					
+
 				}
 
 				@Override
@@ -96,42 +94,42 @@ public class ArchitectureViewPart extends ViewPart {
 				public boolean hasChildren(Object element) {
 					Vertex v = (Vertex) element;
 					Collection<Edge> outEdges = graph.getOutEdges(v);
-					
-					return outEdges.size()>0; 
+
+					return outEdges.size() > 0;
 				}
-				
+
 			});
 			tv.setLabelProvider(new ILabelProvider() {
-				
+
 				@Override
 				public void removeListener(ILabelProviderListener listener) {
 					// TODO Auto-generated method stub
-					
+
 				}
-				
+
 				@Override
 				public boolean isLabelProperty(Object element, String property) {
 					// TODO Auto-generated method stub
 					return false;
 				}
-				
+
 				@Override
 				public void dispose() {
 					// TODO Auto-generated method stub
-					
+
 				}
-				
+
 				@Override
 				public void addListener(ILabelProviderListener listener) {
 					// TODO Auto-generated method stub
-					
+
 				}
-				
+
 				@Override
 				public String getText(Object element) {
-					return ((Vertex)element).getId();
+					return ((Vertex) element).getId();
 				}
-				
+
 				@Override
 				public Image getImage(Object element) {
 					// TODO Auto-generated method stub
@@ -140,10 +138,8 @@ public class ArchitectureViewPart extends ViewPart {
 			});
 		}
 
-//		architectureCanvas = new ArchitectureCanvas(container,
-//				SWT.DOUBLE_BUFFERED);
-		
-		
+		// architectureCanvas = new ArchitectureCanvas(container,
+		// SWT.DOUBLE_BUFFERED);
 
 		createActions();
 		initializeToolBar();
@@ -190,25 +186,25 @@ public class ArchitectureViewPart extends ViewPart {
 		// Set the focus
 	}
 
-	private ICadmosEditorSelectionChangedListener cadmosEditorSelectionChangedListener = new ICadmosEditorSelectionChangedListener() {
+	private final ICadmosEditorSelectionChangedListener cadmosEditorSelectionChangedListener = new ICadmosEditorSelectionChangedListener() {
 		@Override
 		public void selectionChanged(XtextEditor editor, EObject selectedObject) {
 			final Component component = EcoreUtil2.getContainerOfType(
 					selectedObject, Component.class);
-//			getArchitectureCanvas().setRootComponent(component);
-//			getArchitectureCanvas().setSelectedObject(selectedObject);
-			
-//			ModelTraverser mt = new ModelTraverser();
-//			System.out.println(mt.traverseRoot(component));
-//			
+			// getArchitectureCanvas().setRootComponent(component);
+			// getArchitectureCanvas().setSelectedObject(selectedObject);
+
+			// ModelTraverser mt = new ModelTraverser();
+			// System.out.println(mt.traverseRoot(component));
+			//
 			DFGTranslator dfg = new DFGTranslator(component);
-//			graph = dfg.translateFlatGraphToDFG();
+			// graph = dfg.translateFlatGraphToDFG();
 			graph = dfg.translateToDFG();
 			tv.setInput(graph);
-			
+
 		};
 	};
-	
+
 	private DirectedSparseMultigraph<Vertex, Edge> graph;
 
 	private ArchitectureCanvas architectureCanvas;

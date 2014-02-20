@@ -23,9 +23,7 @@ import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.utils.EditorUtils;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 
-import edu.tum.cs.cadmos.analysis.architecture.model.DFGTranslator;
 import edu.tum.cs.cadmos.analysis.schedule.ScheduleManager;
-import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.Deployment;
 
 public class ScheduleDeploymentHandler extends AbstractHandler implements
@@ -80,22 +78,16 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 										state.setValue(isSelected);
 										if (!isSelected) {
 											scheduleManager
-													.deleteSoftwareComponentDFG();
+													.deleteSoftwareComponent();
 											scheduleManager
-													.deleteProcessingComponentDFG();
+													.deleteProcessingComponent();
 										} else {
-											final Component softwareComponent = deployment
-													.getSwc();
-											final Component processingComponent = deployment
-													.getPlc();
 											scheduleManager
-													.addProcessingComponentDFG(new DFGTranslator(
-															processingComponent)
-															.translateFlatGraphToDFG());
+													.addProcessingComponent(deployment
+															.getPlc());
 											scheduleManager
-													.addSoftwareComponentDFG(new DFGTranslator(
-															softwareComponent)
-															.translateFlatGraphToDFG());
+													.addSoftwareComponent(deployment
+															.getSwc());
 										}
 									}
 									service.refreshElements(command.getId(),
