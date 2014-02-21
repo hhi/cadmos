@@ -63,7 +63,7 @@ class ScheduleSMTGenerator {
 			(assert (forall ((x components)) (= (finish x) (+ (start x) (dR x (mapping x))))))
 			
 			; Precedence constraints.
-			«deploymentModel.softwareComponentDFG.generatePrecedenceConstraints»
+			«deploymentModel.softwareComponentDFG.generatePrecedenceConstraints(deploymentModel.period)»
 			
 			; Overlap constraints.
 			(assert (forall ((x components) (y components)) 
@@ -72,10 +72,10 @@ class ScheduleSMTGenerator {
 						(<= (finish y) (start x))))))
 				
 			; Simplify the start expressions.
-			«simplifyStartTimes(deploymentModel.softwareComponentDFG.components)»
+			«simplifyStartTimes(deploymentModel.softwareComponentDFG.componentsWithPeriodicity(deploymentModel.period))»
 			
 			; Simplify the mapping expressions.
-			«simplifyMapping(deploymentModel.softwareComponentDFG.components)»
+			«simplifyMapping(deploymentModel.softwareComponentDFG.componentsWithPeriodicity(deploymentModel.period))»
 			
 			(check-sat)
 			(get-model)
@@ -91,43 +91,46 @@ class ScheduleSMTGenerator {
 		'''
 	}
 	
-	private def static simplifyMapping(List<Vertex> vertexList) {
+	private def static simplifyMapping(List<Pair<String, Vertex>> vertexList) {
 		'''
 		«FOR sc : vertexList SEPARATOR "\n"»
-		(declare-const mapping«sc.id» platform)
-		(assert (= mapping«sc.id» (mapping «sc.id»)))
+		(declare-const mapping«sc.key» platform)
+		(assert (= mapping«sc.key» (mapping «sc.key»)))
 		«ENDFOR»
 		'''
 	}
 	
-	private def static simplifyStartTimes(List<Vertex> vertexList) {
+	private def static simplifyStartTimes(List<Pair<String, Vertex>> vertexList) {
 		'''
 		«FOR sc : vertexList SEPARATOR "\n"»
-		(declare-const start«sc.id» Int)
-		(assert (= start«sc.id» (start «sc.id»)))
+		(declare-const start«sc.key» Int)
+		(assert (= start«sc.key» (start «sc.key»)))
 		«ENDFOR»
 		'''
 	}
 
-	private def static generatePrecedenceConstraints(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG) {
-		'''«FOR channel : softwareComponentDFG.edges SEPARATOR "\n"»(assert (<= (finish «softwareComponentDFG.
-			getSource(channel).id») (start «softwareComponentDFG.getDest(channel).id»)))«ENDFOR»'''
+	private def static generatePrecedenceConstraints(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG,
+														HashMap<Integer, List<String>> periodMap) {
+		'''«FOR channel : softwareComponentDFG.edges SEPARATOR "\n"»«
+				FOR precComponents : softwareComponentDFG.getSource(channel).precedenceComponents(
+										softwareComponentDFG.getDest(channel), periodMap) SEPARATOR "\n"»(assert (<= (finish «
+										precComponents.key») (start «precComponents.value»)))«ENDFOR»«ENDFOR»'''
 	}
 
 	private def static generateFinishAssertions(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
 													HashMap<Integer, List<String>> periodMap) {
 		'''«FOR sc : softwareComponentDFG.componentsWithPeriodicity(periodMap) SEPARATOR "\n"
-						»(assert (<= (finish «sc.key») T«sc.value.periodTime(periodMap)»))«ENDFOR»'''
+						»(assert (<= (finish «sc.key») (* «sc.key.substring(sc.key.lastIndexOf("_")+1)»  T«sc.value.periodTime(periodMap)»)))«ENDFOR»'''
 	}
 
 	private def static generateDuration(DeploymentModel deploymentModel) {
 		'''
-			«FOR sc : deploymentModel.softwareComponentDFG.components SEPARATOR "\n"»(ite (= c «sc.id») «
+			«FOR sc : deploymentModel.softwareComponentDFG.componentsWithPeriodicity(deploymentModel.period) SEPARATOR "\n"»(ite (= c «sc.key») «
 				FOR pc : deploymentModel.processingComponentDFG.
-				components.tail SEPARATOR " "»(ite (= x «pc.id») «sc.executionTime(pc, deploymentModel.wcet)»«ENDFOR» «sc.executionTime(
+				components.tail SEPARATOR " "»(ite (= x «pc.id») «sc.value.executionTime(pc, deploymentModel.wcet)»«ENDFOR» «sc.value.executionTime(
 				deploymentModel.processingComponentDFG.components.head, deploymentModel.wcet)»«closedParanthesis(
 					deploymentModel.processingComponentDFG.components.size - 1)»«ENDFOR» 0«closedParanthesis(
-				deploymentModel.softwareComponentDFG.components.size + 1)»
+				deploymentModel.softwareComponentDFG.componentsWithPeriodicity(deploymentModel.period).size + 1)»
 		'''
 	}
 
