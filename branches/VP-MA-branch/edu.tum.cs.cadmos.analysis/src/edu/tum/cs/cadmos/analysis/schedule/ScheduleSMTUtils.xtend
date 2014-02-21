@@ -53,15 +53,16 @@ class ScheduleSMTUtils {
 	
 	def static componentsWithPeriodicity(DirectedSparseMultigraph<Vertex, Edge> componentDFG,
 											 HashMap<Integer,List<String>> periodMap) {
-		val allVertices = new ArrayList()
+		val List<Pair<String, Vertex>> allVertices = new ArrayList()
 		for (Vertex v : componentDFG.vertices.toList) {
 			allVertices.addAll(v.verticesListWithPeriodicity(periodMap))
 		}
+		
 		allVertices
 	}
 	
-	private def static verticesListWithPeriodicity(Vertex vertex, HashMap<Integer,
-												List<String>> periodMap) {
+	private def static verticesListWithPeriodicity(Vertex vertex, 
+													HashMap<Integer, List<String>> periodMap) {
 		var i = 1
 		val lcm = periodMap.keySet.toList.lcm
 		val vlist = new ArrayList()
@@ -72,6 +73,23 @@ class ScheduleSMTUtils {
 		vlist
 	}
 	
+	def static precedenceComponents(Vertex src, Vertex dst, HashMap<Integer, List<String>> periodMap) {
+		val srcList = src.verticesListWithPeriodicity(periodMap)
+		val dstList = dst.verticesListWithPeriodicity(periodMap)
+		
+		val List<Pair<String, String>> pairComponentList = new ArrayList()
+	
+		val minElements = Math::min(srcList.size, dstList.size)
+		var i = 0
+		while (i < minElements) {
+			pairComponentList.add(new Pair(srcList.get(i).key, dstList.get(i).key))
+			i = i + 1
+		} 
+		
+		pairComponentList
+	}
+	
+		
 	def static executionTime(Vertex sc, Vertex pc, HashMap<Pair<String, String>, Integer> execMap) {
 //		val rand = new Random
 //		Integer::toString(rand.nextInt(3))
