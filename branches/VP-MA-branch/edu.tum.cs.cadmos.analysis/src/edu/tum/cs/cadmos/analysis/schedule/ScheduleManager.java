@@ -14,8 +14,10 @@ import org.eclipse.xtext.xbase.lib.Pair;
 import edu.tum.cs.cadmos.analysis.architecture.model.DeploymentModel;
 import edu.tum.cs.cadmos.analysis.architecture.model.utils.CostmodelUtils;
 import edu.tum.cs.cadmos.analysis.architecture.model.utils.DFGTranslator;
+import edu.tum.cs.cadmos.analysis.architecture.model.utils.RequirementsUtils;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.Costmodel;
+import edu.tum.cs.cadmos.language.cadmos.Requirements;
 
 public class ScheduleManager {
 
@@ -99,11 +101,21 @@ public class ScheduleManager {
 		deploymentModel.setProcessingComponentDFG(null);
 	}
 
-	public void addCostmodel(Costmodel costmodel) {
+	public void addWcetFromCostmodel(Costmodel costmodel) {
 		deploymentModel.setWcet(CostmodelUtils.translateWCET(costmodel));
 	}
 
-	public void deleteCostmodel() {
+	public void deleteWcet() {
 		deploymentModel.setWcet(null);
 	}
+
+	public void addPeriodFromRequirement(Requirements requirements) {
+		deploymentModel.setPeriod(RequirementsUtils
+				.translateComponentPeriodicity(requirements));
+	}
+
+	public void deletePeriod() {
+		deploymentModel.setPeriod(null);
+	}
+
 }

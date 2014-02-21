@@ -81,7 +81,8 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 													.deleteSoftwareComponent();
 											scheduleManager
 													.deleteProcessingComponent();
-											scheduleManager.deleteCostmodel();
+											scheduleManager.deleteWcet();
+											scheduleManager.deletePeriod();
 										} else {
 											scheduleManager
 													.addProcessingComponent(deployment
@@ -90,8 +91,11 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 													.addSoftwareComponent(deployment
 															.getSwc());
 											scheduleManager
-													.addCostmodel(deployment
+													.addWcetFromCostmodel(deployment
 															.getCost());
+											scheduleManager
+													.addPeriodFromRequirement(deployment
+															.getReq());
 										}
 									}
 									service.refreshElements(command.getId(),
