@@ -9,6 +9,7 @@ import edu.tum.cs.cadmos.analysis.architecture.model.Edge
 import static extension edu.tum.cs.cadmos.analysis.schedule.ScheduleSMTUtils.*
 import java.util.List
 import edu.tum.cs.cadmos.analysis.architecture.model.DeploymentModel
+import java.util.HashMap
 
 class ScheduleSMTGenerator {
 
@@ -32,12 +33,12 @@ class ScheduleSMTGenerator {
 
 	private def static generateComponents(DeploymentModel deploymentModel) {
 		'''
-			;Declare the response time.
-			(declare-const T1 Int)
-			(assert (= T1 10))
+			;Declare the period times.
+			«deploymentModel.period.keySet.toList.declarePeriods»
 			
 			;Declare the possible allocation as a function.
-			(declare-datatypes () ((components «deploymentModel.softwareComponentDFG.componentsString»)))
+			(declare-datatypes () ((components «deploymentModel.softwareComponentDFG.
+													componentsStringWithPeriodicity(deploymentModel.period)»)))
 			(declare-datatypes () ((platform «deploymentModel.processingComponentDFG.componentsString»)))
 			(declare-fun mapping (components) platform)
 			
@@ -52,7 +53,7 @@ class ScheduleSMTGenerator {
 			; Start lower limit.
 			(assert (forall ((x components)) (>= (start x) 0)))
 			; Finish upper limit.
-			«deploymentModel.softwareComponentDFG.generateFinishAssertions»
+			«deploymentModel.softwareComponentDFG.generateFinishAssertions(deploymentModel.period)»
 			
 			; TODO: Multirate schedule constant periodicity.
 			
@@ -81,6 +82,15 @@ class ScheduleSMTGenerator {
 		'''
 	}
 	
+	private def static declarePeriods(List<Integer> periodValues) {
+		'''
+			«FOR period : periodValues SEPARATOR "\n"»
+			(declare-const T«period.toString» Int)
+			(assert (= T«period.toString» «period.toString»))
+			«ENDFOR»
+		'''
+	}
+	
 	private def static simplifyMapping(List<Vertex> vertexList) {
 		'''
 		«FOR sc : vertexList SEPARATOR "\n"»
@@ -104,8 +114,10 @@ class ScheduleSMTGenerator {
 			getSource(channel).id») (start «softwareComponentDFG.getDest(channel).id»)))«ENDFOR»'''
 	}
 
-	private def static generateFinishAssertions(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG) {
-		'''«FOR sc : softwareComponentDFG.components SEPARATOR "\n"»(assert (<= (finish «sc.id») T1))«ENDFOR»'''
+	private def static generateFinishAssertions(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
+													HashMap<Integer, List<String>> periodMap) {
+		'''«FOR sc : softwareComponentDFG.componentsWithPeriodicity(periodMap) SEPARATOR "\n"
+						»(assert (<= (finish «sc.key») T«sc.value.periodTime(periodMap)»))«ENDFOR»'''
 	}
 
 	private def static generateDuration(DeploymentModel deploymentModel) {
