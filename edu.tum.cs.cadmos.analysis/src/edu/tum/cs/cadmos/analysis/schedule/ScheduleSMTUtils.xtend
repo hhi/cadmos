@@ -61,6 +61,21 @@ class ScheduleSMTUtils {
 		allVertices
 	}
 	
+	def static componentsWithStringConsecutivePeriodicity(DirectedSparseMultigraph<Vertex, Edge> componentDFG,
+											 HashMap<Integer,List<String>> periodMap) {
+		val List<Pair<Pair<String, Vertex>, Pair<String, Vertex>>> allVertices = new ArrayList()
+		for (Vertex v : componentDFG.vertices.toList) {
+			val vList = v.verticesListWithPeriodicity(periodMap)
+			var i = 1
+			while (i < vList.size) {
+				allVertices.add(new Pair(vList.get(i), vList.get(i-1)))
+				i = i + 1
+			}
+		}
+		
+		allVertices
+	}
+	
 	private def static verticesListWithPeriodicity(Vertex vertex, 
 													HashMap<Integer, List<String>> periodMap) {
 		var i = 1

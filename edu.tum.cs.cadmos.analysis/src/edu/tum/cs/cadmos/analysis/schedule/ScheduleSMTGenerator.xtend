@@ -55,7 +55,8 @@ class ScheduleSMTGenerator {
 			; Finish upper limit.
 			«deploymentModel.softwareComponentDFG.generateFinishAssertions(deploymentModel.period)»
 			
-			; TODO: Multirate schedule constant periodicity.
+			; Multirate schedule constant periodicity.
+			«deploymentModel.softwareComponentDFG.generateConstantPeriodicityAssertions(deploymentModel.period)»
 			
 			; TODO: Multirate allocation consistency.
 			
@@ -80,6 +81,13 @@ class ScheduleSMTGenerator {
 			(check-sat)
 			(get-model)
 		'''
+	}
+	
+	private def static generateConstantPeriodicityAssertions(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
+													HashMap<Integer, List<String>> periodMap) {
+		'''«FOR pairSc : softwareComponentDFG.componentsWithStringConsecutivePeriodicity(periodMap) SEPARATOR "\n"
+				»(assert (= (start «pairSc.key.key») (+ (start «pairSc.value.key») T«pairSc.key.value.periodTime(periodMap)»)))«ENDFOR»'''
+														
 	}
 	
 	private def static declarePeriods(List<Integer> periodValues) {
