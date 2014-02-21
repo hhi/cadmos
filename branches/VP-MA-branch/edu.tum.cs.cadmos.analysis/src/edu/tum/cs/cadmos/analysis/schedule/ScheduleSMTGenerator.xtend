@@ -58,7 +58,8 @@ class ScheduleSMTGenerator {
 			; Multirate schedule constant periodicity.
 			«deploymentModel.softwareComponentDFG.generateConstantPeriodicityAssertions(deploymentModel.period)»
 			
-			; TODO: Multirate allocation consistency.
+			; Multirate allocation consistency.
+			«deploymentModel.softwareComponentDFG.generateAllocationConsistencyAssertions(deploymentModel.period)»
 			
 			; Finish computation.
 			(assert (forall ((x components)) (= (finish x) (+ (start x) (dR x (mapping x))))))
@@ -81,6 +82,12 @@ class ScheduleSMTGenerator {
 			(check-sat)
 			(get-model)
 		'''
+	}
+	
+	private def static generateAllocationConsistencyAssertions(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
+													HashMap<Integer, List<String>> periodMap) {
+		'''«FOR pairSc : softwareComponentDFG.componentsWithStringConsecutivePeriodicity(periodMap) SEPARATOR "\n"
+				»(assert (= (mapping «pairSc.key.key») (mapping «pairSc.value.key»)))«ENDFOR»'''
 	}
 	
 	private def static generateConstantPeriodicityAssertions(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
