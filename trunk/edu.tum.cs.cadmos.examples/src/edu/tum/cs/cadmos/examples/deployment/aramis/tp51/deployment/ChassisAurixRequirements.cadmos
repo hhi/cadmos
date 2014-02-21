@@ -1,0 +1,12 @@
+package edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.^deployment
+
+import edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.^software.*
+import edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.platform.*
+
+requirements ChassisAurixRequirements {
+	period FlexRayReader = 5
+	period ChassisFunction1 = 5
+	period ChassisFunction2 = 5
+	period ChassisFunction3 = 10
+	period FlexRayWriter = 5
+}

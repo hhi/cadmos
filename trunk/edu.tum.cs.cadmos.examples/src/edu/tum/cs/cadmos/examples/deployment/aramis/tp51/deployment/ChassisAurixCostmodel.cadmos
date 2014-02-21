@@ -1,7 +1,7 @@
-package edu.tum.cs.cadmos.examples.deployment.aramis.tp51.deployment
+package edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.^deployment
 
-import edu.tum.cs.cadmos.examples.deployment.aramis.tp51.^software.*
-import edu.tum.cs.cadmos.examples.deployment.aramis.tp51.platform.*
+import edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.^software.*
+import edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.platform.*
 
 costmodel Chassis_on_AurixTC277T {
 	
