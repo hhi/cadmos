@@ -56,18 +56,17 @@ Requirement:
 	PeriodicityRequirement | LatencyRequirement | RobustnessRequirement;
 
 RobustnessRequirement:
-	'robustness' '[' fromComponent=[Component] ']' '[' toComponent=[Component] ']' '=' value=INT;
+	'robustness' '[' fromComponent=[Component] ']' '[' toComponent=[Component] ']' '=' robustness=INT;
 
 PeriodicityRequirement:
-	'period' component=[Component] '=' value=INT;
+	'period' component=[Component] '=' period=INT;
 
 LatencyRequirement:
 	'latency' component1=[Component] '.' port1=[Port] '=>' component2=[Component] '.' port2=[Port] '=' 
-		((value=INT) | interval=Interval);
+		((latency=INT) | latencyInterval=Interval);
 
 Interval:
-	'['(fromValue=INT '..' toValue=INT)']'
-;
+	'['(fromValue=INT '..' toValue=INT)']';
 
 Deployment:
 	'deployment' name=ID '{'
