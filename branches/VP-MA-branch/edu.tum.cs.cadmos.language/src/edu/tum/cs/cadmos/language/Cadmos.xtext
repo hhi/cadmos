@@ -63,7 +63,8 @@ PeriodicityRequirement:
 	'period' component=[Component] '=' period=INT;
 
 LatencyRequirement:
-	'latency' fromPort=PortRef '=>' toPort=PortRef '=' latency=Interval;
+	'latency' fromComponent=[Component]'.'(fromEmbedding=[Embedding] '.')? fromPort=[Port] '=>' 
+			toComponent=[Component]'.'(toEmbedding=[Embedding] '.')? toPort=[Port] '=' latency=Interval;
 
 Interval:
 	'['(fromValue=INT '..' toValue=INT)']';
