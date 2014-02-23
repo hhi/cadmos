@@ -56,14 +56,14 @@ Requirement:
 	PeriodicityRequirement | LatencyRequirement | RobustnessRequirement;
 
 RobustnessRequirement:
-	'robustness' '[' fromComponent=[Component] ']' '[' toComponent=[Component] ']' '=' robustness=INT;
+	'robustness' '[' fromComponent=[Component]'.'fromEmbedding=[Embedding] ']' 
+				'[' toComponent=[Component]'.'toEmbedding=[Embedding] ']' '=' robustness=Interval;
 
 PeriodicityRequirement:
 	'period' component=[Component] '=' period=INT;
 
 LatencyRequirement:
-	'latency' component1=[Component] '.' port1=[Port] '=>' component2=[Component] '.' port2=[Port] '=' 
-		((latency=INT) | latencyInterval=Interval);
+	'latency' fromPort=PortRef '=>' toPort=PortRef '=' latency=Interval;
 
 Interval:
 	'['(fromValue=INT '..' toValue=INT)']';

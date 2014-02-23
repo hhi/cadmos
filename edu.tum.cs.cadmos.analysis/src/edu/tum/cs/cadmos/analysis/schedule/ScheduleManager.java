@@ -112,10 +112,13 @@ public class ScheduleManager {
 	public void addPeriodFromRequirement(Requirements requirements) {
 		deploymentModel.setPeriod(RequirementsUtils
 				.translateComponentPeriodicity(requirements));
+		deploymentModel.setRobustness(RequirementsUtils
+				.translateComponentRobustness(requirements));
 	}
 
 	public void deletePeriod() {
 		deploymentModel.setPeriod(null);
+		deploymentModel.setRobustness(null);
 	}
 
 }

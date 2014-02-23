@@ -67,6 +67,9 @@ class ScheduleSMTGenerator {
 			; Precedence constraints.
 			«deploymentModel.softwareComponentDFG.generatePrecedenceConstraints(deploymentModel.period)»
 			
+			; Robustness requirements.
+			«deploymentModel.robustness.generateRobustnessRequirements(deploymentModel.period)»
+			
 			; Overlap constraints.
 			(assert (forall ((x components) (y components)) 
 				(=> (and (distinct x y) (= (mapping x) (mapping y)))
@@ -130,6 +133,23 @@ class ScheduleSMTGenerator {
 				FOR precComponents : softwareComponentDFG.getSource(channel).precedenceComponents(
 										softwareComponentDFG.getDest(channel), periodMap) SEPARATOR "\n"»(assert (<= (finish «
 										precComponents.key») (start «precComponents.value»)))«ENDFOR»«ENDFOR»'''
+	}
+	
+	private def static generateRobustnessRequirements(
+											HashMap<Pair<Pair<String, String>, Pair<String, String>>, Pair<Integer, Integer>> robustnessMap,
+											HashMap<Integer, List<String>> periodMap) {
+		 
+		  '''«FOR robPair : robustnessMap.entrySet SEPARATOR "\n"»«FOR per : 1..robPair.key.key.value.periodNrOfExecutions(periodMap)»
+			  (assert (>= (+ (start «robPair.key.value.key»_1) (* T«robPair.key.value.value.periodTime(periodMap)» 
+			  		(ite (> (finish «robPair.key.key.key»_«per») (start «robPair.key.value.key»_1)) (+ 1 (/ (- (finish «robPair.key.key.key»_«per») (start «robPair.key.value.key»_1)) «robPair.key.value.value.periodTime(periodMap)»)) 
+			  		(/ (- (finish «robPair.key.key.key»_«per») (start «robPair.key.value.key»_1)) «robPair.key.value.value.periodTime(periodMap)»))))
+			  		(+ (finish «robPair.key.key.key»_«per») «robPair.value.key»)))
+			  (assert (<= (+ (start «robPair.key.value.key»_1) (* T«robPair.key.value.value.periodTime(periodMap)» 
+			  		(ite (> (finish «robPair.key.key.key»_«per») (start «robPair.key.value.key»_1)) (+ 1 (/ (- (finish «robPair.key.key.key»_«per») (start «robPair.key.value.key»_1)) «robPair.key.value.value.periodTime(periodMap)»)) 
+			  		(/ (- (finish «robPair.key.key.key»_«per») (start «robPair.key.value.key»_1)) «robPair.key.value.value.periodTime(periodMap)»))))
+			  		(+ (finish «robPair.key.key.key»_«per») «robPair.value.value»)))
+		  	«ENDFOR»«ENDFOR»
+		  '''
 	}
 
 	private def static generateFinishAssertions(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
