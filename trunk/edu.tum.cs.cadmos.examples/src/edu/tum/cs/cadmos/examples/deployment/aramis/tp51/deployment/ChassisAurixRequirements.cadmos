@@ -9,4 +9,8 @@ requirements ChassisAurixRequirements {
 	period ChassisFunction2 = 5
 	period ChassisFunction3 = 10
 	period FlexRayWriter = 5
+	
+	period ChassisControlFunctions = 5
+	
+	robustness[ChassisControlFunctions.reader][ChassisControlFunctions.f3] = [2..10]
 }
