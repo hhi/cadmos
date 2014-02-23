@@ -14,6 +14,7 @@ import org.eclipse.xtext.scoping.IScope
 import org.eclipse.xtext.scoping.Scopes
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider
 import edu.tum.cs.cadmos.language.cadmos.RobustnessRequirement
+import edu.tum.cs.cadmos.language.cadmos.LatencyRequirement
 
 /**
  * This class contains custom scoping description.
@@ -64,5 +65,38 @@ class CadmosScopeProvider extends AbstractDeclarativeScopeProvider {
 		return Scopes.scopeFor(component.embeddings);
 	}
 	
+	def IScope scope_LatencyRequirement_fromEmbedding(LatencyRequirement latencyRequirement, EReference ref) {
+		val component = latencyRequirement.fromComponent
+		
+		if (component == null) {
+			return IScope.NULLSCOPE;
+		}
+		return Scopes.scopeFor(component.embeddings);
+	}
+	
+	def IScope scope_LatencyRequirement_toEmbedding(LatencyRequirement latencyRequirement, EReference ref) {
+		val component = latencyRequirement.toComponent
+		
+		if (component == null) {
+			return IScope.NULLSCOPE;
+		}
+		return Scopes.scopeFor(component.embeddings);
+	}
+	
+	def IScope scope_LatencyRequirement_fromPort(LatencyRequirement latencyRequirement, EReference ref) {
+		val fromComponent = latencyRequirement.fromComponent
+		if (fromComponent == null) {
+			return IScope.NULLSCOPE;
+		}
+		return Scopes.scopeFor(fromComponent.ports);
+	}
+	
+	def IScope scope_LatencyRequirement_toPort(LatencyRequirement latencyRequirement, EReference ref) {
+		val toComponent = latencyRequirement.toComponent
+		if (toComponent == null) {
+			return IScope.NULLSCOPE;
+		}
+		return Scopes.scopeFor(toComponent.ports);
+	}
 
 }
