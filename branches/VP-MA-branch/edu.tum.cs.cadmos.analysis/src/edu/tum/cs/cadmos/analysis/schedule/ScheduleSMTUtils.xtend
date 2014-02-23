@@ -123,6 +123,28 @@ class ScheduleSMTUtils {
 		0
 	}
 	
+	def static periodNrOfExecutions (String sc, HashMap<Integer, List<String>> periodMap) {
+		var period = 0
+		for (Entry<Integer, List<String>> e : periodMap.entrySet) {
+			if (e.value.contains(sc)) {
+				period = e.key
+			}
+		}
+		
+		return periodMap.keySet.toList.lcm/period
+	}
+	
+	def static periodTime (String sc, HashMap<Integer, List<String>> periodMap) {
+		var period = 0
+		for (Entry<Integer, List<String>> e : periodMap.entrySet) {
+			if (e.value.contains(sc)) {
+				period = e.key
+			}
+		}
+		
+		return period
+	}
+	
 	def static periodTime (Vertex sc, HashMap<Integer, List<String>> periodMap) {
 		if (sc.data instanceof Embedding) {
 			val typeSc = (sc.data as Embedding).component.name
