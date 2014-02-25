@@ -84,8 +84,11 @@ public class ScheduleManager {
 	}
 
 	public void addSoftwareComponent(Component softwareComponent) {
-		deploymentModel.setSoftwareComponentDFG(new DFGTranslator(
-				softwareComponent).translateFlatGraphToDFG());
+		final DFGTranslator dfgTranslator = new DFGTranslator(softwareComponent);
+		deploymentModel.setSoftwareComponentDFG(dfgTranslator
+				.translateFlatGraphToDFG());
+		deploymentModel.setAtomicSoftwareComponents(dfgTranslator
+				.atomicSoftwareComponentsFlat());
 	}
 
 	public void deleteSoftwareComponent() {

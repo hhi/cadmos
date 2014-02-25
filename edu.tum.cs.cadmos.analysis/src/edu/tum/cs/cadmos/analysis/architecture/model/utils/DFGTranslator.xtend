@@ -13,6 +13,8 @@ import java.util.Map
 import org.eclipse.emf.ecore.EObject
 import edu.tum.cs.cadmos.analysis.architecture.model.Vertex
 import edu.tum.cs.cadmos.analysis.architecture.model.Edge
+import edu.tum.cs.cadmos.language.cadmos.Assumption
+import edu.tum.cs.cadmos.language.EAssumptions
 
 class DFGTranslator {
 
@@ -41,6 +43,23 @@ class DFGTranslator {
 		} else {
 			ch.src.port.name
 		}
+	}
+	
+	def atomicSoftwareComponentsFlat() {
+		val List<List<Pair<String, String>>> ascList = new ArrayList();
+		val List<Assumption> assumptionList = this.root.features.filter(Assumption).toList
+		assumptionList.addAll(this.root.eContents.filter(Embedding).map[component.features].flatten.filter(Assumption))
+		
+		val listIterators = new ArrayList();
+		assumptionList.filter[value == EAssumptions::ATOMIC_SOFTWARE_COMPONENT.name].forEach[listIterators.add((it.eContainer as Component).
+			features.filter(Embedding).toList)]
+		listIterators.forEach[
+			val newList = new ArrayList()
+			it.forEach[newList.add(new Pair((it as Embedding).name, (it as Embedding).component.name))]
+			ascList.add(newList)
+		]
+		
+		ascList
 	}
 
 	def translateFlatGraphToDFG() {
@@ -231,6 +250,7 @@ class DFGTranslator {
 		]
 		return list
 	}
+	
 	def List<List<Channel>> findAtomicSinks2(Port p, List<Embedding> context, List<Channel> path) {
 		val list = new ArrayList<List<Channel>>
 		if ((p.inbound && p.component.atomic )|| context.empty) {

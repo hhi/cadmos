@@ -7,7 +7,7 @@ import edu.tum.cs.cadmos.language.cadmos.Embedding
 import edu.tum.cs.cadmos.language.cadmos.Port
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 import java.util.ArrayList
-import java.util.HashMap
+import java.util.Map
 import java.util.List
 import java.util.Map.Entry
 
@@ -28,7 +28,7 @@ class ScheduleSMTUtils {
 		'''«FOR vertex : childComponents SEPARATOR " "»«vertex.id»«ENDFOR»'''
 	}
 	
-	def static componentsStringWithPeriodicity(DirectedSparseMultigraph<Vertex, Edge> componentDFG, HashMap<Integer,
+	def static componentsStringWithPeriodicity(DirectedSparseMultigraph<Vertex, Edge> componentDFG, Map<Integer,
 												List<String>> periodMap) {
 		val childComponents = componentDFG.vertices.toList
 		
@@ -36,7 +36,7 @@ class ScheduleSMTUtils {
 	}
 	
 	private def static verticesWithPeriodicity(Vertex vertex, 
-												HashMap<Integer, List<String>> periodMap) {
+												Map<Integer, List<String>> periodMap) {
 		var i = 1
 		val lcm = periodMap.keySet.toList.lcm
 		var stringVertex = ""
@@ -52,7 +52,7 @@ class ScheduleSMTUtils {
 	}
 	
 	def static componentsWithPeriodicity(DirectedSparseMultigraph<Vertex, Edge> componentDFG,
-											 HashMap<Integer,List<String>> periodMap) {
+											 Map<Integer,List<String>> periodMap) {
 		val List<Pair<String, Vertex>> allVertices = new ArrayList()
 		for (Vertex v : componentDFG.vertices.toList) {
 			allVertices.addAll(v.verticesListWithPeriodicity(periodMap))
@@ -62,7 +62,7 @@ class ScheduleSMTUtils {
 	}
 	
 	def static componentsWithStringConsecutivePeriodicity(DirectedSparseMultigraph<Vertex, Edge> componentDFG,
-											 HashMap<Integer,List<String>> periodMap) {
+											 Map<Integer,List<String>> periodMap) {
 		val List<Pair<Pair<String, Vertex>, Pair<String, Vertex>>> allVertices = new ArrayList()
 		for (Vertex v : componentDFG.vertices.toList) {
 			val vList = v.verticesListWithPeriodicity(periodMap)
@@ -77,7 +77,7 @@ class ScheduleSMTUtils {
 	}
 	
 	private def static verticesListWithPeriodicity(Vertex vertex, 
-													HashMap<Integer, List<String>> periodMap) {
+													Map<Integer, List<String>> periodMap) {
 		var i = 1
 		val lcm = periodMap.keySet.toList.lcm
 		val vlist = new ArrayList()
@@ -88,7 +88,7 @@ class ScheduleSMTUtils {
 		vlist
 	}
 	
-	def static precedenceComponents(Vertex src, Vertex dst, HashMap<Integer, List<String>> periodMap) {
+	def static precedenceComponents(Vertex src, Vertex dst, Map<Integer, List<String>> periodMap) {
 		val srcList = src.verticesListWithPeriodicity(periodMap)
 		val dstList = dst.verticesListWithPeriodicity(periodMap)
 		
@@ -105,7 +105,7 @@ class ScheduleSMTUtils {
 	}
 	
 		
-	def static executionTime(Vertex sc, Vertex pc, HashMap<Pair<String, String>, Integer> execMap) {
+	def static executionTime(Vertex sc, Vertex pc, Map<Pair<String, String>, Integer> execMap) {
 //		val rand = new Random
 //		Integer::toString(rand.nextInt(3))
 
@@ -123,18 +123,19 @@ class ScheduleSMTUtils {
 		0
 	}
 	
-	def static periodNrOfExecutions (String sc, HashMap<Integer, List<String>> periodMap) {
+	def static periodNrOfExecutions (String sc, Map<Integer, List<String>> periodMap) {
 		var period = 0
 		for (Entry<Integer, List<String>> e : periodMap.entrySet) {
 			if (e.value.contains(sc)) {
 				period = e.key
 			}
 		}
-		
-		return periodMap.keySet.toList.lcm/period
+		if (period > 0)
+			return periodMap.keySet.toList.lcm / period
+		return 1
 	}
 	
-	def static periodTime (String sc, HashMap<Integer, List<String>> periodMap) {
+	def static periodTime (String sc, Map<Integer, List<String>> periodMap) {
 		var period = 0
 		for (Entry<Integer, List<String>> e : periodMap.entrySet) {
 			if (e.value.contains(sc)) {
@@ -145,7 +146,7 @@ class ScheduleSMTUtils {
 		return period
 	}
 	
-	def static periodTime (Vertex sc, HashMap<Integer, List<String>> periodMap) {
+	def static periodTime (Vertex sc, Map<Integer, List<String>> periodMap) {
 		if (sc.data instanceof Embedding) {
 			val typeSc = (sc.data as Embedding).component.name
 			var period = 0
