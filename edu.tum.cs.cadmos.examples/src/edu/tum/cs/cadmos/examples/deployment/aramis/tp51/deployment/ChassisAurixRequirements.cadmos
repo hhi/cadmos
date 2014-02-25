@@ -13,4 +13,6 @@ requirements ChassisAurixRequirements {
 	period ChassisControlFunctions = 5
 	
 	robustness[ChassisControlFunctions.reader][ChassisControlFunctions.f3] = [2..10]
+
+	latency ChassisControlFunctions.reader.input => ChassisControlFunctions.writer.output = [1..100]
 }
