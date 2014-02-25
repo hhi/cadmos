@@ -9,7 +9,7 @@ import edu.tum.cs.cadmos.analysis.architecture.model.Edge
 import static extension edu.tum.cs.cadmos.analysis.schedule.ScheduleSMTUtils.*
 import java.util.List
 import edu.tum.cs.cadmos.analysis.architecture.model.DeploymentModel
-import java.util.HashMap
+import java.util.Map
 
 class ScheduleSMTGenerator {
 
@@ -67,6 +67,9 @@ class ScheduleSMTGenerator {
 			; Precedence constraints.
 			«deploymentModel.softwareComponentDFG.generatePrecedenceConstraints(deploymentModel.period)»
 			
+			; Atomic software components run on same core assumption.
+			«deploymentModel.atomicSoftwareComponents.generateAtomicSoftwareComponentsAssumption(deploymentModel.period)»
+			
 			; Robustness requirements.
 			«deploymentModel.robustness.generateLatencyRequirements(deploymentModel.period)»
 			
@@ -91,13 +94,13 @@ class ScheduleSMTGenerator {
 	}
 	
 	private def static generateAllocationConsistencyAssertions(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
-													HashMap<Integer, List<String>> periodMap) {
+													Map<Integer, List<String>> periodMap) {
 		'''«FOR pairSc : softwareComponentDFG.componentsWithStringConsecutivePeriodicity(periodMap) SEPARATOR "\n"
 				»(assert (= (mapping «pairSc.key.key») (mapping «pairSc.value.key»)))«ENDFOR»'''
 	}
 	
 	private def static generateConstantPeriodicityAssertions(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
-													HashMap<Integer, List<String>> periodMap) {
+													Map<Integer, List<String>> periodMap) {
 		'''«FOR pairSc : softwareComponentDFG.componentsWithStringConsecutivePeriodicity(periodMap) SEPARATOR "\n"
 				»(assert (= (start «pairSc.key.key») (+ (start «pairSc.value.key») T«pairSc.key.value.periodTime(periodMap)»)))«ENDFOR»'''
 														
@@ -131,16 +134,24 @@ class ScheduleSMTGenerator {
 	}
 
 	private def static generatePrecedenceConstraints(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG,
-														HashMap<Integer, List<String>> periodMap) {
+														Map<Integer, List<String>> periodMap) {
 		'''«FOR channel : softwareComponentDFG.edges SEPARATOR "\n"»«
 				FOR precComponents : softwareComponentDFG.getSource(channel).precedenceComponents(
 										softwareComponentDFG.getDest(channel), periodMap) SEPARATOR "\n"»(assert (<= (finish «
 										precComponents.key») (start «precComponents.value»)))«ENDFOR»«ENDFOR»'''
 	}
 	
+	private def static generateAtomicSoftwareComponentsAssumption(List<List<Pair<String, String>>> ascList,
+																	Map<Integer, List<String>> periodMap) {
+		'''(assert (= «FOR ascComponents : ascList SEPARATOR " "
+		»«FOR components : ascComponents SEPARATOR " "»«FOR per : 1..components.value.periodNrOfExecutions(periodMap)
+			SEPARATOR " "»(mapping «components.key»_«per»)«ENDFOR»«ENDFOR»«ENDFOR»))
+		'''
+	}
+	
 	private def static generateLatencyRequirements(
-											HashMap<Pair<Pair<String, String>, Pair<String, String>>, Pair<Integer, Integer>> robustnessMap,
-											HashMap<Integer, List<String>> periodMap) {
+											Map<Pair<Pair<String, String>, Pair<String, String>>, Pair<Integer, Integer>> robustnessMap,
+											Map<Integer, List<String>> periodMap) {
 		  '''«FOR robPair : robustnessMap.entrySet SEPARATOR "\n"»«FOR per : 1..robPair.key.key.value.periodNrOfExecutions(periodMap)»
 			  (assert (>= (+ («robPair.key.value.key»_1) (* T«robPair.key.value.value.periodTime(periodMap)» 
 			  		(ite (> («robPair.key.key.key»_«per») («robPair.key.value.key»_1)) (+ 1 (/ (- («robPair.key.key.key»_«per») («robPair.key.value.key»_1)) «robPair.key.value.value.periodTime(periodMap)»)) 
@@ -155,7 +166,7 @@ class ScheduleSMTGenerator {
 	}
 
 	private def static generateFinishAssertions(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
-													HashMap<Integer, List<String>> periodMap) {
+													Map<Integer, List<String>> periodMap) {
 		'''«FOR sc : softwareComponentDFG.componentsWithPeriodicity(periodMap) SEPARATOR "\n"
 						»(assert (<= (finish «sc.key») (* «sc.key.substring(sc.key.lastIndexOf("_")+1)»  T«sc.value.periodTime(periodMap)»)))«ENDFOR»'''
 	}
