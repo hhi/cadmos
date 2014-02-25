@@ -12,6 +12,7 @@ import edu.tum.cs.cadmos.language.EComponentProperties
 import edu.tum.cs.cadmos.language.cadmos.ComponentProperty
 import edu.tum.cs.cadmos.language.EBusTypes
 import edu.tum.cs.cadmos.language.ECosts
+import edu.tum.cs.cadmos.language.EAssumptions
 
 /**
  * see http://www.eclipse.org/Xtext/documentation.html#contentAssist on how to customize content assistant
@@ -47,6 +48,14 @@ class CadmosProposalProvider extends AbstractCadmosProposalProvider {
 		super.completeCost_Key(model, assignment, context, acceptor)
 		for (c : ECosts.values) {
 			acceptor.accept(createCompletionProposal(c.name, context));
+		}
+	}
+	
+	override completeAssumption_Value(EObject model, Assignment assignment, ContentAssistContext context,
+		ICompletionProposalAcceptor acceptor) {
+		super.completeCost_Key(model, assignment, context, acceptor)
+		for (a : EAssumptions.values) {
+			acceptor.accept(createCompletionProposal(a.name, context));
 		}
 	}
 
