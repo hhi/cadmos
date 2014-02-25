@@ -114,11 +114,14 @@ public class ScheduleManager {
 				.translateComponentPeriodicity(requirements));
 		deploymentModel.setRobustness(RequirementsUtils
 				.translateComponentRobustness(requirements));
+		deploymentModel.setLatency(RequirementsUtils
+				.translateComponentLatency(requirements));
 	}
 
 	public void deletePeriod() {
 		deploymentModel.setPeriod(null);
 		deploymentModel.setRobustness(null);
+		deploymentModel.setLatency(null);
 	}
 
 }

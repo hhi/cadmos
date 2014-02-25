@@ -11,6 +11,7 @@ class CostmodelUtils {
 	
 	def static translateWCET (Costmodel costmodel) {
 		val wcetMap = new HashMap()
+		
 		//<Pair<Vertex,Vertex>, Integer>() 
 		for (Mapping mapping : costmodel.mappings) {
 			val sc = mapping.component
