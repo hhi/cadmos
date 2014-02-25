@@ -84,19 +84,27 @@ class CadmosScopeProvider extends AbstractDeclarativeScopeProvider {
 	}
 	
 	def IScope scope_LatencyRequirement_fromPort(LatencyRequirement latencyRequirement, EReference ref) {
-		val fromComponent = latencyRequirement.fromComponent
-		if (fromComponent == null) {
-			return IScope.NULLSCOPE;
+		val fromEmbedded = latencyRequirement.fromEmbedding
+		if (fromEmbedded == null) {
+			val fromComponent = latencyRequirement.fromComponent
+			if (fromComponent == null) {
+				return IScope.NULLSCOPE;	
+			}
+			return Scopes.scopeFor(fromComponent.ports);
 		}
-		return Scopes.scopeFor(fromComponent.ports);
+		return Scopes.scopeFor(fromEmbedded.component.ports)
 	}
 	
 	def IScope scope_LatencyRequirement_toPort(LatencyRequirement latencyRequirement, EReference ref) {
-		val toComponent = latencyRequirement.toComponent
-		if (toComponent == null) {
-			return IScope.NULLSCOPE;
+		val toEmbedded = latencyRequirement.toEmbedding
+		if (toEmbedded == null) {
+			val toComponent = latencyRequirement.toComponent
+			if (toComponent == null) {
+				return IScope.NULLSCOPE;	
+			}
+			return Scopes.scopeFor(toComponent.ports);
 		}
-		return Scopes.scopeFor(toComponent.ports);
+		return Scopes.scopeFor(toEmbedded.component.ports)
 	}
 
 }
