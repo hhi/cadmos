@@ -13,47 +13,43 @@ class RequirementsUtils {
 	
 	def static translateComponentPeriodicity(Requirements requirements) {
 		val periodicityMap = new HashMap()
-		val periodicityRequirements = requirements.eContents.filter(PeriodicityRequirement)
-		
-		for (PeriodicityRequirement req : periodicityRequirements) {
-			var List<String> componentList = periodicityMap.get(req.period)
+		requirements.eContents.filter(PeriodicityRequirement).forEach[
+			var List<String> componentList = periodicityMap.get(it.period)
 			if (componentList == null) {
 				componentList = new ArrayList();
 			}
-			componentList.add(req.component.name)
+			componentList.add(it.component.name)
 			
-			periodicityMap.put(req.period, componentList)
-		}
+			periodicityMap.put(it.period, componentList)		
+		]
 		
 		periodicityMap
 	}
 	
 	def static translateComponentRobustness(Requirements requirements) {
 		val robustnessMap = new HashMap()
-		val robustnessRequirements = requirements.eContents.filter(RobustnessRequirement)
 		
-		for (RobustnessRequirement req : robustnessRequirements) {
-			val robustnessPair = new Pair (new Pair("finish " + req.fromEmbedding.name, req.fromEmbedding.component.name),
-											new Pair ("start " + req.toEmbedding.name, req.toEmbedding.component.name)
+		requirements.eContents.filter(RobustnessRequirement).forEach[
+			val robustnessPair = new Pair (new Pair("finish " + it.fromEmbedding.name, it.fromEmbedding.component.name),
+											new Pair ("start " + it.toEmbedding.name, it.toEmbedding.component.name)
 			)
-			val robustnessInterval = new Pair (req.robustness.fromValue, req.robustness.toValue)
+			val robustnessInterval = new Pair (it.robustness.fromValue, it.robustness.toValue)
 			robustnessMap.put(robustnessPair, robustnessInterval)
-		}
+		]
 		
 		robustnessMap
 	}
 	
 	def static translateComponentLatency(Requirements requirements) {
 		val latencyMap = new HashMap()
-		val latencyRequirements = requirements.eContents.filter(LatencyRequirement)
 		
-		for (LatencyRequirement req : latencyRequirements) {
-			val latencyPair = new Pair (new Pair(req.fromPort.ioType + req.fromEmbedding.name, req.fromEmbedding.component.name),
-											new Pair (req.toPort.ioType + req.toEmbedding.name, req.toEmbedding.component.name)
+		requirements.eContents.filter(LatencyRequirement).forEach[
+			val latencyPair = new Pair (new Pair(it.fromPort.ioType + it.fromEmbedding.name, it.fromEmbedding.component.name),
+											new Pair (it.toPort.ioType + it.toEmbedding.name, it.toEmbedding.component.name)
 			)
-			val latencyInterval = new Pair (req.latency.fromValue, req.latency.toValue)
+			val latencyInterval = new Pair (it.latency.fromValue, it.latency.toValue)
 			latencyMap.put(latencyPair, latencyInterval)
-		}
+		]
 		
 		latencyMap
 	}
@@ -64,7 +60,6 @@ class RequirementsUtils {
 		if (!port.inbound) {
 			type = "finish "
 		} else {
-			// val list = port.eClass.EAllAttributes.filter[it.name.equals("inbound")]
 			type = "start "
 		}
 		
