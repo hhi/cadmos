@@ -20,7 +20,7 @@ enum Role:
 	software | processing | bus;
 
 Feature:
-	Port | Embedding | Channel | ComponentProperty;
+	Port | Embedding | Channel | ComponentProperty | Assumption;
 
 Port:
 	(inbound?='in' | 'out') name=ID ('rate' rate=INT)?;
@@ -33,6 +33,9 @@ Channel:
 
 PortRef:
 	(embedding=[Embedding] '.')? port=[Port];
+
+Assumption:
+	'assumption' value=ID;
 
 ComponentProperty:
 	'property' name=ID '=' value=STRING;
