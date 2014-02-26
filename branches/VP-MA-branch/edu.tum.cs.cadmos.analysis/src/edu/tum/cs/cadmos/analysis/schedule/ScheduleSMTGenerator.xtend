@@ -71,6 +71,9 @@ class ScheduleSMTGenerator {
 			; Transmission latencies costs.
 			«deploymentModel.softwareComponentDFG.generateTransmissionLatenciesConstraints(deploymentModel.transmissionLatency, deploymentModel.period)»
 			
+			; Transmission duration constraints.
+			«deploymentModel.softwareComponentDFG.generateTransmissionDurationConstraints(deploymentModel.transmissionDuration, deploymentModel.period)»
+			
 			; Atomic software components run on same core assumption.
 			«deploymentModel.atomicSoftwareComponents.generateAtomicSoftwareComponentsAssumption(deploymentModel.period)»
 			
@@ -137,6 +140,15 @@ class ScheduleSMTGenerator {
 		'''
 	}
 	
+	private def static generateTransmissionDurationConstraints(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG,
+														Map<Pair<String, String>, Integer> transmissionDuration,
+														Map<Integer, List<String>> periodMap) {
+		'''(assert (>= «periodMap.lcmOfComponents» (+ «FOR edge : softwareComponentDFG.edges SEPARATOR " "
+			»«IF edge.src(softwareComponentDFG) != "" && edge.dst(softwareComponentDFG) != ""
+					» (ite (not (= (mapping «edge.src(softwareComponentDFG)»_1) (mapping «edge.dst(softwareComponentDFG)»_1))) «
+					edge.duration(transmissionDuration)» 0)«ENDIF»«ENDFOR»)))'''														
+	}
+	
 	private def static generateTransmissionLatenciesConstraints(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG,
 														Map<Pair<String, String>, Integer> transmissionLatency,
 														Map<Integer, List<String>> periodMap) {
@@ -147,13 +159,16 @@ class ScheduleSMTGenerator {
 		].forEach[
 			val outComponentPort = it.id.substring(1, it.id.indexOf(", "))
 			val inComponentPort = it.id.substring(it.id.indexOf(", ") + 2, it.id.indexOf(")"))
-			val latency = transmissionLatency.get(new Pair(outComponentPort, ""))
-			if (latency != null) {			  		
+			var latency = transmissionLatency.get(new Pair(outComponentPort, ""))
+			// Latency was not defined in this case for the component.
+			if (latency == null && outComponentPort.contains(".") && inComponentPort.contains(".")) latency = 0
+			
+			if (latency != null) {
 				val outComponent = outComponentPort.substring(0, outComponentPort.indexOf("."))
 				val inComponent = inComponentPort.substring(0, inComponentPort.indexOf("."))
 				for (per : 1..outComponent.periodNrOfExecutions(periodMap)) {
 					assertions.append("(assert " + 
-					'''(=> (= (mapping «softwareComponentDFG.getDest(it).id»_1) (mapping «softwareComponentDFG.getSource(it).id»_1))
+					'''(=> (not (= (mapping «softwareComponentDFG.getDest(it).id»_1) (mapping «softwareComponentDFG.getSource(it).id»_1)))
 					''' + "\t(>= (+ (start " + softwareComponentDFG.getDest(it).id + "_1) \n\t(* T" + inComponent.periodTime(periodMap) + " " + 
 					'''
 						(ite (> (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id
@@ -163,7 +178,7 @@ class ScheduleSMTGenerator {
 					''')
 					assertions.append("\t(+ (finish " + softwareComponentDFG.getSource(it).id + "_" + per + ") " + latency + "))))\n")	
 				}
-				usedComponentPairs.add(new Pair(softwareComponentDFG.getSource(it).id, softwareComponentDFG.getDest(it).id))
+				usedComponentPairs.add(new Pair(softwareComponentDFG.getSource(it).id, softwareComponentDFG.getDest(it).id))	
 			}
 		]
 		

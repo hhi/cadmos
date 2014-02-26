@@ -9,6 +9,7 @@ class DeploymentModel {
 	@Property DirectedSparseMultigraph<Vertex, Edge> processingComponentDFG
 	@Property Map<Pair<String, String>, Integer> wcet
 	@Property Map<Pair<String, String>, Integer> transmissionLatency
+	@Property Map<Pair<String, String>, Integer> transmissionDuration
 	@Property List<List<Pair<String, String>>> atomicSoftwareComponents
 	@Property Map<Integer, List<String>> period
 	@Property Map<Pair<Pair<String, String>, Pair<String, String>>, Pair<Integer, Integer>> robustness
@@ -18,6 +19,8 @@ class DeploymentModel {
 		_softwareComponentDFG = null
 		_processingComponentDFG = null 
 		_wcet = null
+		_transmissionLatency = null
+		_transmissionDuration = null
 		_atomicSoftwareComponents = null
 		_period = null
 		_robustness = null
@@ -28,6 +31,7 @@ class DeploymentModel {
 			DirectedSparseMultigraph<Vertex, Edge> processingComponentDFG,
 			Map<Pair<String, String>, Integer> wcet,
 			Map<Pair<String, String>, Integer> transmissionLatency,
+			Map<Pair<String, String>, Integer> transmissionDuration,
 			List<List<Pair<String, String>>> atomicSoftwareComponents,
 			Map<Integer, List<String>> period,
 			Map<Pair<Pair<String, String>, Pair<String, String>>, Pair<Integer, Integer>> robustness,
@@ -36,6 +40,7 @@ class DeploymentModel {
 		_processingComponentDFG = processingComponentDFG
 		_wcet = wcet
 		_transmissionLatency = transmissionLatency
+		_transmissionDuration = transmissionDuration
 		_atomicSoftwareComponents = atomicSoftwareComponents
 		_period = period
 		_robustness = robustness
@@ -45,7 +50,7 @@ class DeploymentModel {
 	def isReadyToSchedule() {
 		_softwareComponentDFG != null && _processingComponentDFG != null 
 			&& _wcet != null && _period != null && _robustness != null && _latency != null
-			&& _transmissionLatency != null
+			&& _transmissionLatency != null && transmissionDuration != null
 	}
 	
 	
