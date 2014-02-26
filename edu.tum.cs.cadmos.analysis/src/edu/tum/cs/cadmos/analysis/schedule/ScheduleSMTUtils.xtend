@@ -16,6 +16,33 @@ class ScheduleSMTUtils {
 	
 	static val INFINITY = (1<<30)
 	
+	def static src(Edge edge, DirectedSparseMultigraph<Vertex, Edge> dfg) {
+		val outComponentPort = edge.id.substring(1, edge.id.indexOf(", "))
+		
+		val index = outComponentPort.indexOf(".")
+		if (index >= 0)
+			return dfg.getSource(edge).id
+		""
+	}
+	
+	def static dst(Edge edge, DirectedSparseMultigraph<Vertex, Edge> dfg) {
+		val inComponentPort = edge.id.substring(edge.id.indexOf(", ") + 2, edge.id.indexOf(")"))
+		
+		val index = inComponentPort.indexOf(".")
+		if (index >= 0)
+			return dfg.getDest(edge).id
+		""
+	}
+	
+	def static duration(Edge edge, Map<Pair<String, String>, Integer> transmissionDuration) {
+		val outComponentPort = edge.id.substring(1, edge.id.indexOf(", "))
+		var duration = transmissionDuration.get(new Pair(outComponentPort, ""))
+		// Latency was not defined in this case for the component.
+		if (duration == null && outComponentPort.contains(".")) duration = 0
+		
+		duration
+	}
+	
 	def static componentName(DirectedSparseMultigraph<Vertex, Edge> componentDFG) {
 		val child = componentDFG.vertices.toList.head.data
 		val component = child.eContainer as Component
@@ -34,6 +61,10 @@ class ScheduleSMTUtils {
 		val childComponents = componentDFG.vertices.toList
 		
 		'''«FOR vertex : childComponents SEPARATOR " "»«vertex.verticesWithPeriodicity(periodMap)»«ENDFOR»'''
+	}
+	
+	def static lcmOfComponents (Map<Integer, List<String>> periodMap) {
+		periodMap.keySet.toList.lcm
 	}
 	
 	private def static verticesWithPeriodicity(Vertex vertex, 

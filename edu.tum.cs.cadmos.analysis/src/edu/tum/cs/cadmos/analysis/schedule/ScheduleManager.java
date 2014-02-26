@@ -108,11 +108,14 @@ public class ScheduleManager {
 		deploymentModel.setWcet(CostmodelUtils.translateWCET(costmodel));
 		deploymentModel.setTransmissionLatency(CostmodelUtils
 				.translateTransmissionLatency(costmodel));
+		deploymentModel.setTransmissionDuration(CostmodelUtils
+				.translateTransmissionDuration(costmodel));
 	}
 
 	public void deleteCostmodel() {
 		deploymentModel.setWcet(null);
 		deploymentModel.setTransmissionLatency(null);
+		deploymentModel.setTransmissionDuration(null);
 	}
 
 	public void addPeriodFromRequirement(Requirements requirements) {
