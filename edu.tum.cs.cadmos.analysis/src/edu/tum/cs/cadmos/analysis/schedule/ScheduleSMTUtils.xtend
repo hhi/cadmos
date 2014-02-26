@@ -10,6 +10,7 @@ import java.util.ArrayList
 import java.util.Map
 import java.util.List
 import java.util.Map.Entry
+import edu.tum.cs.cadmos.language.cadmos.Role
 
 class ScheduleSMTUtils {
 	
@@ -23,7 +24,7 @@ class ScheduleSMTUtils {
 	}
 	
 	def static componentsString(DirectedSparseMultigraph<Vertex, Edge> componentDFG) {
-		val childComponents = componentDFG.vertices.toList
+		val childComponents = componentDFG.vertices.filter[(data as Embedding).component.role != Role::BUS].toList
 		
 		'''«FOR vertex : childComponents SEPARATOR " "»«vertex.id»«ENDFOR»'''
 	}
@@ -48,7 +49,7 @@ class ScheduleSMTUtils {
 	}
 	
 	def static components(DirectedSparseMultigraph<Vertex, Edge> componentDFG) {
-		componentDFG.vertices.toList
+		componentDFG.vertices.filter[(data as Embedding).component.role != Role::BUS].toList
 	}
 	
 	def static componentsWithPeriodicity(DirectedSparseMultigraph<Vertex, Edge> componentDFG,
