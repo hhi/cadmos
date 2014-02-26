@@ -1,15 +1,16 @@
 package edu.tum.cs.cadmos.analysis.schedule
 
+import edu.tum.cs.cadmos.analysis.architecture.model.DeploymentModel
+import edu.tum.cs.cadmos.analysis.architecture.model.Edge
+import edu.tum.cs.cadmos.analysis.architecture.model.Vertex
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 import java.io.File
 import java.io.FileWriter
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph
-import edu.tum.cs.cadmos.analysis.architecture.model.Vertex
-import edu.tum.cs.cadmos.analysis.architecture.model.Edge
+import java.util.HashSet
+import java.util.List
+import java.util.Map
 
 import static extension edu.tum.cs.cadmos.analysis.schedule.ScheduleSMTUtils.*
-import java.util.List
-import edu.tum.cs.cadmos.analysis.architecture.model.DeploymentModel
-import java.util.Map
 
 class ScheduleSMTGenerator {
 
@@ -66,6 +67,9 @@ class ScheduleSMTGenerator {
 			
 			; Precedence constraints.
 			«deploymentModel.softwareComponentDFG.generatePrecedenceConstraints(deploymentModel.period)»
+			
+			; Transmission latencies costs.
+			«deploymentModel.softwareComponentDFG.generateTransmissionLatenciesConstraints(deploymentModel.transmissionLatency, deploymentModel.period)»
 			
 			; Atomic software components run on same core assumption.
 			«deploymentModel.atomicSoftwareComponents.generateAtomicSoftwareComponentsAssumption(deploymentModel.period)»
@@ -131,6 +135,39 @@ class ScheduleSMTGenerator {
 		(assert (= start«sc.key» (start «sc.key»)))
 		«ENDFOR»
 		'''
+	}
+	
+	private def static generateTransmissionLatenciesConstraints(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG,
+														Map<Pair<String, String>, Integer> transmissionLatency,
+														Map<Integer, List<String>> periodMap) {
+		val usedComponentPairs = new HashSet()
+		val assertions = new StringBuilder()
+		softwareComponentDFG.edges.filter[
+			!usedComponentPairs.contains(new Pair(softwareComponentDFG.getSource(it).id, softwareComponentDFG.getDest(it).id))
+		].forEach[
+			val outComponentPort = it.id.substring(1, it.id.indexOf(", "))
+			val inComponentPort = it.id.substring(it.id.indexOf(", ") + 2, it.id.indexOf(")"))
+			val latency = transmissionLatency.get(new Pair(outComponentPort, ""))
+			if (latency != null) {			  		
+				val outComponent = outComponentPort.substring(0, outComponentPort.indexOf("."))
+				val inComponent = inComponentPort.substring(0, inComponentPort.indexOf("."))
+				for (per : 1..outComponent.periodNrOfExecutions(periodMap)) {
+					assertions.append("(assert " + 
+					'''(=> (= (mapping «softwareComponentDFG.getDest(it).id»_1) (mapping «softwareComponentDFG.getSource(it).id»_1))
+					''' + "\t(>= (+ (start " + softwareComponentDFG.getDest(it).id + "_1) \n\t(* T" + inComponent.periodTime(periodMap) + " " + 
+					'''
+						(ite (> (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id
+						»_1)) (+ 1 (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «
+						outComponent.periodTime(periodMap)»)) (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «
+						outComponent.periodTime(periodMap)»))))
+					''')
+					assertions.append("\t(+ (finish " + softwareComponentDFG.getSource(it).id + "_" + per + ") " + latency + "))))\n")	
+				}
+				usedComponentPairs.add(new Pair(softwareComponentDFG.getSource(it).id, softwareComponentDFG.getDest(it).id))
+			}
+		]
+		
+		assertions
 	}
 
 	private def static generatePrecedenceConstraints(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG,

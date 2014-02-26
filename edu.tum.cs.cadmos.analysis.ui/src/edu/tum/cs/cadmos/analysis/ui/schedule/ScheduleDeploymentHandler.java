@@ -81,7 +81,7 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 													.deleteSoftwareComponent();
 											scheduleManager
 													.deleteProcessingComponent();
-											scheduleManager.deleteWcet();
+											scheduleManager.deleteCostmodel();
 											scheduleManager.deletePeriod();
 										} else {
 											scheduleManager
@@ -91,7 +91,7 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 													.addSoftwareComponent(deployment
 															.getSwc());
 											scheduleManager
-													.addWcetFromCostmodel(deployment
+													.addCostmodel(deployment
 															.getCost());
 											scheduleManager
 													.addPeriodFromRequirement(deployment
