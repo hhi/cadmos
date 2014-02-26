@@ -104,12 +104,15 @@ public class ScheduleManager {
 		deploymentModel.setProcessingComponentDFG(null);
 	}
 
-	public void addWcetFromCostmodel(Costmodel costmodel) {
+	public void addCostmodel(Costmodel costmodel) {
 		deploymentModel.setWcet(CostmodelUtils.translateWCET(costmodel));
+		deploymentModel.setTransmissionLatency(CostmodelUtils
+				.translateTransmissionLatency(costmodel));
 	}
 
-	public void deleteWcet() {
+	public void deleteCostmodel() {
 		deploymentModel.setWcet(null);
+		deploymentModel.setTransmissionLatency(null);
 	}
 
 	public void addPeriodFromRequirement(Requirements requirements) {

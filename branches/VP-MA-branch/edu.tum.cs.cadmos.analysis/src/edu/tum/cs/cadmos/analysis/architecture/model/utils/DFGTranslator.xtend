@@ -37,9 +37,25 @@ class DFGTranslator {
 		}
 	}
 	
+	def getSinkPortName(Channel ch){
+		if (ch.snk.embedding != null) {
+			ch.snk.embedding.component.name + '.' + ch.snk.port.name
+		} else {
+			ch.snk.port.name
+		}
+	}
+	
 	def getSourceName(Channel ch){
 		if (ch.src.embedding != null) {
 			ch.src.embedding.name	
+		} else {
+			ch.src.port.name
+		}
+	}
+	
+	def getSourcePortName(Channel ch){
+		if (ch.src.embedding != null) {
+			ch.src.embedding.component.name + '.' + ch.src.port.name
 		} else {
 			ch.src.port.name
 		}
@@ -87,7 +103,7 @@ class DFGTranslator {
 			val srcVertex = visited.get(it.sourceName)
 			val snkVertex = visited.get(it.sinkName)
 			if(srcVertex != null && snkVertex != null) {
-				val edge = new Edge("(" + srcVertex.id + ", " + snkVertex.id + ")", 0)
+				val edge = new Edge("(" + it.sourcePortName + ", " + it.sinkPortName + ")", 0)
 				g.addEdge(edge, srcVertex, snkVertex)
 			}
 		]
