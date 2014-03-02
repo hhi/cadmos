@@ -87,8 +87,10 @@ public class ScheduleManager {
 					newSchedule.createNewFile();
 				}
 
-				ScheduleSMTGenerator.doGenerateCadmosSchedule(newSchedule,
-						schedule, deploymentModel);
+				if (schedule != null) {
+					ScheduleSMTGenerator.doGenerateCadmosSchedule(newSchedule,
+							schedule, deploymentModel);
+				}
 
 			} catch (IOException e) {
 				e.printStackTrace();

@@ -16,6 +16,8 @@ import edu.tum.cs.cadmos.language.cadmos.Embedding
 import edu.tum.cs.cadmos.language.cadmos.Component
 
 class ScheduleSMTGenerator {
+	
+	var static id = 1;
 
 	/**
 	 * Creates the given file and writes the given contents to it.
@@ -199,11 +201,7 @@ class ScheduleSMTGenerator {
 					assertions.append("(assert " + 
 					'''(=> (not (= (mapping «softwareComponentDFG.getDest(it).id»_1) (mapping «softwareComponentDFG.getSource(it).id»_1)))
 					''' + "\t(>= (+ (start " + softwareComponentDFG.getDest(it).id + "_1) \n\t(* T" + inComponent.periodTime(periodMap) + " " + 
-					'''
-						(ite (> (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id
-						»_1)) (+ 1 (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «
-						outComponent.periodTime(periodMap)»)) (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «
-						outComponent.periodTime(periodMap)»))))
+					'''(+ 1 (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «inComponent.periodTime(periodMap)»))))
 					''')
 					assertions.append("\t(+ (finish " + softwareComponentDFG.getSource(it).id + "_" + per + ") " + latency + "))))\n")	
 				}
@@ -235,14 +233,14 @@ class ScheduleSMTGenerator {
 											Map<Pair<Pair<String, String>, Pair<String, String>>, Pair<Integer, Integer>> robustnessMap,
 											Map<Integer, List<String>> periodMap) {
 		  '''«FOR robPair : robustnessMap.entrySet SEPARATOR "\n"»«FOR per : 1..robPair.key.key.value.periodNrOfExecutions(periodMap)»
-			  (assert (>= (+ («robPair.key.value.key»_1) (* T«robPair.key.value.value.periodTime(periodMap)» 
-			  		(ite (> («robPair.key.key.key»_«per») («robPair.key.value.key»_1)) (+ 1 (/ (- («robPair.key.key.key»_«per») («robPair.key.value.key»_1)) «robPair.key.value.value.periodTime(periodMap)»)) 
-			  		(/ (- («robPair.key.key.key»_«per») («robPair.key.value.key»_1)) «robPair.key.value.value.periodTime(periodMap)»))))
-			  		(+ («robPair.key.key.key»_«per») «robPair.value.key»)))
-			  (assert (<= (+ («robPair.key.value.key»_1) (* T«robPair.key.value.value.periodTime(periodMap)» 
-			  		(ite (> («robPair.key.key.key»_«per») («robPair.key.value.key»_1)) (+ 1 (/ (- («robPair.key.key.key»_«per») («robPair.key.value.key»_1)) «robPair.key.value.value.periodTime(periodMap)»)) 
-			  		(/ (- («robPair.key.key.key»_«per») («robPair.key.value.key»_1)) «robPair.key.value.value.periodTime(periodMap)»))))
-			  		(+ («robPair.key.key.key»_«per») «robPair.value.value»)))
+				(declare-const «robPair.key.value.value»«id=id+1» Int)
+				(assert (= «robPair.key.value.value»«id» (ite (= (mod (- («robPair.key.key.key»_«per») («robPair.key.value.key»_1)) «
+					robPair.key.value.value.periodTime(periodMap)») 0) (/ (- («robPair.key.key.key»_«per») («robPair.key.value.key
+					»_1))  «robPair.key.value.value.periodTime(periodMap)») (+ 1 (/ (- («robPair.key.key.key»_«per») («robPair.key.value.key»_1)) «robPair.key.value.value.periodTime(periodMap)»)))))
+				(assert (>= (+ («robPair.key.value.key»_1) (* T«robPair.key.value.value.periodTime(periodMap)» «robPair.key.value.value»«id»))
+				  		(+ («robPair.key.key.key»_«per») «robPair.value.key»)))
+				(assert (<= (+ («robPair.key.value.key»_1) (* T«robPair.key.value.value.periodTime(periodMap)» «robPair.key.value.value»«id»))
+				  		(+ («robPair.key.key.key»_«per») «robPair.value.value»)))
 		  	«ENDFOR»«ENDFOR»
 		  '''
 	}
