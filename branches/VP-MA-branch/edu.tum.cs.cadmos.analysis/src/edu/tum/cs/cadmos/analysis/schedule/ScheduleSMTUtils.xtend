@@ -79,8 +79,12 @@ class ScheduleSMTUtils {
 		stringVertex										
 	}
 	
+	def static rootComponentName(DirectedSparseMultigraph<Vertex, Edge> componentDFG) {
+		(componentDFG.components.head.data.eContainer as Component).name
+	}
+	
 	def static components(DirectedSparseMultigraph<Vertex, Edge> componentDFG) {
-		componentDFG.vertices.filter[(data as Embedding).component.role != Role::BUS].toList
+		componentDFG.vertices.filter[(data instanceof Embedding) && (data as Embedding).component.role != Role::BUS].toList
 	}
 	
 	def static componentsWithPeriodicity(DirectedSparseMultigraph<Vertex, Edge> componentDFG,

@@ -22,7 +22,7 @@ public class ScheduleSMTParser {
 		for (Vertex v : softwareComponentDFG.getVertices()) {
 			int index = content.indexOf("start" + v.getId());
 			if (index >= 0) {
-				index += 5 + v.getId().length();
+				index += 5 + v.getId().length() + 5;
 				while (!Character.isDigit(content.charAt(index))) {
 					++index;
 				}

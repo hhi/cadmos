@@ -15,6 +15,8 @@ import org.eclipse.xtext.scoping.Scopes
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider
 import edu.tum.cs.cadmos.language.cadmos.RobustnessRequirement
 import edu.tum.cs.cadmos.language.cadmos.LatencyRequirement
+import edu.tum.cs.cadmos.language.cadmos.ResourceSchedule
+import edu.tum.cs.cadmos.language.cadmos.Task
 
 /**
  * This class contains custom scoping description.
@@ -105,6 +107,24 @@ class CadmosScopeProvider extends AbstractDeclarativeScopeProvider {
 			return Scopes.scopeFor(toComponent.ports);
 		}
 		return Scopes.scopeFor(toEmbedded.component.ports)
+	}
+	
+	def IScope scope_ResourceSchedule_embedding(ResourceSchedule resourceSchedule, EReference ref) {
+		val component = resourceSchedule.resource
+		
+		if (component == null) {
+			return IScope.NULLSCOPE;
+		}
+		return Scopes.scopeFor(component.embeddings);
+	}
+	
+	def IScope scope_Task_embedding(Task task, EReference ref) {
+		val component = task.component
+		
+		if (component == null) {
+			return IScope.NULLSCOPE;
+		}
+		return Scopes.scopeFor(component.embeddings);
 	}
 
 }

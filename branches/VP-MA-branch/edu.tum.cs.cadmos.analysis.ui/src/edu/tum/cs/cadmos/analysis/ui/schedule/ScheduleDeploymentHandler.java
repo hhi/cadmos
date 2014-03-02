@@ -25,6 +25,7 @@ import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 
 import edu.tum.cs.cadmos.analysis.schedule.ScheduleManager;
 import edu.tum.cs.cadmos.language.cadmos.Deployment;
+import edu.tum.cs.cadmos.language.cadmos.Model;
 
 public class ScheduleDeploymentHandler extends AbstractHandler implements
 		IElementUpdater {
@@ -64,7 +65,9 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 								final EObject selectedObject = NodeModelUtils
 										.findActualSemanticObjectFor(leafNode);
 								if (selectedObject instanceof Deployment) {
-									Deployment deployment = (Deployment) selectedObject;
+									final Deployment deployment = (Deployment) selectedObject;
+									final Model model = (Model) deployment
+											.eContainer();
 									final ICommandService service = (ICommandService) HandlerUtil
 											.getActiveWorkbenchWindowChecked(
 													event).getService(
@@ -83,7 +86,10 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 													.deleteProcessingComponent();
 											scheduleManager.deleteCostmodel();
 											scheduleManager.deletePeriod();
+											scheduleManager.deleteImports();
 										} else {
+											scheduleManager.addImports(model
+													.getImports());
 											scheduleManager
 													.addProcessingComponent(deployment
 															.getPlc());
@@ -104,7 +110,19 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 									if (isSelected) {
 										System.out.println("Start scheduling!");
 										if (scheduleManager.readyToSchedule()) {
-											scheduleManager.schedule();
+											String resourceName = xtextEditor
+													.getResource().getName();
+											scheduleManager
+													.schedule(
+															xtextEditor
+																	.getResource()
+																	.getParent()
+																	.getFullPath(),
+															resourceName
+																	.substring(
+																			0,
+																			resourceName
+																					.lastIndexOf(".")));
 										}
 									}
 

@@ -5,6 +5,7 @@ import java.util.Map
 import java.util.List
 
 class DeploymentModel {
+	@Property List<String> imports
 	@Property DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG
 	@Property DirectedSparseMultigraph<Vertex, Edge> processingComponentDFG
 	@Property Map<Pair<String, String>, Integer> wcet
@@ -16,6 +17,7 @@ class DeploymentModel {
 	@Property Map<Pair<Pair<String, String>, Pair<String, String>>, Pair<Integer, Integer>> latency
 	
 	new () {
+		_imports = null
 		_softwareComponentDFG = null
 		_processingComponentDFG = null 
 		_wcet = null
@@ -27,7 +29,8 @@ class DeploymentModel {
 		_latency = null
 	}
 	
-	new(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
+	new(List<String> imports,
+			DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
 			DirectedSparseMultigraph<Vertex, Edge> processingComponentDFG,
 			Map<Pair<String, String>, Integer> wcet,
 			Map<Pair<String, String>, Integer> transmissionLatency,
@@ -36,6 +39,7 @@ class DeploymentModel {
 			Map<Integer, List<String>> period,
 			Map<Pair<Pair<String, String>, Pair<String, String>>, Pair<Integer, Integer>> robustness,
 			Map<Pair<Pair<String, String>, Pair<String, String>>, Pair<Integer, Integer>> latency) {
+		_imports = imports
 		_softwareComponentDFG = softwareComponentDFG
 		_processingComponentDFG = processingComponentDFG
 		_wcet = wcet
@@ -50,7 +54,7 @@ class DeploymentModel {
 	def isReadyToSchedule() {
 		_softwareComponentDFG != null && _processingComponentDFG != null 
 			&& _wcet != null && _period != null && _robustness != null && _latency != null
-			&& _transmissionLatency != null && transmissionDuration != null
+			&& _transmissionLatency != null && _transmissionDuration != null
 	}
 	
 	

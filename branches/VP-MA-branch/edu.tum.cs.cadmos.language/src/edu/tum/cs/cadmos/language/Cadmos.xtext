@@ -87,10 +87,10 @@ PeriodicSchedule:
 	'periodic' period=INT '{' resourceSchedules+=ResourceSchedule* '}';
 
 ResourceSchedule:
-	'resource' resource=[Component] '{' tasks+=Task* '}';
+	'resource' resource=[Component] '.' embedding=[Embedding] '{' tasks+=Task* '}';
 
 Task:
-	'task' component=[Component] start=INT;
+	'task' component=[Component] '.' embedding=[Embedding] start=INT;
 
 QualifiedName:
 	ID ('.' ID)*;
