@@ -3,11 +3,14 @@ package edu.tum.cs.cadmos.analysis.schedule;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.xbase.lib.Pair;
 
@@ -17,6 +20,7 @@ import edu.tum.cs.cadmos.analysis.architecture.model.utils.DFGTranslator;
 import edu.tum.cs.cadmos.analysis.architecture.model.utils.RequirementsUtils;
 import edu.tum.cs.cadmos.language.cadmos.Component;
 import edu.tum.cs.cadmos.language.cadmos.Costmodel;
+import edu.tum.cs.cadmos.language.cadmos.Import;
 import edu.tum.cs.cadmos.language.cadmos.Requirements;
 
 public class ScheduleManager {
@@ -36,7 +40,7 @@ public class ScheduleManager {
 		return deploymentModel.isReadyToSchedule();
 	}
 
-	public void schedule() {
+	public void schedule(IPath resourceDirectory, String resourceName) {
 		final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace()
 				.getRoot();
 		final IPath location = workspaceRoot.getLocation();
@@ -47,7 +51,7 @@ public class ScheduleManager {
 
 		String generatedFileName = "";
 		if (outputDirectory.isDirectory()) {
-			generatedFileName = ScheduleSMTGenerator.doGenerate(
+			generatedFileName = ScheduleSMTGenerator.doGenerateSMTScript(
 					outputDirectory, deploymentModel);
 			ProcessBuilder cProcess = null;
 			if (System.getProperty("os.name").equals("Mac OS X")) {
@@ -76,6 +80,16 @@ public class ScheduleManager {
 						.parse(output,
 								deploymentModel.getSoftwareComponentDFG());
 				System.out.println(schedule);
+
+				File newSchedule = new File(location + "/" + resourceDirectory
+						+ "/" + resourceName + "Schedule.cadmos");
+				if (!newSchedule.exists()) {
+					newSchedule.createNewFile();
+				}
+
+				ScheduleSMTGenerator.doGenerateCadmosSchedule(newSchedule,
+						schedule, deploymentModel);
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -131,6 +145,20 @@ public class ScheduleManager {
 		deploymentModel.setPeriod(null);
 		deploymentModel.setRobustness(null);
 		deploymentModel.setLatency(null);
+	}
+
+	public void addImports(EList<Import> imports) {
+		final List<String> iList = new ArrayList<>();
+		for (Import im : imports) {
+			String newImport = "import ";
+			newImport += im.getImportedNamespace();
+			iList.add(newImport);
+		}
+		deploymentModel.setImports(iList);
+	}
+
+	public void deleteImports() {
+		deploymentModel.setImports(null);
 	}
 
 }

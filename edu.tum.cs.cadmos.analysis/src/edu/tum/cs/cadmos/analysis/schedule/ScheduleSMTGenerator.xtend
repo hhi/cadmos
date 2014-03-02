@@ -11,6 +11,9 @@ import java.util.List
 import java.util.Map
 
 import static extension edu.tum.cs.cadmos.analysis.schedule.ScheduleSMTUtils.*
+import org.eclipse.emf.ecore.EObject
+import edu.tum.cs.cadmos.language.cadmos.Embedding
+import edu.tum.cs.cadmos.language.cadmos.Component
 
 class ScheduleSMTGenerator {
 
@@ -22,8 +25,34 @@ class ScheduleSMTGenerator {
 		writer.write(contents.toString)
 		writer.close
 	}
+	
+	def static doGenerateCadmosSchedule(File outputFile, Map<EObject, Pair<String, Integer>> schedule, DeploymentModel deploymentModel) {
+		generateFile(outputFile, schedule.generateSchedule(deploymentModel));
+		
+		outputFile
+	}
+	
+	private def static generateSchedule(Map<EObject, Pair<String, Integer>> schedule, DeploymentModel deploymentModel) {
+		'''
+			«FOR imp : deploymentModel.imports SEPARATOR "\n"»«imp»«ENDFOR»
+		
+			schedule «deploymentModel.softwareComponentDFG.rootComponentName»_«deploymentModel.processingComponentDFG.rootComponentName» {
+				«FOR period : deploymentModel.period.keySet.toList SEPARATOR "\n\n"
+			    »periodic «period» {
+					«FOR resource : deploymentModel.processingComponentDFG.components.filter[data instanceof Embedding] SEPARATOR "\n\n"
+					»resource «((resource.data as Embedding).eContainer as Component).name».«resource.id» {
+						«FOR entry : schedule.entrySet().filter[key instanceof Embedding && value.key.equals(resource.id) 
+													&& (key as Embedding).component.name.periodTime(deploymentModel.period) == period] 
+													SEPARATOR "\n"
+						»task «(entry.key.eContainer as Component).name».«(entry.key as Embedding).name»	«
+						IF entry.value.value >= period»«entry.value.value - period»«ELSE»«entry.value.value»«ENDIF»«ENDFOR»
+					}«ENDFOR»
+				}«ENDFOR»
+			}
+		'''
+	}
 
-	def static doGenerate(File outputDirectory, DeploymentModel deploymentModel) {
+	def static doGenerateSMTScript(File outputDirectory, DeploymentModel deploymentModel) {
 		val generatedFileName = deploymentModel.softwareComponentDFG.componentName + "-" + deploymentModel.processingComponentDFG.componentName +
 			".smt2"
 		generateFile(new File(outputDirectory, generatedFileName),
@@ -195,6 +224,7 @@ class ScheduleSMTGenerator {
 	
 	private def static generateAtomicSoftwareComponentsAssumption(List<List<Pair<String, String>>> ascList,
 																	Map<Integer, List<String>> periodMap) {
+		if (ascList.size == 0) return ""
 		'''(assert (= «FOR ascComponents : ascList SEPARATOR " "
 		»«FOR components : ascComponents SEPARATOR " "»«FOR per : 1..components.value.periodNrOfExecutions(periodMap)
 			SEPARATOR " "»(mapping «components.key»_«per»)«ENDFOR»«ENDFOR»«ENDFOR»))
