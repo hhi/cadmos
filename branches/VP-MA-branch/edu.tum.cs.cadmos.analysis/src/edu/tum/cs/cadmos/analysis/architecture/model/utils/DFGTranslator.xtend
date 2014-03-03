@@ -14,7 +14,7 @@ import org.eclipse.emf.ecore.EObject
 import edu.tum.cs.cadmos.analysis.architecture.model.Vertex
 import edu.tum.cs.cadmos.analysis.architecture.model.Edge
 import edu.tum.cs.cadmos.language.cadmos.Assumption
-import edu.tum.cs.cadmos.language.EAssumptions
+import edu.tum.cs.cadmos.language.EAssumptionsimport edu.tum.cs.cadmos.language.cadmos.Deployment
 
 class DFGTranslator {
 
@@ -111,7 +111,7 @@ class DFGTranslator {
 	}
 
 	def translateToDFG() {
-		if(root.embeddings.empty){
+		if(root == null || root.embeddings.empty){
 			return g
 		}
 		
