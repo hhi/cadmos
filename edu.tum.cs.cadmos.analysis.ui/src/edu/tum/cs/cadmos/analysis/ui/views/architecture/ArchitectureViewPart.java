@@ -3,6 +3,9 @@ package edu.tum.cs.cadmos.analysis.ui.views.architecture;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -12,11 +15,20 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.commands.ExecutionException;
+import org.eclipse.ui.commands.ICommandService;
+import org.eclipse.ui.commands.NotDefinedException;
+import org.eclipse.ui.commands.NotHandledException;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.services.IServiceLocator;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 
@@ -44,6 +56,34 @@ public class ArchitectureViewPart extends ViewPart {
 	public void createPartControl(Composite parent) {
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(new FillLayout(SWT.HORIZONTAL));
+		{
+			Button btnRunZ = new Button(container, SWT.NONE);
+			btnRunZ.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					// Obtain IServiceLocator implementer, e.g. from PlatformUI.getWorkbench():
+					IServiceLocator serviceLocator = PlatformUI.getWorkbench();
+					// or a site from within a editor or view:
+					// IServiceLocator serviceLocator = getSite();
+
+					ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
+
+					try  { 
+					    // Lookup commmand with its ID
+					    Command command = commandService.getCommand("edu.tum.cs.cadmos.analysis.ui.SoftwareDeploymentHandler");
+
+					    // Optionally pass a ExecutionEvent instance, default no-param arg creates blank event
+					    command.executeWithChecks(new ExecutionEvent());
+					        
+					} catch (Exception ex) {
+					    
+					    // Replace with real-world exception handling
+					    ex.printStackTrace();
+					}
+				}
+			});
+			btnRunZ.setText("Run Z3");
+		}
 		{
 			tv = new TreeViewer(container, SWT.BORDER);
 			Tree tree = tv.getTree();
