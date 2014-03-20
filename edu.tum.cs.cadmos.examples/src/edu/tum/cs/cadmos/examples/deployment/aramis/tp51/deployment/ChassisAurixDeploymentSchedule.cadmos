@@ -1,0 +1,32 @@
+	import edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.^software.*
+	import edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.platform.*
+	import edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.^deployment.*
+
+	schedule ChassisControlFunctions_InfineonAurixTC277T {
+		periodic 5 {
+			resource InfineonAurixTC277T.core2 {
+			}
+			
+			resource InfineonAurixTC277T.core0 {
+				task ChassisControlFunctions.writer	3
+				task ChassisControlFunctions.f1	2
+			}
+			
+			resource InfineonAurixTC277T.core1 {
+				task ChassisControlFunctions.f2	2
+				task ChassisControlFunctions.reader	1
+			}
+		}
+		
+		periodic 10 {
+			resource InfineonAurixTC277T.core2 {
+				task ChassisControlFunctions.f3	2
+			}
+			
+			resource InfineonAurixTC277T.core0 {
+			}
+			
+			resource InfineonAurixTC277T.core1 {
+			}
+		}
+	}
