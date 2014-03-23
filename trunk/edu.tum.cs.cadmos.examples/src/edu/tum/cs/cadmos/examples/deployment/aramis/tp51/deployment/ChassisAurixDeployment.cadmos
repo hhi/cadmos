@@ -7,6 +7,8 @@ import edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.^deployment.*
 deployment ChassisAurixDeployment {
 	swc ChassisControlFunctions
 	plc InfineonAurixTC277T
-	cost Chassis_on_AurixTC277T
+//	cost Chassis_on_AurixTC277T
+	cost Chassis_on_AurixTC277T_VPMA
+//	cost Chassis_on_AurixTC277T_CDMA
 	req ChassisAurixRequirements
 }

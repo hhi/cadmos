@@ -4,29 +4,29 @@
 
 	schedule ChassisControlFunctions_InfineonAurixTC277T {
 		periodic 5 {
-			resource InfineonAurixTC277T.core2 {
+			resource InfineonAurixTC277T.core1 {
+				task ChassisControlFunctions.writer	4
+				task ChassisControlFunctions.reader	2
+				task ChassisControlFunctions.f2	3
 			}
 			
 			resource InfineonAurixTC277T.core0 {
-				task ChassisControlFunctions.writer	3
-				task ChassisControlFunctions.f1	2
+				task ChassisControlFunctions.f1	3
 			}
 			
-			resource InfineonAurixTC277T.core1 {
-				task ChassisControlFunctions.f2	2
-				task ChassisControlFunctions.reader	1
+			resource InfineonAurixTC277T.core2 {
 			}
 		}
 		
 		periodic 10 {
-			resource InfineonAurixTC277T.core2 {
-				task ChassisControlFunctions.f3	2
+			resource InfineonAurixTC277T.core1 {
 			}
 			
 			resource InfineonAurixTC277T.core0 {
 			}
 			
-			resource InfineonAurixTC277T.core1 {
+			resource InfineonAurixTC277T.core2 {
+				task ChassisControlFunctions.f3	3
 			}
 		}
 	}
