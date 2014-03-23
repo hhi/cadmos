@@ -1,5 +1,6 @@
 package edu.tum.cs.cadmos.analysis.schedule;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.emf.ecore.EObject;
@@ -16,6 +17,7 @@ public class ScheduleSMTParser {
 		final HashMap<EObject, Pair<String, Integer>> schedule = new HashMap<>();
 
 		if (!content.startsWith("sat")) {
+			parseUnsat(content);
 			return null;
 		}
 
@@ -58,6 +60,19 @@ public class ScheduleSMTParser {
 		}
 
 		return schedule;
+	}
+
+	private static void parseUnsat(String content) {
+		String[] lines = content.split("\n");
+		String core = lines[2];
+		core = core.substring(1, core.length()-1);
+		String[] coreElements = core.split(" ");
+		
+		for(String element : coreElements){
+			AssertionNameMapping.SINGLETON.addUnsat(element);
+		}
+		
+		AssertionNameMapping.print();
 	}
 
 }
