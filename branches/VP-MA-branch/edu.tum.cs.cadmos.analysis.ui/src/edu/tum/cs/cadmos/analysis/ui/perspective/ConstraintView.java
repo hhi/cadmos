@@ -1,30 +1,46 @@
 package edu.tum.cs.cadmos.analysis.ui.perspective;
 
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.part.ViewPart;
-import org.eclipse.swt.widgets.Tree;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewerColumn;
-import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.jface.action.Action;
-import org.eclipse.wb.swt.ResourceManager;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.commands.ICommandService;
+import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.services.IServiceLocator;
+import org.eclipse.wb.swt.ResourceManager;
+
+import edu.tum.cs.cadmos.analysis.schedule.AssertionNameMapping;
 
 public class ConstraintView extends ViewPart {
 
 	public static final String ID = "edu.tum.cs.cadmos.analysis.ui.perspective.ConstraintView"; //$NON-NLS-1$
 	private Action action;
+	private TableViewer constraintViewer;
 
 	public ConstraintView() {
 	}
@@ -39,7 +55,7 @@ public class ConstraintView extends ViewPart {
 		container.setLayout(new GridLayout(1, false));
 		
 		Composite composite = new Composite(container, SWT.NONE);
-		composite.setLayout(new GridLayout(3, false));
+		composite.setLayout(new GridLayout(4, false));
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		
 		Label lblNewLabel = new Label(composite, SWT.NONE);
@@ -54,9 +70,28 @@ public class ConstraintView extends ViewPart {
 		btnOpen.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				
+				// Obtain IServiceLocator implementer, e.g. from PlatformUI.getWorkbench():
+				IServiceLocator serviceLocator = PlatformUI.getWorkbench();
+				// or a site from within a editor or view:
+				// IServiceLocator serviceLocator = getSite();
+
+				ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
+
+				try  { 
+				    // Lookup commmand with its ID
+				    Command command = commandService.getCommand("edu.tum.cs.cadmos.analysis.ui.SoftwareDeploymentHandler");
+
+				    // Optionally pass a ExecutionEvent instance, default no-param arg creates blank event
+				    command.executeWithChecks(new ExecutionEvent());
+				        
+				} catch (Exception ex) {
+				    
+				    // Replace with real-world exception handling
+				    ex.printStackTrace();
+				}
 			}
 		});
+
 		btnOpen.setImage(ResourceManager.getPluginImage("org.eclipse.jdt.ui", "/icons/full/etool16/opentype.gif"));
 		btnOpen.setText("Open...");
 		
@@ -72,30 +107,54 @@ public class ConstraintView extends ViewPart {
 		MenuItem mntmReq_2 = new MenuItem(menu, SWT.CHECK);
 		mntmReq_2.setText("Req 03");
 		
-		CheckboxTreeViewer checkboxTreeViewer = new CheckboxTreeViewer(container, SWT.BORDER);
-		Tree tree = checkboxTreeViewer.getTree();
+		Button btnRefresh = new Button(composite, SWT.NONE);
+		btnRefresh.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				constraintViewer.setInput(AssertionNameMapping.getContents());
+			}
+		});
+		btnRefresh.setText("Refresh");
+		
+		constraintViewer = new TableViewer(container, SWT.BORDER);
+		Table tree = constraintViewer.getTable();
 		tree.setLinesVisible(true);
 		tree.setHeaderVisible(true);
 		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
-		TreeViewerColumn treeViewerColumn = new TreeViewerColumn(checkboxTreeViewer, SWT.NONE);
-		TreeColumn trclmnName = treeViewerColumn.getColumn();
-		trclmnName.setWidth(100);
+		constraintViewer.setContentProvider(new ArrayContentProvider());
+		constraintViewer.setSorter(new ViewerSorter(){
+			@Override
+			public int compare(Viewer viewer, Object e1, Object e2) {
+				// TODO Auto-generated method stub
+				return super.compare(viewer, e1, e2);
+			}
+		});
+		TableViewerColumn treeViewerColumn = new TableViewerColumn(constraintViewer, SWT.NONE);
+		TableColumn trclmnName = treeViewerColumn.getColumn();
+		trclmnName.setWidth(300);
 		trclmnName.setText("Name");
 		
-		TreeViewerColumn treeViewerColumn_1 = new TreeViewerColumn(checkboxTreeViewer, SWT.NONE);
-		TreeColumn trclmnValue = treeViewerColumn_1.getColumn();
+		treeViewerColumn.setLabelProvider(new ColumnLabelProvider(){
+			
+		});
+		
+		TableViewerColumn treeViewerColumn_1 = new TableViewerColumn(constraintViewer, SWT.NONE);
+		TableColumn trclmnValue = treeViewerColumn_1.getColumn();
 		trclmnValue.setWidth(100);
 		trclmnValue.setText("Value");
 		
-		TreeItem trtmTest = new TreeItem(tree, SWT.NONE);
-		trtmTest.setText("Test");
+		treeViewerColumn_1.setLabelProvider(new ColumnLabelProvider(){
+			@Override
+			public String getText(Object element) {
+				String s = (String) element;
+				if(AssertionNameMapping.SINGLETON.isUnsat(s)){
+					return "UNSAT";
+				}
+				return "SAT";
+			}
+		});
 		
-		TreeItem trtmAsdf = new TreeItem(tree, SWT.NONE);
-		trtmAsdf.setText("asdf");
-		
-		TreeItem trtmFasdfasd = new TreeItem(tree, SWT.NONE);
-		trtmFasdfasd.setText("fasdfasd");
 
 		createActions();
 		initializeToolBar();

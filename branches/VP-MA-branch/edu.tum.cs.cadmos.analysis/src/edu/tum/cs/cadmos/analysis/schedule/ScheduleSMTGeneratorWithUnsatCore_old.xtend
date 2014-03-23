@@ -15,9 +15,7 @@ import org.eclipse.emf.ecore.EObject
 import edu.tum.cs.cadmos.language.cadmos.Embedding
 import edu.tum.cs.cadmos.language.cadmos.Component
 
-import static edu.tum.cs.cadmos.analysis.schedule.UnsatCorePreferences.*
-
-class ScheduleSMTGeneratorWithUnsatCore {
+class ScheduleSMTGeneratorWithUnsatCore_old {
 	
 	var static id = 1;
 	var static AssertionNameMapping map;
@@ -59,7 +57,7 @@ class ScheduleSMTGeneratorWithUnsatCore {
 
 	def static doGenerateSMTScript(File outputDirectory, DeploymentModel deploymentModel) {
 		val generatedFileName = deploymentModel.softwareComponentDFG.componentName + "-" + deploymentModel.processingComponentDFG.componentName +
-			"UnsatCore.smt2"
+			"-withUnsatCore.smt2"
 		generateFile(new File(outputDirectory, generatedFileName),
 			deploymentModel.generateComponents())
 		generatedFileName
@@ -67,39 +65,26 @@ class ScheduleSMTGeneratorWithUnsatCore {
 	}
 
 	private def static generateComponents(DeploymentModel deploymentModel) {
-		val s = new StringBuilder
 		map = AssertionNameMapping.SINGLETON
 		map.clear
 		
-		
-		s.append(
 		'''
 			;Declare generation of UNSAT core
 			(set-option :produce-unsat-cores true)
-			
-		''')
-		if(GENERATE__PERIOD_TIMES){
-		s.append('''
+		
 			;Declare the period times.
 			«deploymentModel.period.keySet.toList.declarePeriods»
 			
-			''')}
-		s.append('''
 			;Declare the possible allocation as a function.
 			(declare-datatypes () ((components «deploymentModel.softwareComponentDFG.
 													componentsStringWithPeriodicity(deploymentModel.period)»)))
 			(declare-datatypes () ((platform «deploymentModel.processingComponentDFG.componentsString»)))
 			(declare-fun mapping (components) platform)
 			
-			''')
-		if(GENERATE__DURATION_TIMES){
-		s.append('''
 			;Define the duration times of the components on the different processors.
-			«deploymentModel.generateDuration()»
-			
-			''')}
-		if(GENERATE__UPPER_LOWER_LIMIT){
-		s.append('''							
+			(define-fun dR ((c components) (x platform)) Int 
+										«deploymentModel.generateDuration()»
+										
 			; Declare the starting and finish times of the components in the schedule.
 			(declare-fun start (components) Int)
 			(declare-fun finish (components) Int)
@@ -109,71 +94,39 @@ class ScheduleSMTGeneratorWithUnsatCore {
 			; Finish upper limit.
 			«deploymentModel.softwareComponentDFG.generateFinishAssertions(deploymentModel.period)»
 			
-			''')}
-		if(GENERATE__MULTIRATE_CONSTANT_PERIOD){
-		s.append('''
 			; Multirate schedule constant periodicity.
 			«deploymentModel.softwareComponentDFG.generateConstantPeriodicityAssertions(deploymentModel.period)»
 			
-			''')}
-		if(GENERATE__MULTIRATE_ALLOCATION_CONSISTENCY){
-		s.append('''
 			; Multirate allocation consistency.
 			«deploymentModel.softwareComponentDFG.generateAllocationConsistencyAssertions(deploymentModel.period)»
 			
-			''')}
-		s.append('''
 			; Finish computation.
 			(assert (forall ((x components)) (= (finish x) (+ (start x) (dR x (mapping x))))))
 			
-			''')
-		if(GENERATE__PRECEDENCE_CONSTRAINTS){
-		s.append('''
 			; Precedence constraints.
 			«deploymentModel.softwareComponentDFG.generatePrecedenceConstraints(deploymentModel.period)»
 			
-			''')}
-		if(GENERATE__TRANSMISSION_LATENCY_COSTS){
-		s.append('''
 			; Transmission latencies costs.
 			«deploymentModel.softwareComponentDFG.generateTransmissionLatenciesConstraints(deploymentModel.transmissionLatency, deploymentModel.period)»
 			
-			''')}
-		if(GENERATE__TRANSMISSION_DURATION_CONSTRAINTS){
-		s.append('''
 			; Transmission duration constraints.
 			«deploymentModel.softwareComponentDFG.generateTransmissionDurationConstraints(deploymentModel.transmissionDuration, deploymentModel.period)»
 			
-			''')}
-		if(GENERATE__ATOMIC_ON_SAME_CORE_ASSUMPTION){
-		s.append('''
 			; Atomic software components run on same core assumption.
 			«deploymentModel.atomicSoftwareComponents.generateAtomicSoftwareComponentsAssumption(deploymentModel.period)»
 			
-			''')}
-		if(GENERATE__ROBUSTNESS_REQUIREMENTS){
-		s.append('''
 			; Robustness requirements.
 			«deploymentModel.robustness.generateLatencyRequirements(deploymentModel.period)»
 			
-			''')}
-		if(GENERATE__LATENCY_REQUIREMENTS){
-		s.append('''
 			; Latency requirements.
 			«deploymentModel.latency.generateLatencyRequirements(deploymentModel.period)»
 			
-			''')}
-		if(GENERATE__OVERLAP_CONSTRAINTS){
-		s.append('''
 			; Overlap constraints.
 			(assert (forall ((x components) (y components)) 
 				(=> (and (distinct x y) (= (mapping x) (mapping y)))
 					(or (<= (finish x) (start y)) 
 						(<= (finish y) (start x))))))
-			
-			''')}
-			
-		s.append('''
+				
 			; Simplify the start expressions.
 			«simplifyStartTimes(deploymentModel.softwareComponentDFG.componentsWithPeriodicity(deploymentModel.period))»
 			
@@ -183,68 +136,27 @@ class ScheduleSMTGeneratorWithUnsatCore {
 			(check-sat)
 			(get-model)
 			(get-unsat-core)
-		''')
-		s.toString
+		'''
 	}
 	
 	private def static generateAllocationConsistencyAssertions(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
 													Map<Integer, List<String>> periodMap) {
-		
-		if(CORE__MULTIRATE_ALLOCATION_CONSISTENCY){
-		val s = new StringBuilder
-			for(pairSc : softwareComponentDFG.componentsWithStringConsecutivePeriodicity(periodMap)){
-				val name = pairSc.key.key.subSequence(0, pairSc.key.key.lastIndexOf('_'))
-				val ass_name = "multirate_alloc_consistency_"+name
-				map.put(ass_name, null)
-				s.append('''(assert (! (= (mapping «pairSc.key.key») (mapping «pairSc.value.key»)) :named «ass_name»))
-				''')
-			}
-			return s.toString
-		}
 		'''«FOR pairSc : softwareComponentDFG.componentsWithStringConsecutivePeriodicity(periodMap) SEPARATOR "\n"
-				»(assert (= (mapping «pairSc.key.key») (mapping «pairSc.value.key»)))«ENDFOR»'''
+				»(assert (!(= (mapping «pairSc.key.key») (mapping «pairSc.value.key»)) :named multirate_alloc_«pairSc.key.key»_«pairSc.value.key»))«map.put("multirate_alloc_"+pairSc.key.key+"_"+pairSc.value.key,null)»«ENDFOR»'''
 	}
 	
 	private def static generateConstantPeriodicityAssertions(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
 													Map<Integer, List<String>> periodMap) {
-	if(CORE__MULTIRATE_CONSTANT_PERIOD){
-		val s = new StringBuilder
-		for(pairSc : softwareComponentDFG.componentsWithStringConsecutivePeriodicity(periodMap)){
-			val name = pairSc.key.key.subSequence(0, pairSc.key.key.lastIndexOf('_'))
-			val ass_name = "multirate_const_period_"+name
-			map.put(ass_name, null)
-			s.append('''(assert (! (= (start «pairSc.key.key») (+ (start «pairSc.value.key») T«pairSc.key.value.periodTime(periodMap)»)) :named «ass_name»))
-			''')
-		}
-		
-		return s.toString
-	}
 		'''«FOR pairSc : softwareComponentDFG.componentsWithStringConsecutivePeriodicity(periodMap) SEPARATOR "\n"
-				»(assert (= (start «pairSc.key.key») (+ (start «pairSc.value.key») T«pairSc.key.value.periodTime(periodMap)»)))«ENDFOR»'''
+		»(assert (! (= (start «pairSc.key.key») (+ (start «pairSc.value.key») T«pairSc.key.value.periodTime(periodMap)»)) :named multirate_const_period_«pairSc.key.key»))«map.put("multirate_const_period_"+pairSc.key.key,null)»«ENDFOR»'''
 														
 	}
 	
 	private def static declarePeriods(List<Integer> periodValues) {
-		if(CORE__PERIOD_TIMES){
-		val s = new StringBuilder
-			for(period : periodValues){
-				val name = period.toString
-				val ass_name = "iteration_period_T"+name
-				map.put(ass_name, null)
-				s.append(
-				'''
-					(declare-const T«name» Int)
-					(assert (!(= T«name» «name») :named «ass_name»))
-					
-				''')
-			}
-			return s.toString
-		}
 		'''
 			«FOR period : periodValues SEPARATOR "\n"»
 			(declare-const T«period.toString» Int)
-			(assert (= T«period.toString» «period.toString»))
-			«ENDFOR»
+			(assert (!(= T«period.toString» «period.toString») :named «"iteration_period_T"+period.toString»))«map.put("iteration_period_T"+period.toString, null)»«ENDFOR»
 		'''
 	}
 	
@@ -293,12 +205,13 @@ class ScheduleSMTGeneratorWithUnsatCore {
 				val outComponent = outComponentPort.substring(0, outComponentPort.indexOf("."))
 				val inComponent = inComponentPort.substring(0, inComponentPort.indexOf("."))
 				for (per : 1..outComponent.periodNrOfExecutions(periodMap)) {
-					assertions.append("(assert " + 
+					assertions.append("(assert (!" + 
 					'''(=> (not (= (mapping «softwareComponentDFG.getDest(it).id»_1) (mapping «softwareComponentDFG.getSource(it).id»_1)))
 					''' + "\t(>= (+ (start " + softwareComponentDFG.getDest(it).id + "_1) \n\t(* T" + inComponent.periodTime(periodMap) + " " + 
-					'''(ite (= (mod (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «inComponent.periodTime(periodMap)») 0) (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «inComponent.periodTime(periodMap)») (+ 1 (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «inComponent.periodTime(periodMap)»)))))
+					'''(+ 1 (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «inComponent.periodTime(periodMap)»))))
 					''')
-					assertions.append("\t(+ (finish " + softwareComponentDFG.getSource(it).id + "_" + per + ") " + latency + "))))\n")	
+					assertions.append("\t(+ (finish " + softwareComponentDFG.getSource(it).id + "_" + per + ") " + latency + "))) :named transmission_latency_"+softwareComponentDFG.getSource(it).id+"_"+per+"_"+softwareComponentDFG.getDest(it).id+"))\n")	
+					map.put("transmission_latency_"+softwareComponentDFG.getDest(it).id+"-"+softwareComponentDFG.getSource(it).id,null)
 				}
 				usedComponentPairs.add(new Pair(softwareComponentDFG.getSource(it).id, softwareComponentDFG.getDest(it).id))	
 			}
@@ -309,25 +222,10 @@ class ScheduleSMTGeneratorWithUnsatCore {
 
 	private def static generatePrecedenceConstraints(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG,
 														Map<Integer, List<String>> periodMap) {
-		if(CORE__PRECEDENCE_CONSTRAINTS){
-		val s = new StringBuilder
-		for(channel : softwareComponentDFG.edges){
-			for(precComponents : softwareComponentDFG.getSource(channel).precedenceComponents(
-										softwareComponentDFG.getDest(channel), periodMap)){
-			val name = precComponents.key+"_"+precComponents.value
-			val ass_name = "precedence_"+name
-			map.put(ass_name, null)
-			s.append('''(assert (! (<= (finish «precComponents.key») (start «precComponents.value»)) :named «ass_name»))
-			''')
-			}
-		}
-		
-		return s.toString
-	}
 		'''«FOR channel : softwareComponentDFG.edges SEPARATOR "\n"»«
 				FOR precComponents : softwareComponentDFG.getSource(channel).precedenceComponents(
-										softwareComponentDFG.getDest(channel), periodMap) SEPARATOR "\n"»(assert (<= (finish «
-										precComponents.key») (start «precComponents.value»)))«ENDFOR»«ENDFOR»'''
+										softwareComponentDFG.getDest(channel), periodMap) SEPARATOR "\n"»(assert (!(<= (finish «
+										precComponents.key») (start «precComponents.value»)) :named precedence_«precComponents.key»_«precComponents.value»))«map.put("precedence_"+precComponents.key+"_"+precComponents.value,null)»«ENDFOR»«ENDFOR»'''
 	}
 	
 	private def static generateAtomicSoftwareComponentsAssumption(List<List<Pair<String, String>>> ascList,
@@ -357,40 +255,12 @@ class ScheduleSMTGeneratorWithUnsatCore {
 
 	private def static generateFinishAssertions(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG, 
 													Map<Integer, List<String>> periodMap) {
-		if(CORE__UPPER_LOWER_LIMIT){
-			val s = new StringBuilder
-			for(sc : softwareComponentDFG.componentsWithPeriodicity(periodMap)){
-				map.put("finish_"+sc.key+"_T"+sc.value.periodTime(periodMap) ,null)
-				s.append('''(assert (! (<= (finish «sc.key») (* «sc.key.substring(sc.key.lastIndexOf("_")+1)»  T«sc.value.periodTime(periodMap)»)) :named finish_«sc.key»_T«sc.value.periodTime(periodMap)»))
-				''')
-			}
-			return s.toString
-		}
-		'''«FOR sc : softwareComponentDFG.componentsWithPeriodicity(periodMap) SEPARATOR "\n"
-						»(assert (<= (finish «sc.key») (* «sc.key.substring(sc.key.lastIndexOf("_")+1)»  T«sc.value.periodTime(periodMap)»)))«ENDFOR»'''
+		'''«FOR sc : softwareComponentDFG.componentsWithPeriodicity(periodMap) SEPARATOR "\n"»
+		(assert (!(<= (finish «sc.key») (* «sc.key.substring(sc.key.lastIndexOf("_")+1)»  T«sc.value.periodTime(periodMap)»)) :named finish_upper_limit_T«sc.value.periodTime(periodMap)»_«sc.key»))«map.put("finish_upper_limit_T"+sc.value.periodTime(periodMap)+"_"+sc.key,null)»«ENDFOR»'''
 	}
 
 	private def static generateDuration(DeploymentModel deploymentModel) {
-		if(CORE__DURATION_TIMES){
-			val s = new StringBuilder
-			s.append("(declare-fun dR ((components) (platform)) Int) \n")
-			
-			for(sc : deploymentModel.softwareComponentDFG.componentsWithPeriodicity(deploymentModel.period)){
-				for(pc : deploymentModel.processingComponentDFG.components){
-					val task = sc.key
-					val core = pc.id
-					val dR = sc.value.executionTime(pc, deploymentModel.wcet)
-					val ass_name = "dur_"+task+"_"+core
-					map.put(ass_name, null)
-					s.append("
-					(assert (!(= (dR "+task+" "+core+") "+dR+") :named "+ass_name+"))")
-				}
-			}
-			
-			return s.toString
-		}
 		'''
-		(define-fun dR ((c components) (x platform)) Int
 			«FOR sc : deploymentModel.softwareComponentDFG.componentsWithPeriodicity(deploymentModel.period) SEPARATOR "\n"»(ite (= c «sc.key») «
 				FOR pc : deploymentModel.processingComponentDFG.
 				components.tail SEPARATOR " "»(ite (= x «pc.id») «sc.value.executionTime(pc, deploymentModel.wcet)»«ENDFOR» «sc.value.executionTime(
