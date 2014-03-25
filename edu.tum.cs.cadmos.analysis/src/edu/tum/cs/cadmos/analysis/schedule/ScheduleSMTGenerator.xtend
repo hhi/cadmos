@@ -29,8 +29,9 @@ class ScheduleSMTGenerator {
 	}
 	
 	def static doGenerateCadmosSchedule(File outputFile, Map<EObject, Pair<String, Integer>> schedule, DeploymentModel deploymentModel) {
-		generateFile(outputFile, schedule.generateSchedule(deploymentModel));
-		
+		val content = schedule.generateSchedule(deploymentModel)
+		generateFile(outputFile, content);
+		IOOutput.print(content.toString)
 		outputFile
 	}
 	

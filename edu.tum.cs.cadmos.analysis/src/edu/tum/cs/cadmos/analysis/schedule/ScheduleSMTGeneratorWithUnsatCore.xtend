@@ -29,6 +29,7 @@ class ScheduleSMTGeneratorWithUnsatCore {
 		val writer = new FileWriter(file, false)
 		writer.write(contents.toString)
 		writer.close
+		IOOutput.print(contents.toString());
 	}
 	
 	def static doGenerateCadmosSchedule(File outputFile, Map<EObject, Pair<String, Integer>> schedule, DeploymentModel deploymentModel) {
@@ -184,6 +185,7 @@ class ScheduleSMTGeneratorWithUnsatCore {
 			(get-model)
 			(get-unsat-core)
 		''')
+		IOOutput.print(s.toString());
 		s.toString
 	}
 	

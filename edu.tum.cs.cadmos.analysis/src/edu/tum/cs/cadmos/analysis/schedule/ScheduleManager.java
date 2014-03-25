@@ -61,9 +61,16 @@ public class ScheduleManager {
 			ProcessBuilder cProcess = null;
 			if (System.getProperty("os.name").equals("Mac OS X")) {
 				// FIXME CD: will fix this
-				 cProcess = new ProcessBuilder("/Applications/Z3/z3",
-				 generatedFileName);
-//				cProcess = new ProcessBuilder("./z3  " + generatedFileName);
+				cProcess = new ProcessBuilder("/Applications/Z3/z3", generatedFileName);
+//				cProcess = new ProcessBuilder("echo $PATH");
+//				cProcess = new ProcessBuilder("echo", "$PATH");
+//				cProcess = new ProcessBuilder("./z3 " + generatedFileName);
+//				cProcess = new ProcessBuilder("z3", generatedFileName);
+//				cProcess = new ProcessBuilder("./z3", generatedFileName);
+//				String path = cProcess.environment().get("PATH");
+//				path += File.pathSeparator + "/Applications/Z3";
+//				cProcess.environment().put("PATH", path);
+//				System.out.println(cProcess.environment());
 				cProcess.directory(outputDirectory);
 			} else if (System.getProperty("os.name").startsWith("Windows")) {
 				cProcess = new ProcessBuilder("cmd", "/C", "z3 "
@@ -73,6 +80,7 @@ public class ScheduleManager {
 
 			Process process;
 			try {
+				IOOutput.print("Starting Z3 and calculating");
 				long start = System.currentTimeMillis();
 				process = cProcess.start();
 				InputStream inputStream = process.getInputStream();
@@ -82,12 +90,17 @@ public class ScheduleManager {
 					output += (char) b;
 				}
 				long stop = System.currentTimeMillis();
+				
+				
 				System.out.println(output);
-				System.out.println("returned after "+(stop-start)+"ms");
+				IOOutput.print(output);
 				final HashMap<EObject, Pair<String, Integer>> schedule = ScheduleSMTParser
 						.parse(output,
 								deploymentModel.getSoftwareComponentDFG());
 				System.out.println(printSchedule(schedule));
+				IOOutput.print (printSchedule(schedule));
+				System.out.println("returned after "+(double)((stop-start)/100)/10+"s");
+				IOOutput.print("returned after "+(double)((stop-start)/100)/10+"s");
 
 				File newSchedule = new File(location + "/" + resourceDirectory
 						+ "/" + resourceName + "Schedule.cadmos");
@@ -101,7 +114,7 @@ public class ScheduleManager {
 				}
 
 			} catch (IOException e) {
-				e.printStackTrace();
+				IOOutput.print(e.getMessage());
 			}
 		}
 
