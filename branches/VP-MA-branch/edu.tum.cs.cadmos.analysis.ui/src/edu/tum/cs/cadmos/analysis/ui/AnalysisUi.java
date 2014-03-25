@@ -1,5 +1,6 @@
 package edu.tum.cs.cadmos.analysis.ui;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -47,4 +48,8 @@ public class AnalysisUi extends AbstractUIPlugin {
 		return plugin;
 	}
 
+	
+	public static ImageDescriptor getImageDescriptor(String path){
+		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
 }

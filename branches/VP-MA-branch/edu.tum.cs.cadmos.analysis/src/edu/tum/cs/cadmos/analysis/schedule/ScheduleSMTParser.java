@@ -59,6 +59,7 @@ public class ScheduleSMTParser {
 			}
 		}
 
+		AssertionNameMapping.SINGLETON.coreFinished();
 		return schedule;
 	}
 
@@ -71,7 +72,7 @@ public class ScheduleSMTParser {
 		for(String element : coreElements){
 			AssertionNameMapping.SINGLETON.addUnsat(element);
 		}
-		
+		AssertionNameMapping.SINGLETON.coreFinished();
 		AssertionNameMapping.print();
 	}
 

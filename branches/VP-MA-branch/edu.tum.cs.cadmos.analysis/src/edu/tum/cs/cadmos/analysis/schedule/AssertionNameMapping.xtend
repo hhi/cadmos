@@ -3,10 +3,12 @@ package edu.tum.cs.cadmos.analysis.schedule
 import java.util.HashMap
 import org.eclipse.emf.ecore.EObject
 import java.util.HashSet
+import java.util.ArrayList
 
 class AssertionNameMapping {
 	public static var SINGLETON = new AssertionNameMapping
 	
+	public static val listeners = new ArrayList<IUnsatCoreListener>()
 	
 	val map = new HashMap<String, EObject>
 	
@@ -43,5 +45,20 @@ class AssertionNameMapping {
 			}
 			println(line + s)
 		}
+	}
+	
+	def public static registerListener(IUnsatCoreListener listener){
+		listeners.add(listener)
+	}
+	def public static unregisterListener(IUnsatCoreListener listener){
+		listeners.remove(listener)
+	}
+	def static notifyAllListeners(){
+		for(l : listeners){
+			l.notifyUnsatCoreChange
+		}
+	}
+	def public coreFinished(){
+		notifyAllListeners
 	}
 }

@@ -1,5 +1,6 @@
 package edu.tum.cs.cadmos.analysis.ui.schedule;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -7,14 +8,19 @@ import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.State;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.commands.IElementUpdater;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.menus.UIElement;
+import org.eclipse.ui.progress.IProgressService;
 import org.eclipse.xtext.nodemodel.ILeafNode;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 import org.eclipse.xtext.parser.IParseResult;
@@ -23,6 +29,7 @@ import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.utils.EditorUtils;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 
+import edu.tum.cs.cadmos.analysis.schedule.IOOutput;
 import edu.tum.cs.cadmos.analysis.schedule.ScheduleManager;
 import edu.tum.cs.cadmos.language.cadmos.Deployment;
 import edu.tum.cs.cadmos.language.cadmos.Model;
@@ -109,20 +116,39 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 
 									if (isSelected) {
 										System.out.println("Start scheduling!");
+										IOOutput.print("Start scheduling");
 										if (scheduleManager.readyToSchedule()) {
-											String resourceName = xtextEditor
+											final String resourceName = xtextEditor
 													.getResource().getName();
-											scheduleManager
-													.schedule(
-															xtextEditor
-																	.getResource()
-																	.getParent()
-																	.getFullPath(),
-															resourceName
-																	.substring(
-																			0,
-																			resourceName
-																					.lastIndexOf(".")));
+											
+											IWorkbench wb = PlatformUI.getWorkbench();
+											IProgressService ps = wb.getProgressService();
+											try {
+												ps.busyCursorWhile(new IRunnableWithProgress() {
+													@Override
+													public void run(IProgressMonitor pm) {
+														pm.setTaskName("Executing Z3");
+														scheduleManager
+														.schedule(
+																xtextEditor
+																.getResource()
+																.getParent()
+																.getFullPath(),
+																resourceName
+																.substring(
+																		0,
+																		resourceName
+																		.lastIndexOf(".")));
+													}
+												});
+											} catch (InvocationTargetException e1) {
+												// TODO Auto-generated catch block
+												e1.printStackTrace();
+											} catch (InterruptedException e1) {
+												// TODO Auto-generated catch block
+												e1.printStackTrace();
+											}
+
 										}
 									}
 
