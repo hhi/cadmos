@@ -11,25 +11,43 @@ class AssertionNameMapping {
 	public static val listeners = new ArrayList<IUnsatCoreListener>()
 	
 	val map = new HashMap<String, EObject>
+	val satSet = new HashSet<String>
+	val unsatSet = new HashSet<String>
+	val relaxSet = new HashSet<String>();
 	
 	def put (String s, EObject e){
 		map.put(s,e)
 	}
 	
-	val unsatSet = new HashSet<String>
 	
 	def addUnsat(String s){
 		unsatSet.add(s)
 	}
 	
+	def isUnsat(String s){
+		SINGLETON.unsatSet.contains(s)
+ 	}
+	def isSat(String s){
+		SINGLETON.satSet.contains(s)
+ 	}
+ 	
+ 	def addRelax(String ass){
+ 		relaxSet.add(ass)
+ 	}
+ 	def removeRelax(String ass){
+ 		relaxSet.remove(ass)
+ 	}
+ 	def isRelax(String ass){
+ 		relaxSet.contains(ass)
+ 	}
+ 	
 	def clear(){
 		map.clear
 		unsatSet.clear
+		satSet.clear
+//		relaxSet.clear
 	}
 	
-	def isUnsat(String s){
-		SINGLETON.unsatSet.contains(s)
-	}
 	
 	def static getContents(){
 		SINGLETON.map.keySet
@@ -59,6 +77,7 @@ class AssertionNameMapping {
 		}
 	}
 	def public coreFinished(){
+		satSet.addAll(map.keySet.filter[!unsatSet.contains(it)&&!relaxSet.contains(it)])
 		notifyAllListeners
 	}
 }

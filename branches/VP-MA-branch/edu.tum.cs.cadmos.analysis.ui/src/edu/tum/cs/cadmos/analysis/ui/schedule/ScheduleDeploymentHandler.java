@@ -86,6 +86,7 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 										isSelected = !(Boolean) state
 												.getValue();
 										state.setValue(isSelected);
+										//TODO prevent need for double click
 										if (!isSelected) {
 											scheduleManager
 													.deleteSoftwareComponent();
@@ -128,6 +129,9 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 													@Override
 													public void run(IProgressMonitor pm) {
 														pm.setTaskName("Executing Z3");
+														pm.beginTask("Calculating...", IProgressMonitor.UNKNOWN);
+														//TODO implement process kill
+														//pm.isCanceled();
 														scheduleManager
 														.schedule(
 																xtextEditor
@@ -140,6 +144,8 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 																		resourceName
 																		.lastIndexOf(".")));
 													}
+													
+													
 												});
 											} catch (InvocationTargetException e1) {
 												// TODO Auto-generated catch block

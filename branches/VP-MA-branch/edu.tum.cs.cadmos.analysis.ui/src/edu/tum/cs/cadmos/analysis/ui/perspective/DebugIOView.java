@@ -14,6 +14,7 @@ import org.eclipse.swt.layout.GridData;
 
 import edu.tum.cs.cadmos.analysis.schedule.IOOutput;
 import edu.tum.cs.cadmos.analysis.schedule.IOOutputListener;
+import org.eclipse.wb.swt.ResourceManager;
 
 public class DebugIOView extends ViewPart implements IOOutputListener{
 
@@ -21,6 +22,7 @@ public class DebugIOView extends ViewPart implements IOOutputListener{
 	private TextViewer textViewer;
 
 	public DebugIOView() {
+		setTitleImage(ResourceManager.getPluginImage("edu.tum.cs.cadmos.analysis.ui", "icons/runIO.gif"));
 	}
 
 	/**
@@ -32,7 +34,7 @@ public class DebugIOView extends ViewPart implements IOOutputListener{
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(new GridLayout(1, false));
 		{
-			textViewer = new TextViewer(container, SWT.BORDER);
+			textViewer = new TextViewer(container, SWT.BORDER|SWT.V_SCROLL);
 			StyledText styledText = textViewer.getTextWidget();
 			styledText.setAlwaysShowScrollBars(true);
 			styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
