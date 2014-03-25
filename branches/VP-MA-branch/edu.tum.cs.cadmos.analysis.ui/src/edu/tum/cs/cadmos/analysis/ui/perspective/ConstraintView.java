@@ -1,6 +1,8 @@
 package edu.tum.cs.cadmos.analysis.ui.perspective;
 
 
+import java.util.HashSet;
+
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.jface.action.Action;
@@ -8,6 +10,9 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -42,7 +47,10 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 	private Action action;
 	private TableViewer constraintViewer;
 	
+	private HashSet<String> relax = new HashSet<String>();
 	
+	
+	Image RELAX= AnalysisUi.getImageDescriptor("icons/relax.gif").createImage();
 	Image SAT = AnalysisUi.getImageDescriptor("icons/sat.gif").createImage();
 	Image UNSAT = AnalysisUi.getImageDescriptor("icons/unsat.gif").createImage();
 
@@ -131,6 +139,21 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 				return super.compare(viewer, e1, e2);
 			}
 		});
+		
+		constraintViewer.addDoubleClickListener(new IDoubleClickListener() {
+			
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				String s = (String) ((IStructuredSelection)event.getSelection()).getFirstElement();
+				if(relax.contains(s)){
+					relax.remove(s);
+				} else {
+					relax.add(s);
+				}
+				constraintViewer.refresh();
+			}
+		});
+		
 		TableViewerColumn treeViewerColumn = new TableViewerColumn(constraintViewer, SWT.NONE);
 		TableColumn trclmnName = treeViewerColumn.getColumn();
 		trclmnName.setWidth(300);
@@ -157,9 +180,12 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 			@Override
 			public Image getImage(Object element) {
 				String s = (String) element;
+				if(relax.contains(s)){
+					return RELAX;
+				}
 				if(AssertionNameMapping.SINGLETON.isUnsat(s)){
 					return UNSAT;
-				}
+				} 
 				return SAT;
 			}
 		});
