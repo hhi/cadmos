@@ -198,6 +198,9 @@ class ScheduleSMTGeneratorWithUnsatCore {
 				val name = pairSc.key.key.subSequence(0, pairSc.key.key.lastIndexOf('_'))
 				val ass_name = "multirate_alloc_consistency_"+name
 				map.put(ass_name, null)
+				if(AssertionNameMapping.SINGLETON.isRelax(ass_name)){
+					s.append("; relaxed assertion \n;")					
+				}
 				s.append('''(assert (! (= (mapping «pairSc.key.key») (mapping «pairSc.value.key»)) :named «ass_name»))
 				''')
 			}
@@ -215,6 +218,9 @@ class ScheduleSMTGeneratorWithUnsatCore {
 			val name = pairSc.key.key.subSequence(0, pairSc.key.key.lastIndexOf('_'))
 			val ass_name = "multirate_const_period_"+name
 			map.put(ass_name, null)
+			if(AssertionNameMapping.SINGLETON.isRelax(ass_name)){
+					s.append("; relaxed assertion \n;")					
+			}
 			s.append('''(assert (! (= (start «pairSc.key.key») (+ (start «pairSc.value.key») T«pairSc.key.value.periodTime(periodMap)»)) :named «ass_name»))
 			''')
 		}
@@ -231,14 +237,23 @@ class ScheduleSMTGeneratorWithUnsatCore {
 		val s = new StringBuilder
 			for(period : periodValues){
 				val name = period.toString
-				val ass_name = "iteration_period_T"+name
+				val ass_name = "iteration_period_T" + name
 				map.put(ass_name, null)
-				s.append(
-				'''
-					(declare-const T«name» Int)
-					(assert (!(= T«name» «name») :named «ass_name»))
-					
-				''')
+				if (AssertionNameMapping.SINGLETON.isRelax(ass_name)) {
+					s.append(
+					'''; relaxed assertion
+(declare-const T«name» Int)
+;(assert (!(= T«name» «name») :named «ass_name»))
+						
+					''')
+				} else {
+					s.append(
+					'''
+						(declare-const T«name» Int)
+						(assert (!(= T«name» «name») :named «ass_name»))
+						
+					''')
+				}
 			}
 			return s.toString
 		}
@@ -319,6 +334,9 @@ class ScheduleSMTGeneratorWithUnsatCore {
 			val name = precComponents.key+"_"+precComponents.value
 			val ass_name = "precedence_"+name
 			map.put(ass_name, null)
+			if(AssertionNameMapping.SINGLETON.isRelax(ass_name)){
+					s.append("; relaxed assertion \n;")					
+			}
 			s.append('''(assert (! (<= (finish «precComponents.key») (start «precComponents.value»)) :named «ass_name»))
 			''')
 			}
@@ -362,7 +380,11 @@ class ScheduleSMTGeneratorWithUnsatCore {
 		if(CORE__UPPER_LOWER_LIMIT){
 			val s = new StringBuilder
 			for(sc : softwareComponentDFG.componentsWithPeriodicity(periodMap)){
-				map.put("finish_"+sc.key+"_T"+sc.value.periodTime(periodMap) ,null)
+				val ass_name = "finish_"+sc.key+"_T"+sc.value.periodTime(periodMap)
+				map.put(ass_name ,null)
+				if(AssertionNameMapping.SINGLETON.isRelax(ass_name)){
+					s.append("; relaxed assertion \n;")					
+				}
 				s.append('''(assert (! (<= (finish «sc.key») (* «sc.key.substring(sc.key.lastIndexOf("_")+1)»  T«sc.value.periodTime(periodMap)»)) :named finish_«sc.key»_T«sc.value.periodTime(periodMap)»))
 				''')
 			}
@@ -384,8 +406,10 @@ class ScheduleSMTGeneratorWithUnsatCore {
 					val dR = sc.value.executionTime(pc, deploymentModel.wcet)
 					val ass_name = "dur_"+task+"_"+core
 					map.put(ass_name, null)
-					s.append("
-					(assert (!(= (dR "+task+" "+core+") "+dR+") :named "+ass_name+"))")
+					if(AssertionNameMapping.SINGLETON.isRelax(ass_name)){
+						s.append("; relaxed assertion \n;")					
+					}
+					s.append("(assert (!(= (dR "+task+" "+core+") "+dR+") :named "+ass_name+"))")
 				}
 			}
 			

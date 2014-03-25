@@ -47,14 +47,16 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 	private Action action;
 	private TableViewer constraintViewer;
 	
-	private HashSet<String> relax = new HashSet<String>();
+	
 	
 	
 	Image RELAX= AnalysisUi.getImageDescriptor("icons/relax.gif").createImage();
 	Image SAT = AnalysisUi.getImageDescriptor("icons/sat.gif").createImage();
 	Image UNSAT = AnalysisUi.getImageDescriptor("icons/unsat.gif").createImage();
+	Image UNDEFINED = AnalysisUi.getImageDescriptor("icons/undef.gif").createImage();
 
 	public ConstraintView() {
+		setTitleImage(ResourceManager.getPluginImage("edu.tum.cs.cadmos.analysis.ui", "icons/constraints.gif"));
 	}
 
 	/**
@@ -109,8 +111,8 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 			}
 		});
 
-		btnOpen.setImage(ResourceManager.getPluginImage("org.eclipse.jdt.ui", "/icons/full/etool16/opentype.gif"));
-		btnOpen.setText("Open...");
+		btnOpen.setImage(ResourceManager.getPluginImage("edu.tum.cs.cadmos.analysis.ui", "icons/runz32.gif"));
+		btnOpen.setText("Run Z3 calculation");
 		
 		Menu menu = new Menu(btnOpen);
 		btnOpen.setMenu(menu);
@@ -123,6 +125,7 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 		
 		MenuItem mntmReq_2 = new MenuItem(menu, SWT.CHECK);
 		mntmReq_2.setText("Req 03");
+		new Label(composite, SWT.NONE);
 		
 		
 		constraintViewer = new TableViewer(container, SWT.BORDER);
@@ -145,10 +148,10 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
 				String s = (String) ((IStructuredSelection)event.getSelection()).getFirstElement();
-				if(relax.contains(s)){
-					relax.remove(s);
+				if(AssertionNameMapping.SINGLETON.isRelax(s)){
+					AssertionNameMapping.SINGLETON.removeRelax(s);
 				} else {
-					relax.add(s);
+					AssertionNameMapping.SINGLETON.addRelax(s);
 				}
 				constraintViewer.refresh();
 			}
@@ -172,21 +175,30 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 			@Override
 			public String getText(Object element) {
 				String s = (String) element;
+				if(AssertionNameMapping.SINGLETON.isRelax(s)){
+					return "RELAX";
+				}
 				if(AssertionNameMapping.SINGLETON.isUnsat(s)){
 					return "UNSAT";
 				}
-				return "SAT";
+				if(AssertionNameMapping.SINGLETON.isSat(s)){
+					return "     SAT";
+				}
+				return "undefined";
 			}
 			@Override
 			public Image getImage(Object element) {
 				String s = (String) element;
-				if(relax.contains(s)){
+				if(AssertionNameMapping.SINGLETON.isRelax(s)){
 					return RELAX;
 				}
 				if(AssertionNameMapping.SINGLETON.isUnsat(s)){
 					return UNSAT;
 				} 
-				return SAT;
+				if(AssertionNameMapping.SINGLETON.isSat(s)){
+					return SAT;
+				} 
+				return UNDEFINED;
 			}
 		});
 		

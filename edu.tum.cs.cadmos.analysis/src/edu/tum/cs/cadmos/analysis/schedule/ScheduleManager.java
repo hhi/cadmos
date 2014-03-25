@@ -29,6 +29,7 @@ import edu.tum.cs.cadmos.language.cadmos.Requirements;
 public class ScheduleManager {
 
 	private DeploymentModel deploymentModel = null;
+	private Process z3_instance;
 	private static final ScheduleManager instance = new ScheduleManager();
 
 	public static ScheduleManager getInstance() {
@@ -83,6 +84,7 @@ public class ScheduleManager {
 				IOOutput.print("Starting Z3 and calculating");
 				long start = System.currentTimeMillis();
 				process = cProcess.start();
+				ScheduleManager.instance.z3_instance = process;
 				InputStream inputStream = process.getInputStream();
 				int b = 0;
 				String output = "";
@@ -90,7 +92,7 @@ public class ScheduleManager {
 					output += (char) b;
 				}
 				long stop = System.currentTimeMillis();
-				
+				ScheduleManager.instance.z3_instance = null;
 				
 				System.out.println(output);
 				IOOutput.print(output);
@@ -204,6 +206,10 @@ public class ScheduleManager {
 
 	public void deleteImports() {
 		deploymentModel.setImports(null);
+	}
+	
+	public void cancelZ3(){
+		z3_instance.destroy();
 	}
 
 }
