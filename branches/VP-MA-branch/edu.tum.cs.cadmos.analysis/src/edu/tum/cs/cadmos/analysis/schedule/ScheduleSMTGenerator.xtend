@@ -13,7 +13,9 @@ import java.util.Map
 import static extension edu.tum.cs.cadmos.analysis.schedule.ScheduleSMTUtils.*
 import org.eclipse.emf.ecore.EObject
 import edu.tum.cs.cadmos.language.cadmos.Embedding
+import org.eclipse.core.resources.IFile
 import edu.tum.cs.cadmos.language.cadmos.Component
+import java.io.ByteArrayInputStream
 
 class ScheduleSMTGenerator {
 	
@@ -28,10 +30,18 @@ class ScheduleSMTGenerator {
 		writer.close
 	}
 	
-	def static doGenerateCadmosSchedule(File outputFile, Map<EObject, Pair<String, Integer>> schedule, DeploymentModel deploymentModel) {
-		val content = schedule.generateSchedule(deploymentModel)
-		generateFile(outputFile, content);
-		IOOutput.print(content.toString)
+	/**
+	 * Creates the given file and writes the given contents to it.
+	 */
+	private def static generateDerivedFile(IFile iFile, CharSequence contents) {
+		val source = new ByteArrayInputStream(contents.toString().getBytes())
+		iFile.setContents(source, true, true, null)
+		iFile.setDerived(true)
+	}
+	
+	def static doGenerateCadmosSchedule(IFile outputFile, Map<EObject, Pair<String, Integer>> schedule, DeploymentModel deploymentModel) {
+		generateDerivedFile(outputFile, schedule.generateSchedule(deploymentModel));
+		
 		outputFile
 	}
 	
