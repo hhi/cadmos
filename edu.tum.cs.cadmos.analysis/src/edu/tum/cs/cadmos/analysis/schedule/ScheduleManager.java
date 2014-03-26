@@ -1,5 +1,6 @@
 package edu.tum.cs.cadmos.analysis.schedule;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,9 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.xbase.lib.Pair;
@@ -55,23 +60,27 @@ public class ScheduleManager {
 
 		String generatedFileName = "";
 		if (outputDirectory.isDirectory()) {
-			generatedFileName = ScheduleSMTGeneratorWithUnsatCore.doGenerateSMTScript(
-					outputDirectory, deploymentModel);
-//			generatedFileName = ScheduleSMTGenerator.doGenerateSMTScript(
-//					outputDirectory, deploymentModel);
+			generatedFileName = ScheduleSMTGeneratorWithUnsatCore
+					.doGenerateSMTScript(outputDirectory, deploymentModel);
+			// generatedFileName = ScheduleSMTGenerator.doGenerateSMTScript(
+			// outputDirectory, deploymentModel);
 			ProcessBuilder cProcess = null;
 			if (System.getProperty("os.name").equals("Mac OS X")) {
 				// FIXME CD: will fix this
-				cProcess = new ProcessBuilder("/Applications/Z3/z3", generatedFileName);
-//				cProcess = new ProcessBuilder("echo $PATH");
-//				cProcess = new ProcessBuilder("echo", "$PATH");
-//				cProcess = new ProcessBuilder("./z3 " + generatedFileName);
-//				cProcess = new ProcessBuilder("z3", generatedFileName);
-//				cProcess = new ProcessBuilder("./z3", generatedFileName);
-//				String path = cProcess.environment().get("PATH");
-//				path += File.pathSeparator + "/Applications/Z3";
-//				cProcess.environment().put("PATH", path);
-//				System.out.println(cProcess.environment());
+				cProcess = new ProcessBuilder("/Applications/Z3/z3",
+						generatedFileName);
+				// cProcess = new ProcessBuilder("echo $PATH");
+				// cProcess = new ProcessBuilder("echo", "$PATH");
+				// cProcess = new ProcessBuilder("./z3 " + generatedFileName);
+				// cProcess = new ProcessBuilder("z3", generatedFileName);
+				// cProcess = new ProcessBuilder("./z3", generatedFileName);
+				// String path = cProcess.environment().get("PATH");
+				// path += File.pathSeparator + "/Applications/Z3";
+				// cProcess.environment().put("PATH", path);
+				// System.out.println(cProcess.environment());
+				// cProcess = new ProcessBuilder(
+				// "/Users/vlad/Documents/Courses/Masterarbeit/z3/z3-4.3.2.ff265c6c6ccf-x64-osx-10.8.5/bin/z3",
+				// generatedFileName);
 				cProcess.directory(outputDirectory);
 			} else if (System.getProperty("os.name").startsWith("Windows")) {
 				cProcess = new ProcessBuilder("cmd", "/C", "z3 "
@@ -93,21 +102,36 @@ public class ScheduleManager {
 				}
 				long stop = System.currentTimeMillis();
 				ScheduleManager.instance.z3_instance = null;
-				
+
 				System.out.println(output);
 				IOOutput.print(output);
 				final HashMap<EObject, Pair<String, Integer>> schedule = ScheduleSMTParser
 						.parse(output,
 								deploymentModel.getSoftwareComponentDFG());
 				System.out.println(printSchedule(schedule));
-				IOOutput.print (printSchedule(schedule));
-				System.out.println("returned after "+(double)((stop-start)/100)/10+"s");
-				IOOutput.print("returned after "+(double)((stop-start)/100)/10+"s");
+				IOOutput.print(printSchedule(schedule));
+				System.out.println("returned after "
+						+ (double) ((stop - start) / 100) / 10 + "s");
+				IOOutput.print("returned after "
+						+ (double) ((stop - start) / 100) / 10 + "s");
 
-				File newSchedule = new File(location + "/" + resourceDirectory
-						+ "/" + resourceName + "Schedule.cadmos");
+				IWorkspace workspace = ResourcesPlugin.getWorkspace();
+				IPath path = Path.fromOSString(location + "/"
+						+ resourceDirectory + "/" + resourceName
+						+ "Schedule.cadmos");
+				IFile newSchedule = workspace.getRoot()
+						.getFileForLocation(path);
+
 				if (!newSchedule.exists()) {
-					newSchedule.createNewFile();
+					// empty content
+					String content = "";
+					InputStream source = new ByteArrayInputStream(
+							content.getBytes());
+					try {
+						newSchedule.create(source, false, null);
+					} catch (CoreException e) {
+						e.printStackTrace();
+					}
 				}
 
 				if (schedule != null) {
@@ -121,24 +145,24 @@ public class ScheduleManager {
 		}
 
 	}
-	
-	private String printSchedule(HashMap<EObject, Pair<String, Integer>> map){
-		if(map == null){
+
+	private String printSchedule(HashMap<EObject, Pair<String, Integer>> map) {
+		if (map == null) {
 			return "";
 		}
 		StringBuilder s = new StringBuilder();
-		for(Entry<EObject, Pair<String, Integer>> e : map.entrySet()){
-			if(e.getKey() instanceof Embedding){
+		for (Entry<EObject, Pair<String, Integer>> e : map.entrySet()) {
+			if (e.getKey() instanceof Embedding) {
 				Embedding em = (Embedding) e.getKey();
 				String core = e.getValue().getKey();
 				Integer start = e.getValue().getValue();
-				s.append(em.getName()+" -> "+core+" : "+start+"\n");
-			} else if(e.getKey() instanceof Port){
+				s.append(em.getName() + " -> " + core + " : " + start + "\n");
+			} else if (e.getKey() instanceof Port) {
 				Port p = (Port) e.getKey();
 				String core = e.getValue().getKey();
 				Integer start = e.getValue().getValue();
-				s.append(p.getName()+" -> "+core+" : "+start+"\n");
-				
+				s.append(p.getName() + " -> " + core + " : " + start + "\n");
+
 			}
 		}
 		return s.toString();
@@ -207,8 +231,8 @@ public class ScheduleManager {
 	public void deleteImports() {
 		deploymentModel.setImports(null);
 	}
-	
-	public void cancelZ3(){
+
+	public void cancelZ3() {
 		z3_instance.destroy();
 	}
 
