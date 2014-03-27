@@ -9,7 +9,6 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.State;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -32,7 +31,6 @@ import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 
 import edu.tum.cs.cadmos.analysis.schedule.IOOutput;
 import edu.tum.cs.cadmos.analysis.schedule.ScheduleManager;
-import edu.tum.cs.cadmos.analysis.ui.AnalysisUi;
 import edu.tum.cs.cadmos.language.cadmos.Deployment;
 import edu.tum.cs.cadmos.language.cadmos.Model;
 
