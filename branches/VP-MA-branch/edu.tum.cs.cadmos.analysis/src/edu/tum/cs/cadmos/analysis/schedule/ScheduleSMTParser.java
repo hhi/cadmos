@@ -64,6 +64,10 @@ public class ScheduleSMTParser {
 	}
 
 	private static void parseUnsat(String content) {
+		if (!content.startsWith("unsat")) {
+			return;
+		}
+		
 		String[] lines = content.split("\n");
 		String core = lines[2];
 		core = core.substring(1, core.length()-1);
