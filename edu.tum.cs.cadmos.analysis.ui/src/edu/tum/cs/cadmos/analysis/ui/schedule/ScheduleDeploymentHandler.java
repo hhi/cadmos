@@ -127,11 +127,49 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 											try {
 												ps.busyCursorWhile(new IRunnableWithProgress() {
 													@Override
-													public void run(IProgressMonitor pm) {
-														pm.setTaskName("Executing Z3");
-														pm.beginTask("Calculating...", IProgressMonitor.UNKNOWN);
-														//TODO implement process kill
-														//pm.isCanceled();
+													public void run(final IProgressMonitor pm) {
+														pm.beginTask("Executing Z3", IProgressMonitor.UNKNOWN);
+														Thread cancelHelper = new Thread() {
+															public void run() {
+																long start = System
+																		.currentTimeMillis();
+																do {
+																	try {
+																		Thread.sleep(1000);
+																	} catch (InterruptedException e) {
+																		e.printStackTrace();
+																	}
+																	long now = System
+																			.currentTimeMillis();
+																	long time = (now - start) / 1000;
+																	int min = (int) (time / 60);
+																	
+																	if(min<1){
+																		pm.subTask("Elapsed calculation time: less than a minute");
+																	} else if(min<2){
+																		pm.subTask("Elapsed calculation time: one minute");
+																	} else {
+																		pm.subTask("Elapsed calculation time: "
+																				+ min+" minutes");
+																	}
+																} while (!pm
+																		.isCanceled()
+																		&& ScheduleManager
+																				.getInstance()
+																				.isZ3Running());
+																if (ScheduleManager
+																		.getInstance()
+																		.isZ3Running()) {
+																	ScheduleManager
+																			.getInstance()
+																			.cancelZ3();
+																	IOOutput.print("Z3 execution canceled by user");
+																}
+															};
+														};
+														cancelHelper.start();
+														
+														
 														scheduleManager
 														.schedule(
 																xtextEditor
@@ -143,8 +181,8 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 																		0,
 																		resourceName
 																		.lastIndexOf(".")));
+														pm.done();
 													}
-													
 													
 												});
 											} catch (InvocationTargetException e1) {

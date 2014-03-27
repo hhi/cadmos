@@ -230,5 +230,9 @@ public class ScheduleManager {
 	public void cancelZ3() {
 		z3_instance.destroy();
 	}
+	
+	public boolean isZ3Running(){
+		return z3_instance != null;
+	}
 
 }
