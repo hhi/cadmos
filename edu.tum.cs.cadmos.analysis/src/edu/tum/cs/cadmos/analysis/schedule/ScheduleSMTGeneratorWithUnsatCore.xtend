@@ -3,19 +3,22 @@ package edu.tum.cs.cadmos.analysis.schedule
 import edu.tum.cs.cadmos.analysis.architecture.model.DeploymentModel
 import edu.tum.cs.cadmos.analysis.architecture.model.Edge
 import edu.tum.cs.cadmos.analysis.architecture.model.Vertex
+import edu.tum.cs.cadmos.language.cadmos.Component
+import edu.tum.cs.cadmos.language.cadmos.Embedding
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
+import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileWriter
 import java.util.HashSet
 import java.util.List
 import java.util.Map
-
-import static extension edu.tum.cs.cadmos.analysis.schedule.ScheduleSMTUtils.*
+import org.eclipse.core.resources.IFile
 import org.eclipse.emf.ecore.EObject
-import edu.tum.cs.cadmos.language.cadmos.Embedding
-import edu.tum.cs.cadmos.language.cadmos.Component
+import org.eclipse.xtext.xbase.lib.Pair
 
 import static edu.tum.cs.cadmos.analysis.schedule.UnsatCorePreferences.*
+
+import static extension edu.tum.cs.cadmos.analysis.schedule.ScheduleSMTUtils.*
 
 class ScheduleSMTGeneratorWithUnsatCore {
 	
@@ -32,8 +35,17 @@ class ScheduleSMTGeneratorWithUnsatCore {
 		IOOutput.print(contents.toString());
 	}
 	
-	def static doGenerateCadmosSchedule(File outputFile, Map<EObject, Pair<String, Integer>> schedule, DeploymentModel deploymentModel) {
-		generateFile(outputFile, schedule.generateSchedule(deploymentModel));
+	/**
+	 * Creates the given file and writes the given contents to it.
+	 */
+	private def static generateDerivedFile(IFile iFile, CharSequence contents) {
+		val source = new ByteArrayInputStream(contents.toString().getBytes())
+		iFile.setContents(source, true, true, null)
+		iFile.setDerived(true)
+	}
+	
+	def static doGenerateCadmosSchedule(IFile outputFile, Map<EObject, Pair<String, Integer>> schedule, DeploymentModel deploymentModel) {
+		generateDerivedFile(outputFile, schedule.generateSchedule(deploymentModel));
 		
 		outputFile
 	}
@@ -313,7 +325,7 @@ class ScheduleSMTGeneratorWithUnsatCore {
 					assertions.append("(assert " + 
 					'''(=> (not (= (mapping «softwareComponentDFG.getDest(it).id»_1) (mapping «softwareComponentDFG.getSource(it).id»_1)))
 					''' + "\t(>= (+ (start " + softwareComponentDFG.getDest(it).id + "_1) \n\t(* T" + inComponent.periodTime(periodMap) + " " + 
-					'''(ite (= (mod (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «inComponent.periodTime(periodMap)») 0) (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «inComponent.periodTime(periodMap)») (+ 1 (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «inComponent.periodTime(periodMap)»)))))
+					'''(ite (= (* (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «inComponent.periodTime(periodMap)») «inComponent.periodTime(periodMap)») (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1))) (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «inComponent.periodTime(periodMap)») (+ 1 (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «inComponent.periodTime(periodMap)»)))))
 					''')
 					assertions.append("\t(+ (finish " + softwareComponentDFG.getSource(it).id + "_" + per + ") " + latency + "))))\n")	
 				}
