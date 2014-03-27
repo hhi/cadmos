@@ -82,4 +82,19 @@
          </state>
       </command>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="edu.tum.cs.cadmos.language.Cadmos"
+            class="edu.tum.cs.cadmos.analysis.ui.preferences.Z3PreferencePage"
+            id="edu.tum.cs.cadmos.analysis.ui.preferences.z3preferencepage"
+            name="Z3">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="edu.tum.cs.cadmos.analysis.ui.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
 </plugin>

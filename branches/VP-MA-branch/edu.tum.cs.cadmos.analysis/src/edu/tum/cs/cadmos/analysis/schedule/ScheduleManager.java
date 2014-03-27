@@ -16,6 +16,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.xbase.lib.Pair;
@@ -49,6 +50,15 @@ public class ScheduleManager {
 		return deploymentModel.isReadyToSchedule();
 	}
 
+	private String getDefaultZ3Path() {
+		if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+			return "C:\\Program Files\\Z3\\z3.exe";
+		} else {
+			// Mac OS X
+			return "/Applications/Z3/z3";
+		}
+	}
+
 	public void schedule(IPath resourceDirectory, String resourceName) {
 		final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace()
 				.getRoot();
@@ -58,35 +68,20 @@ public class ScheduleManager {
 			outputDirectory.mkdir();
 		}
 
+		// getDefaultZ3Path()
+		String pathZ3 = Platform.getPreferencesService().getString(
+				"edu.tum.cs.cadmos.analysis.ui", "PATH_Z3", getDefaultZ3Path(),
+				null);
+
 		String generatedFileName = "";
 		if (outputDirectory.isDirectory()) {
 			generatedFileName = ScheduleSMTGeneratorWithUnsatCore
 					.doGenerateSMTScript(outputDirectory, deploymentModel);
 			// generatedFileName = ScheduleSMTGenerator.doGenerateSMTScript(
 			// outputDirectory, deploymentModel);
-			ProcessBuilder cProcess = null;
-			if (System.getProperty("os.name").equals("Mac OS X")) {
-				// FIXME CD: will fix this
-				cProcess = new ProcessBuilder("/Applications/Z3/z3",
-						generatedFileName);
-				// cProcess = new ProcessBuilder("echo $PATH");
-				// cProcess = new ProcessBuilder("echo", "$PATH");
-				// cProcess = new ProcessBuilder("./z3 " + generatedFileName);
-				// cProcess = new ProcessBuilder("z3", generatedFileName);
-				// cProcess = new ProcessBuilder("./z3", generatedFileName);
-				// String path = cProcess.environment().get("PATH");
-				// path += File.pathSeparator + "/Applications/Z3";
-				// cProcess.environment().put("PATH", path);
-				// System.out.println(cProcess.environment());
-				// cProcess = new ProcessBuilder(
-				// "/Users/vlad/Documents/Courses/Masterarbeit/z3/z3-4.3.2.ff265c6c6ccf-x64-osx-10.8.5/bin/z3",
-				// generatedFileName);
-				cProcess.directory(outputDirectory);
-			} else if (System.getProperty("os.name").startsWith("Windows")) {
-				cProcess = new ProcessBuilder("cmd", "/C", "z3 "
-						+ generatedFileName);
-				cProcess.directory(outputDirectory);
-			}
+			ProcessBuilder cProcess = new ProcessBuilder(pathZ3,
+					generatedFileName);
+			cProcess.directory(outputDirectory);
 
 			Process process;
 			try {
