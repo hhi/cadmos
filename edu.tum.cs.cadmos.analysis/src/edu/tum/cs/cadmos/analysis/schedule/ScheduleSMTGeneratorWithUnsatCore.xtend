@@ -298,6 +298,27 @@ class ScheduleSMTGeneratorWithUnsatCore {
 	private def static generateTransmissionDurationConstraints(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG,
 														Map<Pair<String, String>, Integer> transmissionDuration,
 														Map<Integer, List<String>> periodMap) {
+															
+		if(CORE__TRANSMISSION_DURATION_CONSTRAINTS) {
+			val s = new StringBuilder
+			val ass_name = "transmission_duration_constraints"
+			map.put(ass_name, null)
+			var relaxed = ""
+			if (AssertionNameMapping.SINGLETON.isRelax(ass_name)) {
+				s.append("; relaxed assertion \n")
+				relaxed = ";"
+			}
+
+			s.append('''«relaxed»(assert (>= «periodMap.lcmOfComponents» (+ «FOR edge : softwareComponentDFG.edges SEPARATOR " "
+			»«IF edge.src(softwareComponentDFG) != "" && edge.dst(softwareComponentDFG) != ""
+					» (ite (not (= (mapping «edge.src(softwareComponentDFG)»_1) (mapping «edge.dst(softwareComponentDFG)»_1))) «
+					edge.duration(transmissionDuration)» 0)«ENDIF»«ENDFOR»)))''')
+			
+			
+			
+			return s
+		}
+															
 		'''(assert (>= «periodMap.lcmOfComponents» (+ «FOR edge : softwareComponentDFG.edges SEPARATOR " "
 			»«IF edge.src(softwareComponentDFG) != "" && edge.dst(softwareComponentDFG) != ""
 					» (ite (not (= (mapping «edge.src(softwareComponentDFG)»_1) (mapping «edge.dst(softwareComponentDFG)»_1))) «
@@ -307,6 +328,52 @@ class ScheduleSMTGeneratorWithUnsatCore {
 	private def static generateTransmissionLatenciesConstraints(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG,
 														Map<Pair<String, String>, Integer> transmissionLatency,
 														Map<Integer, List<String>> periodMap) {
+															
+		if (CORE__TRANSMISSION_LATENCY_COSTS) {
+			val usedComponentPairs = new HashSet()
+			val assertions = new StringBuilder()
+			softwareComponentDFG.edges.filter [
+				!usedComponentPairs.contains(
+					new Pair(softwareComponentDFG.getSource(it).id, softwareComponentDFG.getDest(it).id))
+			].forEach [
+				
+				val src = softwareComponentDFG.getSource(it).id
+				val dest = softwareComponentDFG.getDest(it).id
+				val ass_name = "transmission_latency_" + src + "_" + dest
+				map.put(ass_name, null)
+				var relaxed = ""
+				if (AssertionNameMapping.SINGLETON.isRelax(ass_name)) {
+					assertions.append("; relaxed assertion \n")
+					relaxed = ";"
+				}
+				
+				val outComponentPort = it.id.substring(1, it.id.indexOf(", "))
+				val inComponentPort = it.id.substring(it.id.indexOf(", ") + 2, it.id.indexOf(")"))
+				var latency = transmissionLatency.get(new Pair(outComponentPort, ""))
+				// Latency was not defined in this case for the component.
+				if(latency == null && outComponentPort.contains(".") && inComponentPort.contains(".")) latency = 0
+				if (latency != null) {
+					val outComponent = outComponentPort.substring(0, outComponentPort.indexOf("."))
+					val inComponent = inComponentPort.substring(0, inComponentPort.indexOf("."))
+					for (per : 1 .. outComponent.periodNrOfExecutions(periodMap)) {
+					assertions.append(
+					'''
+					«relaxed»(declare-const Finish«softwareComponentDFG.getSource(it).id»_«per»«id=id+1» Int)
+					«relaxed»(assert (= Finish«softwareComponentDFG.getSource(it).id»_«per»«id» (ite (= (* (div (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «inComponent.periodTime(periodMap)») «inComponent.periodTime(periodMap)») (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1))) (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «inComponent.periodTime(periodMap)») (+ 1 (/ (- (finish «softwareComponentDFG.getSource(it).id»_«per») (start «softwareComponentDFG.getDest(it).id»_1)) «inComponent.periodTime(periodMap)»)))))
+					''')
+					assertions.append('''«relaxed»(assert ''' + 
+					'''(=> (not (= (mapping «softwareComponentDFG.getDest(it).id»_1) (mapping «softwareComponentDFG.getSource(it).id»_1)))
+					''' + "\t(>= (+ (start " + softwareComponentDFG.getDest(it).id + "_1) \n"+relaxed+"\t(* T" + inComponent.periodTime(periodMap) + " " + 
+					'''Finish«softwareComponentDFG.getSource(it).id»_«per»«id»))
+					''')
+					assertions.append(relaxed+"\t(+ (finish " + softwareComponentDFG.getSource(it).id + "_" + per + ") " + latency + "))))\n")	
+				}
+				usedComponentPairs.add(new Pair(softwareComponentDFG.getSource(it).id, softwareComponentDFG.getDest(it).id))	
+			}
+			]
+			return assertions
+		}
+		
 		val usedComponentPairs = new HashSet()
 		val assertions = new StringBuilder()
 		softwareComponentDFG.edges.filter[
@@ -343,24 +410,25 @@ class ScheduleSMTGeneratorWithUnsatCore {
 
 	private def static generatePrecedenceConstraints(DirectedSparseMultigraph<Vertex, Edge> softwareComponentDFG,
 														Map<Integer, List<String>> periodMap) {
-		if(CORE__PRECEDENCE_CONSTRAINTS){
-		val s = new StringBuilder
-		for(channel : softwareComponentDFG.edges){
-			for(precComponents : softwareComponentDFG.getSource(channel).precedenceComponents(
-										softwareComponentDFG.getDest(channel), periodMap)){
-			val name = precComponents.key+"_"+precComponents.value
-			val ass_name = "precedence_"+name
-			map.put(ass_name, null)
-			if(AssertionNameMapping.SINGLETON.isRelax(ass_name)){
-					s.append("; relaxed assertion \n;")					
+		if (CORE__PRECEDENCE_CONSTRAINTS) {
+			val s = new StringBuilder
+			for (channel : softwareComponentDFG.edges) {
+				for (precComponents : softwareComponentDFG.getSource(channel).precedenceComponents(
+					softwareComponentDFG.getDest(channel), periodMap)) {
+					val name = precComponents.key + "_" + precComponents.value
+					val ass_name = "precedence_" + name
+					map.put(ass_name, null)
+					if (AssertionNameMapping.SINGLETON.isRelax(ass_name)) {
+						s.append("; relaxed assertion \n;")
+					}
+					s.append(
+						'''(assert (! (<= (finish «precComponents.key») (start «precComponents.value»)) :named «ass_name»))
+							''')
+				}
 			}
-			s.append('''(assert (! (<= (finish «precComponents.key») (start «precComponents.value»)) :named «ass_name»))
-			''')
-			}
+
+			return s.toString
 		}
-		
-		return s.toString
-	}
 		'''«FOR channel : softwareComponentDFG.edges SEPARATOR "\n"»«
 				FOR precComponents : softwareComponentDFG.getSource(channel).precedenceComponents(
 										softwareComponentDFG.getDest(channel), periodMap) SEPARATOR "\n"»(assert (<= (finish «
