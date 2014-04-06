@@ -37,7 +37,7 @@ public class Z3PreferencePage extends FieldEditorPreferencePage implements
 //		addField(new BooleanFieldEditor("BOOLEAN_VALUE",
 //				"&An example of a boolean preference", getFieldEditorParent()));
 		addField(new LabelFieldEditor("//TODO \n"
-				+ "For further details concerning SMT script generation check UnsatCorePreferences.class", getFieldEditorParent()));
+				+ "For further details concerning SMT script generation check UnsatCorePreferences.java", getFieldEditorParent()));
 	}
 
 }
