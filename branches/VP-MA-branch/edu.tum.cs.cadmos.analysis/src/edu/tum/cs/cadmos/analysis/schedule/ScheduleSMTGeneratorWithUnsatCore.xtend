@@ -167,13 +167,13 @@ class ScheduleSMTGeneratorWithUnsatCore {
 		if(GENERATE__ROBUSTNESS_REQUIREMENTS){
 		s.append('''
 			; Robustness requirements.
-			«deploymentModel.robustness.generateLatencyRequirements(deploymentModel.period)»
+			«deploymentModel.robustness.generateLatencyRequirements(deploymentModel.period, false)»
 			
 			''')}
 		if(GENERATE__LATENCY_REQUIREMENTS){
 		s.append('''
 			; Latency requirements.
-			«deploymentModel.latency.generateLatencyRequirements(deploymentModel.period)»
+			«deploymentModel.latency.generateLatencyRequirements(deploymentModel.period, true)»
 			
 			''')}
 		if(GENERATE__OVERLAP_CONSTRAINTS){
@@ -446,7 +446,41 @@ class ScheduleSMTGeneratorWithUnsatCore {
 	
 	private def static generateLatencyRequirements(
 											Map<Pair<Pair<String, String>, Pair<String, String>>, Pair<Integer, Integer>> robustnessMap,
-											Map<Integer, List<String>> periodMap) {
+											Map<Integer, List<String>> periodMap, boolean isLatencyGeneration) {
+												
+		if((isLatencyGeneration && CORE__LATENCY_REQUIREMENTS) || (!isLatencyGeneration && CORE__ROBUSTNESS_REQUIREMENTS)){
+			val s = new StringBuilder
+			var ass_name = "latency_requirement_"
+			if(!isLatencyGeneration){
+				ass_name = "robustness_requirement_"
+			}
+			
+			for(robPair : robustnessMap.entrySet){
+				for(per : 1..robPair.key.key.value.periodNrOfExecutions(periodMap)){
+			val element = robPair.key.value.value
+			map.put(ass_name+element, null)
+			var relaxed = ""
+			if (AssertionNameMapping.SINGLETON.isRelax(ass_name+element)) {
+				s.append("; relaxed assertion \n")
+				relaxed = ";"
+			}
+					s.append('''
+				(declare-const «robPair.key.value.value»«id=id+1» Int)
+				«relaxed»(assert (= «robPair.key.value.value»«id» «IF robPair.key.value.key.startsWith("start")»(ite (= (* (div (- («robPair.key.key.key»_«per») («robPair.key.value.key»_1)) «
+					robPair.key.value.value.periodTime(periodMap)») «robPair.key.value.value.periodTime(periodMap)») (- («robPair.key.key.key»_«per») («robPair.key.value.key»_1))) (/ (- («robPair.key.key.key»_«per») («robPair.key.value.key
+					»_1))  «robPair.key.value.value.periodTime(periodMap)») (+ 1 (/ (- («robPair.key.key.key»_«per») («robPair.key.value.key»_1)) «robPair.key.value.value.periodTime(periodMap)»)))))«
+					ELSE»«relaxed»(+ 1 (/ (- («robPair.key.key.key»_«per») («robPair.key.value.key»_1)) «robPair.key.value.value.periodTime(periodMap)»))))«ENDIF»
+				«relaxed»(assert (>= (+ («robPair.key.value.key»_1) (* T«robPair.key.value.value.periodTime(periodMap)» «robPair.key.value.value»«id»))
+				«relaxed»  		(+ («robPair.key.key.key»_«per») «robPair.value.key»)))
+				«relaxed»(assert (<= (+ («robPair.key.value.key»_1) (* T«robPair.key.value.value.periodTime(periodMap)» «robPair.key.value.value»«id»))
+				«relaxed»  		(+ («robPair.key.key.key»_«per») «robPair.value.value»)))
+					''')
+				}
+			}
+			return s
+		}
+												
+												
 		  '''«FOR robPair : robustnessMap.entrySet SEPARATOR "\n"»«FOR per : 1..robPair.key.key.value.periodNrOfExecutions(periodMap)»
 				(declare-const «robPair.key.value.value»«id=id+1» Int)
 				(assert (= «robPair.key.value.value»«id» «IF robPair.key.value.key.startsWith("start")»(ite (= (* (div (- («robPair.key.key.key»_«per») («robPair.key.value.key»_1)) «

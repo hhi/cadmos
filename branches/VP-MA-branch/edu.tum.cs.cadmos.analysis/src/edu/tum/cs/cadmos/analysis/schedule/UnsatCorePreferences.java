@@ -25,7 +25,7 @@ public class UnsatCorePreferences {
 	public static boolean CORE__PRECEDENCE_CONSTRAINTS = true;
 	public static boolean CORE__TRANSMISSION_LATENCY_COSTS = true;
 	public static boolean CORE__TRANSMISSION_DURATION_CONSTRAINTS = true;
-	public static boolean CORE__ATOMIC_ON_SAME_CORE_ASSUMPTION = true;
+	public static boolean CORE__ATOMIC_ON_SAME_CORE_ASSUMPTION = true; //FIXME remove
 	public static boolean CORE__ROBUSTNESS_REQUIREMENTS = true;
 	public static boolean CORE__LATENCY_REQUIREMENTS = true;
 	public static boolean CORE__OVERLAP_CONSTRAINTS = true;
