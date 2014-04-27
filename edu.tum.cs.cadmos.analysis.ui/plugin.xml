@@ -15,7 +15,9 @@
             name="Schedule Analysis">
       </view>
       <view
+            allowMultiple="true"
             class="edu.tum.cs.cadmos.analysis.ui.perspective.ConstraintView"
+            icon="icons/constraints.gif"
             id="edu.tum.cs.cadmos.analysis.ui.perspective.ConstraintView"
             name="Constraints">
       </view>
@@ -25,9 +27,16 @@
             name="Debug and Z3 IO Console">
       </view>
       <view
-            class="edu.tum.cs.cadmos.analysis.ui.perspective.Test"
-            id="edu.tum.cs.cadmos.analysis.ui.perspective.Test"
-            name="New ViewPart">
+            class="edu.tum.cs.cadmos.analysis.ui.perspective.ScheduleChart"
+            id="edu.tum.cs.cadmos.analysis.ui.perspective.ScheduleChart"
+            name="Schedule Chart">
+      </view>
+      <view
+            allowMultiple="false"
+            class="edu.tum.cs.cadmos.analysis.ui.perspective.ComplementConstraintView"
+            icon="icons/constraints.gif"
+            id="edu.tum.cs.cadmos.analysis.ui.perspective.ComplementConstraintView"
+            name="Complement Constraints">
       </view>
    </extension>
    <extension

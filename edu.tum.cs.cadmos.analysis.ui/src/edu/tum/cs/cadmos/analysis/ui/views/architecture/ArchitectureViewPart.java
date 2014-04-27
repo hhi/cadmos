@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -23,10 +22,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.commands.ExecutionException;
 import org.eclipse.ui.commands.ICommandService;
-import org.eclipse.ui.commands.NotDefinedException;
-import org.eclipse.ui.commands.NotHandledException;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.services.IServiceLocator;
 import org.eclipse.xtext.EcoreUtil2;
@@ -36,6 +32,7 @@ import edu.tum.cs.cadmos.analysis.architecture.model.Edge;
 import edu.tum.cs.cadmos.analysis.architecture.model.Vertex;
 import edu.tum.cs.cadmos.analysis.architecture.model.utils.DFGTranslator;
 import edu.tum.cs.cadmos.language.cadmos.Component;
+import edu.tum.cs.cadmos.language.cadmos.Deployment;
 import edu.tum.cs.cadmos.language.ui.CadmosUi;
 import edu.tum.cs.cadmos.language.ui.ICadmosEditorSelectionChangedListener;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
@@ -229,6 +226,13 @@ public class ArchitectureViewPart extends ViewPart {
 	private final ICadmosEditorSelectionChangedListener cadmosEditorSelectionChangedListener = new ICadmosEditorSelectionChangedListener() {
 		@Override
 		public void selectionChanged(XtextEditor editor, EObject selectedObject) {
+			
+			if (selectedObject instanceof Deployment) {
+				dep = (Deployment) selectedObject;
+				
+			}
+			
+			
 			final Component component = EcoreUtil2.getContainerOfType(
 					selectedObject, Component.class);
 			// getArchitectureCanvas().setRootComponent(component);
@@ -254,4 +258,6 @@ public class ArchitectureViewPart extends ViewPart {
 	public ArchitectureCanvas getArchitectureCanvas() {
 		return architectureCanvas;
 	}
+	
+	public static Deployment dep = null;
 }

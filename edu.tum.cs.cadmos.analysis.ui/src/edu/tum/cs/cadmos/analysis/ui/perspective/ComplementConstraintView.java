@@ -47,13 +47,11 @@ import edu.tum.cs.cadmos.analysis.schedule.AssertionPrefixes;
 import edu.tum.cs.cadmos.analysis.schedule.IUnsatCoreListener;
 import edu.tum.cs.cadmos.analysis.ui.AnalysisUi;
 import edu.tum.cs.cadmos.analysis.ui.commons.ModelElementLinker;
-import edu.tum.cs.cadmos.analysis.ui.constraints.AssertionTypeFilter;
 import edu.tum.cs.cadmos.analysis.ui.constraints.ConstraintViewSets;
-import edu.tum.cs.cadmos.analysis.ui.constraints.SATFilter;
 
-public class ConstraintView extends ViewPart implements IUnsatCoreListener{
+public class ComplementConstraintView extends ViewPart implements IUnsatCoreListener{
 
-	public static final String ID = "edu.tum.cs.cadmos.analysis.ui.perspective.ConstraintView"; //$NON-NLS-1$
+	public static final String ID = "edu.tum.cs.cadmos.analysis.ui.perspective.ComplementConstraintView"; //$NON-NLS-1$
 	private Action action;
 	private TableViewer constraintViewer;
 	
@@ -64,14 +62,8 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 	Image SAT = AnalysisUi.getImageDescriptor("icons/sat.gif").createImage();
 	Image UNSAT = AnalysisUi.getImageDescriptor("icons/unsat.gif").createImage();
 	Image UNDEFINED = AnalysisUi.getImageDescriptor("icons/undef.gif").createImage();
-	private Menu menu_sat;
-	private Button btnSatFilter;
-	private Menu menu_type;
-	private Menu menu_subs;
-	private Button btnTypeFilter;
-	private Button btnSubsystemFilter;
 
-	public ConstraintView() {
+	public ComplementConstraintView() {
 		setTitleImage(ResourceManager.getPluginImage("edu.tum.cs.cadmos.analysis.ui", "icons/constraints.gif"));
 	}
 
@@ -96,7 +88,7 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 				
 				try {
 					PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-					getActivePage().showView(ID,Math.random()+"",IWorkbenchPage.VIEW_CREATE);
+					getActivePage().showView(ConstraintView.ID,Math.random()+"",IWorkbenchPage.VIEW_CREATE);
 				} catch (PartInitException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -145,133 +137,12 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 		btnOpen.setText("Run Z3 calculation");
 		
 		Composite composite_1 = new Composite(container, SWT.NONE);
-		composite_1.setLayout(new GridLayout(4, false));
+		composite_1.setLayout(new GridLayout(1, false));
 		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		
 		Label lblFilters = new Label(composite_1, SWT.NONE);
-		lblFilters.setText("Filters:");
+		lblFilters.setText("Constraints not shown elsewhere  -  complement to union of all other constraint views");
 		
-		btnSatFilter = new Button(composite_1, SWT.NONE);
-		btnSatFilter.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (menu_sat.getItemCount() == 0)
-					return;
-				Point pt = btnSatFilter.toDisplay(new Point(e.x, e.y));
-				menu_sat.setLocation(pt);
-				menu_sat.setVisible(true);
-			}
-		});
-		btnSatFilter.setText("Satisfaction");
-		
-		menu_sat = new Menu(btnSatFilter);
-		btnSatFilter.setMenu(menu_sat);
-		
-		MenuItem mntmAny = new MenuItem(menu_sat, SWT.RADIO);
-		mntmAny.setSelection(true);
-		mntmAny.setText("any");
-		mntmAny.addSelectionListener(new SelectionAdapter(){
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean checked = ((MenuItem)e.widget).getSelection();
-				ConstraintViewSets.SINGLETON.adjustFilter(ConstraintView.this, SATFilter.ANY, !checked);
-				if(checked){
-					btnSatFilter.setText("any");
-				}
-			}
-		});
-		
-		MenuItem mntmSat = new MenuItem(menu_sat, SWT.RADIO);
-		mntmSat.setText("SAT");
-		mntmSat.addSelectionListener(new SelectionAdapter(){
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean checked = ((MenuItem)e.widget).getSelection();
-				ConstraintViewSets.SINGLETON.adjustFilter(ConstraintView.this, SATFilter.SAT, !checked);
-				if(checked){
-					btnSatFilter.setText("SAT");
-				}
-			}
-		});
-		
-		MenuItem mntmUnsat = new MenuItem(menu_sat, SWT.RADIO);
-		mntmUnsat.setText("UNSAT");
-		mntmUnsat.addSelectionListener(new SelectionAdapter(){
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean checked = ((MenuItem)e.widget).getSelection();
-				ConstraintViewSets.SINGLETON.adjustFilter(ConstraintView.this, SATFilter.UNSAT, !checked);
-				if(checked){
-					btnSatFilter.setText("UNSAT");
-				}
-			}
-		});
-		
-		MenuItem mntmRelax = new MenuItem(menu_sat, SWT.RADIO);
-		mntmRelax.setText("RELAX");
-		mntmRelax.addSelectionListener(new SelectionAdapter(){
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean checked = ((MenuItem)e.widget).getSelection();
-				ConstraintViewSets.SINGLETON.adjustFilter(ConstraintView.this, SATFilter.RELAX, !checked);
-				if(checked){
-					btnSatFilter.setText("RELAX");
-				}
-			}
-		});
-		
-		btnTypeFilter = new Button(composite_1, SWT.NONE);
-		btnTypeFilter.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (menu_type.getItemCount() == 0)
-					return;
-				Point pt = btnTypeFilter.toDisplay(new Point(e.x, e.y));
-				menu_type.setLocation(pt);
-				menu_type.setVisible(true);
-			}
-		});
-		btnTypeFilter.setText("Types");
-		
-		menu_type = new Menu(btnTypeFilter);
-		btnTypeFilter.setMenu(menu_type);
-		
-		fillTypeMenu();
-		
-		btnSubsystemFilter = new Button(composite_1, SWT.NONE);
-		btnSubsystemFilter.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (menu_subs.getItemCount() == 0)
-					return;
-				Point pt = btnSubsystemFilter.toDisplay(new Point(e.x, e.y));
-				menu_subs.setLocation(pt);
-				menu_subs.setVisible(true);
-			}
-		});
-		btnSubsystemFilter.setText("Subsystem");
-		
-		menu_subs = new Menu(btnSubsystemFilter);
-		btnSubsystemFilter.setMenu(menu_subs);
-		
-		MenuItem mntmTopLevel = new MenuItem(menu_subs, SWT.RADIO);
-		mntmTopLevel.setSelection(true);
-		mntmTopLevel.setText("Top Level");
-
-		MenuItem mntmReader = new MenuItem(menu_subs, SWT.RADIO);
-		mntmReader.setText("+ reader");
-		
-		MenuItem mntmF = new MenuItem(menu_subs, SWT.RADIO);
-		mntmF.setText("+ f1");
-		
-		MenuItem mntmF_1 = new MenuItem(menu_subs, SWT.RADIO);
-		mntmF_1.setText("+ f2");
-		
-		MenuItem mntmF_2 = new MenuItem(menu_subs, SWT.RADIO);
-		mntmF_2.setText("+ f3");
-		
-		MenuItem mntmWriter = new MenuItem(menu_subs, SWT.RADIO);
-		mntmWriter.setText("+ writer");
 		
 		
 		constraintViewer = new TableViewer(container, SWT.BORDER);
@@ -303,6 +174,7 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 				} else {
 					AssertionNameMapping.SINGLETON.addRelax(s);
 				}
+				constraintViewer.refresh();
 			}
 		});
 		
@@ -353,6 +225,8 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 		});
 		
 		
+		
+
 		createActions();
 		initializeToolBar();
 		initializeMenu();
@@ -360,49 +234,10 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 		notifyUnsatCoreChange();
 	}
 
-	private void fillTypeMenu() {
-//		MenuItem all = new MenuItem(menu_type, SWT.PUSH);
-//		all.setText("ALL");
-//		all.addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				for(int i=2; i<menu_type.getItems().length; i++){
-//					menu_type.getItem(i).setSelection(true);
-//				}
-//			}
-//		});
-//		MenuItem none = new MenuItem(menu_type, SWT.PUSH);
-//		none.setText("none");
-//		none.addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				for(int i=2; i<menu_type.getItems().length; i++){
-//					menu_type.getItem(i).setSelection(false);
-//				}
-//			}
-//		});
-		
-		
-		for(final AssertionTypeFilter atf : AssertionTypeFilter.getAll()){
-			MenuItem item = new MenuItem(menu_type, SWT.CHECK);
-			item.setText(atf.toString());
-			item.setSelection(true);
-			item.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					boolean checked = ((MenuItem)e.widget).getSelection();
-					ConstraintViewSets.SINGLETON.adjustFilter(ConstraintView.this, atf, checked);
-				}
-			});
-			
-		}
-		
-		
-		
-	}
+
 
 	private void addDataListeners() {
-		ConstraintViewSets.SINGLETON.registerView(this);
+		ConstraintViewSets.SINGLETON.registerComplementView(this);
 	}
 
 	/**
@@ -444,18 +279,10 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 		Display.getDefault().asyncExec(new Runnable(){
 			@Override
 			public void run() {
-//				constraintViewer.setInput(AssertionNameMapping.getContents());
-//				System.out.println(ConstraintView.this);
-//				System.out.println(constraintViewer);
-//				System.out.println(ConstraintViewSets.SINGLETON.getContents(ConstraintView.this));
-				constraintViewer.setInput(ConstraintViewSets.SINGLETON.getContents(ConstraintView.this));
+				constraintViewer.setInput(ConstraintViewSets.SINGLETON.getComplementContents());
 				constraintViewer.refresh();
 			}
 		});
 	}
 	
-	@Override
-	public void dispose() {
-		ConstraintViewSets.SINGLETON.unregisterView(this);
-	}
 }

@@ -33,9 +33,15 @@ class AssertionNameMapping {
  	
  	def addRelax(String ass){
  		relaxSet.add(ass)
+ 		satSet.remove(ass)
+ 		unsatSet.remove(ass)
+ 		
+ 		notifyAllListeners
  	}
  	def removeRelax(String ass){
  		relaxSet.remove(ass)
+ 		
+ 		notifyAllListeners
  	}
  	def isRelax(String ass){
  		relaxSet.contains(ass)
