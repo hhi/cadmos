@@ -524,7 +524,7 @@ class ScheduleSMTGeneratorWithUnsatCore {
 					val task = sc.key
 					val core = pc.id
 					val dR = sc.value.executionTime(pc, deploymentModel.wcet)
-					val ass_name = "dur_"+task+"_"+core
+					val ass_name = "duration_"+task+"_"+core
 					map.put(ass_name, null)
 					if(AssertionNameMapping.SINGLETON.isRelax(ass_name)){
 						s.append("; relaxed assertion \n;")					
