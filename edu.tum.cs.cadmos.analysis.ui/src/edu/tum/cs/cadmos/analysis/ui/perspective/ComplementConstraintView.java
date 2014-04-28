@@ -62,6 +62,7 @@ public class ComplementConstraintView extends ViewPart implements IUnsatCoreList
 	Image SAT = AnalysisUi.getImageDescriptor("icons/sat.gif").createImage();
 	Image UNSAT = AnalysisUi.getImageDescriptor("icons/unsat.gif").createImage();
 	Image UNDEFINED = AnalysisUi.getImageDescriptor("icons/undef.gif").createImage();
+	private Label lblNewLabel_1;
 
 	public ComplementConstraintView() {
 		setTitleImage(ResourceManager.getPluginImage("edu.tum.cs.cadmos.analysis.ui", "icons/constraints.gif"));
@@ -224,6 +225,14 @@ public class ComplementConstraintView extends ViewPart implements IUnsatCoreList
 			}
 		});
 		
+		Composite composite_2 = new Composite(container, SWT.NONE);
+		composite_2.setLayout(new GridLayout(1, false));
+		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		
+		lblNewLabel_1 = new Label(composite_2, SWT.NONE);
+		lblNewLabel_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+		lblNewLabel_1.setText("New Label");
+		
 		
 		
 
@@ -281,8 +290,12 @@ public class ComplementConstraintView extends ViewPart implements IUnsatCoreList
 			public void run() {
 				constraintViewer.setInput(ConstraintViewSets.SINGLETON.getComplementContents());
 				constraintViewer.refresh();
+				getItemCount().setText(constraintViewer.getTable().getItemCount()+" items");
 			}
 		});
 	}
 	
+	public Label getItemCount() {
+		return lblNewLabel_1;
+	}
 }
