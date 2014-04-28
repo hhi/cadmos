@@ -18,7 +18,7 @@ public class UnsatCorePreferences {
 
 	//Activate UNSAT core generation for certain sections of the SMT script
 	public static boolean CORE__PERIOD_TIMES = true;
-	public static boolean CORE__DURATION_TIMES = false;  //FIXME
+	public static boolean CORE__DURATION_TIMES = true;  //FIXME
 	public static boolean CORE__UPPER_LOWER_LIMIT = true;
 	public static boolean CORE__MULTIRATE_CONSTANT_PERIOD = true;
 	public static boolean CORE__MULTIRATE_ALLOCATION_CONSISTENCY = true;

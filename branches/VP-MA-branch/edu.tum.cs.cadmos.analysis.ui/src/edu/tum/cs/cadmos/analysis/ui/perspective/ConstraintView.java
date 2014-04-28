@@ -1,8 +1,7 @@
 package edu.tum.cs.cadmos.analysis.ui.perspective;
 
 
-import java.util.HashSet;
-import java.util.Random;
+import java.util.ArrayList;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -17,7 +16,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -42,14 +40,17 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.services.IServiceLocator;
 import org.eclipse.wb.swt.ResourceManager;
 
+import edu.tum.cs.cadmos.analysis.architecture.model.DeploymentModel;
+import edu.tum.cs.cadmos.analysis.architecture.model.Vertex;
 import edu.tum.cs.cadmos.analysis.schedule.AssertionNameMapping;
-import edu.tum.cs.cadmos.analysis.schedule.AssertionPrefixes;
 import edu.tum.cs.cadmos.analysis.schedule.IUnsatCoreListener;
 import edu.tum.cs.cadmos.analysis.ui.AnalysisUi;
-import edu.tum.cs.cadmos.analysis.ui.commons.ModelElementLinker;
 import edu.tum.cs.cadmos.analysis.ui.constraints.AssertionTypeFilter;
 import edu.tum.cs.cadmos.analysis.ui.constraints.ConstraintViewSets;
 import edu.tum.cs.cadmos.analysis.ui.constraints.SATFilter;
+import edu.tum.cs.cadmos.analysis.ui.constraints.SubsystemFilter;
+import edu.tum.cs.cadmos.language.cadmos.Component;
+import edu.tum.cs.cadmos.language.cadmos.Embedding;
 
 public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 
@@ -151,7 +152,7 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 		Label lblFilters = new Label(composite_1, SWT.NONE);
 		lblFilters.setText("Filters:");
 		
-		btnSatFilter = new Button(composite_1, SWT.NONE);
+		btnSatFilter = new Button(composite_1, SWT.FLAT);
 		btnSatFilter.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -220,7 +221,7 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 			}
 		});
 		
-		btnTypeFilter = new Button(composite_1, SWT.NONE);
+		btnTypeFilter = new Button(composite_1, SWT.FLAT);
 		btnTypeFilter.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -238,7 +239,7 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 		
 		fillTypeMenu();
 		
-		btnSubsystemFilter = new Button(composite_1, SWT.NONE);
+		btnSubsystemFilter = new Button(composite_1, SWT.FLAT);
 		btnSubsystemFilter.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -257,22 +258,9 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 		MenuItem mntmTopLevel = new MenuItem(menu_subs, SWT.RADIO);
 		mntmTopLevel.setSelection(true);
 		mntmTopLevel.setText("Top Level");
-
-		MenuItem mntmReader = new MenuItem(menu_subs, SWT.RADIO);
-		mntmReader.setText("+ reader");
 		
-		MenuItem mntmF = new MenuItem(menu_subs, SWT.RADIO);
-		mntmF.setText("+ f1");
 		
-		MenuItem mntmF_1 = new MenuItem(menu_subs, SWT.RADIO);
-		mntmF_1.setText("+ f2");
-		
-		MenuItem mntmF_2 = new MenuItem(menu_subs, SWT.RADIO);
-		mntmF_2.setText("+ f3");
-		
-		MenuItem mntmWriter = new MenuItem(menu_subs, SWT.RADIO);
-		mntmWriter.setText("+ writer");
-		
+		fillSubsystemMenu();
 		
 		constraintViewer = new TableViewer(container, SWT.BORDER);
 		Table tree = constraintViewer.getTable();
@@ -352,6 +340,14 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 			}
 		});
 		
+		Composite composite_2 = new Composite(container, SWT.NONE);
+		composite_2.setLayout(new GridLayout(1, false));
+		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		
+		lblNewLabel_1 = new Label(composite_2, SWT.NONE);
+		lblNewLabel_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+		lblNewLabel_1.setText("New Label");
+		
 		
 		createActions();
 		initializeToolBar();
@@ -396,8 +392,42 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 			});
 			
 		}
+	}
+	
+	private DeploymentModel dm_old;
+	private Label lblNewLabel_1;
+	private void fillSubsystemMenu() {
+		ArrayList<Component> subs = new ArrayList<Component>();
+		DeploymentModel dm = AssertionNameMapping.SINGLETON.getDeploymentModel();
+		if(dm == null || dm == dm_old){
+			return;
+		}
+		dm_old = dm;
 		
+		menu_subs.dispose();
+		System.out.println("disposed");
+		menu_subs = new Menu(btnSubsystemFilter);
+		btnSubsystemFilter.setMenu(menu_subs);
 		
+		MenuItem mntmTopLevel = new MenuItem(menu_subs, SWT.RADIO);
+		mntmTopLevel.setSelection(true);
+		mntmTopLevel.setText("Top Level");
+		
+		for(Vertex v : dm.getSoftwareComponentDFG().getVertices()){
+			if (v.getData() instanceof Embedding) {
+				final Embedding comp = (Embedding) v.getData();
+				MenuItem item = new MenuItem(menu_subs, SWT.RADIO);
+				item.setText(" + "+comp.getName()); 
+				item.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						boolean checked = ((MenuItem)e.widget).getSelection();
+						ConstraintViewSets.SINGLETON.adjustFilter(ConstraintView.this, new SubsystemFilter(comp.getName()), !checked);
+					}
+				}); 
+			}
+		}
+
 		
 	}
 
@@ -450,6 +480,8 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 //				System.out.println(ConstraintViewSets.SINGLETON.getContents(ConstraintView.this));
 				constraintViewer.setInput(ConstraintViewSets.SINGLETON.getContents(ConstraintView.this));
 				constraintViewer.refresh();
+				getItemCount().setText(constraintViewer.getTable().getItemCount()+" items");
+				fillSubsystemMenu();
 			}
 		});
 	}
@@ -457,5 +489,8 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 	@Override
 	public void dispose() {
 		ConstraintViewSets.SINGLETON.unregisterView(this);
+	}
+	public Label getItemCount() {
+		return lblNewLabel_1;
 	}
 }

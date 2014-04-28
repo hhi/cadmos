@@ -71,6 +71,9 @@ public class SchedulingAnalysisView extends ViewPart {
 //			        // Draw a horizontal line halfway down the canvas
 //			        e.gc.drawLine(0, halfY, maxX, halfY);
 			        
+			        if(AssertionNameMapping.SINGLETON.getDeploymentModel() == null){
+			        	return;
+			        }
 			        
 			        DirectedSparseMultigraph<Vertex, Edge> graph = AssertionNameMapping.SINGLETON.getDeploymentModel().getSoftwareComponentDFG();
 	        		FRLayout<Vertex, Edge> layout = new FRLayout<Vertex, Edge>(graph, new Dimension(maxX, maxY));
