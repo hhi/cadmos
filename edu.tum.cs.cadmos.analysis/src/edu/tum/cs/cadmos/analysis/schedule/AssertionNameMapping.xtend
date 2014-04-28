@@ -1,14 +1,21 @@
 package edu.tum.cs.cadmos.analysis.schedule
 
-import java.util.HashMap
-import org.eclipse.emf.ecore.EObject
-import java.util.HashSet
+import edu.tum.cs.cadmos.analysis.architecture.model.DeploymentModel
+import edu.tum.cs.cadmos.language.cadmos.Deployment
 import java.util.ArrayList
+import java.util.HashMap
+import java.util.HashSet
+import org.eclipse.emf.ecore.EObject
 
 class AssertionNameMapping {
 	public static var SINGLETON = new AssertionNameMapping
 	
 	public static val listeners = new ArrayList<IUnsatCoreListener>()
+	
+	
+	var Deployment deployment;
+	var DeploymentModel deploymentModel;
+	
 	
 	val map = new HashMap<String, EObject>
 	val satSet = new HashSet<String>
@@ -85,5 +92,18 @@ class AssertionNameMapping {
 	def public coreFinished(){
 		satSet.addAll(map.keySet.filter[!unsatSet.contains(it)&&!relaxSet.contains(it)])
 		notifyAllListeners
+	}
+	
+	def public getDeployment(){
+		deployment
+	}
+	def public getDeploymentModel(){
+		deploymentModel
+	}
+	def public setDeployment(Deployment d){
+		deployment = d
+	}
+	def public setDeploymentModel(DeploymentModel d){
+		deploymentModel = d
 	}
 }

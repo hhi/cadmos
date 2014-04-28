@@ -29,6 +29,7 @@ import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.utils.EditorUtils;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 
+import edu.tum.cs.cadmos.analysis.schedule.AssertionNameMapping;
 import edu.tum.cs.cadmos.analysis.schedule.IOOutput;
 import edu.tum.cs.cadmos.analysis.schedule.ScheduleManager;
 import edu.tum.cs.cadmos.language.cadmos.Deployment;
@@ -119,6 +120,9 @@ public class ScheduleDeploymentHandler extends AbstractHandler implements
 										System.out.println("Start scheduling!");
 										IOOutput.print("Start scheduling");
 										if (scheduleManager.readyToSchedule()) {
+											AssertionNameMapping.SINGLETON.setDeployment(deployment);
+											AssertionNameMapping.SINGLETON.setDeploymentModel(scheduleManager.getDeploymentModel());
+											
 											final String resourceName = xtextEditor
 													.getResource().getName();
 											

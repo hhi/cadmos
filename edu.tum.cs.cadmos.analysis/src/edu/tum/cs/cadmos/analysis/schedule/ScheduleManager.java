@@ -49,6 +49,10 @@ public class ScheduleManager {
 	public boolean readyToSchedule() {
 		return deploymentModel.isReadyToSchedule();
 	}
+	
+	public DeploymentModel getDeploymentModel(){
+		return deploymentModel;
+	}
 
 	private String getDefaultZ3Path() {
 		if (System.getProperty("os.name").toLowerCase().contains("windows")) {
