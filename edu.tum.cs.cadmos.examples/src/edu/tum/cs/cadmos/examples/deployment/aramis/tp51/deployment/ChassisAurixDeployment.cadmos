@@ -8,7 +8,8 @@ deployment ChassisAurixDeployment {
 	swc ChassisControlFunctions
 	plc InfineonAurixTC277T
 //	cost Chassis_on_AurixTC277T
-	cost Chassis_on_AurixTC277T_VPMA
-//	cost Chassis_on_AurixTC277T_CDMA
-	req ChassisAurixRequirements
-}
+//	cost Chassis_on_AurixTC277T_VPMA
+	cost Chassis_on_AurixTC277T_CDMA
+//	req ChassisAurixRequirements
+	req ChassisAurixRequirementsCD
+}	

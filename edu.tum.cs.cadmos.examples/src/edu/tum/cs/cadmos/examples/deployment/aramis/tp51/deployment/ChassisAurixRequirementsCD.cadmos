@@ -1,0 +1,18 @@
+package edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.^deployment
+
+import edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.^software.*
+import edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.platform.*
+
+requirements ChassisAurixRequirementsCD {
+	period FlexRayReader = 5000
+	period ChassisFunction1 = 5000
+	period ChassisFunction2 = 5000
+	period ChassisFunction3 = 10000
+	period FlexRayWriter = 5000
+	
+	period ChassisControlFunctions = 5000
+	
+	robustness[ChassisControlFunctions.reader][ChassisControlFunctions.f3] = [2000..10000]
+
+	latency ChassisControlFunctions.reader.input => ChassisControlFunctions.writer.output = [5000..5000]
+}

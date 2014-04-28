@@ -8,92 +8,92 @@ costmodel Chassis_on_AurixTC277T_CDMA {
 	ChassisFunction1 {
 		TriCore16P {
 			
-			WCET = 3 
+			WCET = 3000 
 		}
 		TriCore16PLockStep {
-			WCET = 3	
+			WCET = 3000	
 		}
 		TriCore16ELockStep {
-			WCET = 3	
+			WCET = 3000	
 		}
 		
 	}
 	
 	ChassisFunction1.output {
 		SRICrossBar {
-			TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1
+			TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1000
 		}
 	}
 
 	ChassisFunction2 {
 		TriCore16P {
-			WCET = 3	
+			WCET = 3000	
 		}
 		TriCore16PLockStep {
-			WCET = 3	
+			WCET = 3000	
 		}
 		TriCore16ELockStep {
-			WCET = 3	
+			WCET = 3000	
 		}
 	}
 
 	ChassisFunction2.output {
 		SRICrossBar {
-			TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1
+			TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1000
 		}
 	}
 	
 	ChassisFunction3 {
 		TriCore16P {
-			WCET = 2	
+			WCET = 2000	
 		}
 		TriCore16PLockStep {
-			WCET = 2	
+			WCET = 2000	
 		}
 		TriCore16ELockStep {
-			WCET = 2	
+			WCET = 2000	
 		}
 	}
 	
 	ChassisFunction3.output {
 		SRICrossBar {
-			TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1
+			TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1000
 		}
 	}
 	
 	FlexRayReader {
 		TriCore16PLockStep {
-			WCET = 1	
+			WCET = 1000	
 		}
 		TriCore16ELockStep {
-			WCET = 1	
+			WCET = 1000	
 		}
 	}
 	
 	FlexRayReader.output1 {
 		SRICrossBar {
-			TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1
+			TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1000
 		}
 	}
 
 	FlexRayReader.output2 {
 		SRICrossBar {
-			TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1
+			TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1000
 		}
 	}
 
 	FlexRayReader.output3 {
 		SRICrossBar {
-			TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1
+			TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1000
 		}
 	}
 	
 	FlexRayWriter {
 		TriCore16PLockStep {
-			WCET = 1	
+			WCET = 1000	
 		}
 		TriCore16ELockStep {
-			WCET = 1	
+			WCET = 1000	
 		}
 	}
 	
