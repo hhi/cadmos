@@ -14,6 +14,7 @@ import org.eclipse.swt.layout.GridData;
 
 import edu.tum.cs.cadmos.analysis.schedule.IOOutput;
 import edu.tum.cs.cadmos.analysis.schedule.IOOutputListener;
+
 import org.eclipse.wb.swt.ResourceManager;
 
 public class DebugIOView extends ViewPart implements IOOutputListener{

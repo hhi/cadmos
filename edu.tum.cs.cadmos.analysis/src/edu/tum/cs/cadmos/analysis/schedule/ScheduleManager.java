@@ -109,6 +109,9 @@ public class ScheduleManager {
 								deploymentModel.getSoftwareComponentDFG());
 				System.out.println(printSchedule(schedule));
 				IOOutput.print(printSchedule(schedule));
+				
+				AssertionNameMapping.SINGLETON.setSchedule(schedule);
+				
 				System.out.println("returned after "
 						+ (double) ((stop - start) / 100) / 10 + "s");
 				IOOutput.print("returned after "
@@ -145,7 +148,7 @@ public class ScheduleManager {
 
 	}
 
-	private String printSchedule(HashMap<EObject, Pair<String, Integer>> map) {
+	public static String printSchedule(HashMap<EObject, Pair<String, Integer>> map) {
 		if (map == null) {
 			return "";
 		}
