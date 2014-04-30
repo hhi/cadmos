@@ -15,6 +15,7 @@ class AssertionNameMapping {
 	
 	var Deployment deployment;
 	var DeploymentModel deploymentModel;
+	var HashMap<EObject, Pair<String, Integer>> schedule;
 	
 	
 	val map = new HashMap<String, EObject>
@@ -105,5 +106,12 @@ class AssertionNameMapping {
 	}
 	def public setDeploymentModel(DeploymentModel d){
 		deploymentModel = d
+	}
+	
+	def public setSchedule(HashMap<EObject, Pair<String, Integer>> h){
+		schedule = h
+	}
+	def public getSchedule(){
+		schedule
 	}
 }
