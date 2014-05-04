@@ -4,6 +4,8 @@
 package edu.tum.cs.cadmos.language.ui;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.xtext.ui.LanguageSpecific;
+import org.eclipse.xtext.ui.editor.IURIEditorOpener;
 import org.eclipse.xtext.ui.editor.IXtextEditorCallback;
 
 import com.google.inject.Binder;
@@ -24,5 +26,9 @@ public class CadmosUiModule extends
 				.annotatedWith(Names.named("CadmosXtextEditorCallback"))
 				.to(CadmosXtextEditorCallback.class);
 	}
+	
+//	    public void configureLanguageSpecificURIEditorOpener(com.google.inject.Binder binder) {
+//	        binder.bind(IURIEditorOpener.class).annotatedWith(LanguageSpecific.class).to(EditorOpener.class);
+//	    }
 
 }

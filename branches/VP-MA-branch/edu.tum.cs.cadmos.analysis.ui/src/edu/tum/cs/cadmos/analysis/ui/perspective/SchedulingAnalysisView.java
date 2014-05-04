@@ -179,7 +179,7 @@ public class SchedulingAnalysisView extends ViewPart {
 	        			e.gc.drawText(v.getId(), (int)x+size/2, (int)y+size/2+halfY, SWT.DRAW_TRANSPARENT);
 	        		}
 	        		
-	        		if(true){
+	        		if(AssertionNameMapping.SINGLETON.getSchedule() != null){
 	        			e.gc.setLineStyle(SWT.LINE_DOT);
 	        			e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_DARK_GRAY));
 	        			for(Entry<EObject, Pair<String, Integer>>  entry : AssertionNameMapping.SINGLETON.getSchedule().entrySet()){

@@ -23,12 +23,14 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.xtext.ui.editor.LanguageSpecificURIEditorOpener;
 import org.eclipse.xtext.xbase.lib.Pair;
 
 import edu.tum.cs.cadmos.analysis.architecture.model.DeploymentModel;
 import edu.tum.cs.cadmos.analysis.architecture.model.Vertex;
 import edu.tum.cs.cadmos.analysis.schedule.AssertionNameMapping;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
+import edu.tum.cs.cadmos.language.ui.EditorOpener;
 
 public class ScheduleChart extends ViewPart {
 	
@@ -68,7 +70,7 @@ public class ScheduleChart extends ViewPart {
 		scale = new Scale(composite, SWT.NONE);
 		scale.setPageIncrement(100);
 		scale.setMaximum(500);
-		scale.setMinimum(10);
+		scale.setMinimum(50);
 		scale.setSelection(100);
 		
 		Button btnReset = new Button(composite, SWT.NONE);
@@ -189,8 +191,10 @@ public class ScheduleChart extends ViewPart {
 		        	g.drawText(core.getName(), 0, row*rowHeight-15, SWT.DRAW_TRANSPARENT);
 		        	
 		        }
-		        
+		        //draw tick lines
+		        int step = getGridStep(unit);
 		        for(int i = 1; i < cycles*(maxPeriod+2); i++){
+		        	if(i%step!=0) continue;
 		        	g.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
 		        	g.setLineStyle(SWT.LINE_DOT);
 		        	g.drawLine((int)(i*unit), 0, (int)(i*unit), maxY);
@@ -199,16 +203,6 @@ public class ScheduleChart extends ViewPart {
 		        }
 		        
 		        
-//		        for(int core = 0; core <coresNum; core++){
-//		        	int tasksNum = (int)(Math.random()*maxPeriod*cycles);
-//		        	for(int task = 0; task<tasksNum; task++){
-//		        		g.setAlpha(100);
-//		        		g.fillRectangle((int)(task*unit)+pad, core*rowHeight+pad, (int)(unit)-2*pad, rowHeight-2*pad);
-//		        		g.setAlpha(255);
-//		        		g.drawRectangle((int)(task*unit)+pad, core*rowHeight+pad, (int)(unit)-2*pad, rowHeight-2*pad);
-//		        	}
-//		        }
-//		 
 		       scrolledComposite.setMinSize((int) (unit*cycles*maxPeriod), SWT.DEFAULT);
 		       scrolledComposite.getParent().layout();
 			}});
@@ -224,6 +218,17 @@ public class ScheduleChart extends ViewPart {
 
 	}
 	
+	protected int getGridStep(double unit) {
+		int[] steps = new int[]{1,2,5,10,25,50,100,250,500,1000,2500};
+		int threshold = 100;
+		for (int i = 0; i < steps.length; i++) {
+			if(steps[i]*unit > threshold){
+				return steps[i];
+			}
+		}
+		return 1;
+	}
+
 	private class PeriodEntry{
 		public Embedding task;
 		public Embedding core;
