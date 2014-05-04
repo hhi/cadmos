@@ -96,8 +96,9 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 			public void widgetSelected(SelectionEvent e) {
 				
 				try {
+					System.out.println(
 					PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-					getActivePage().showView(ID,Math.random()+"",IWorkbenchPage.VIEW_CREATE);
+					getActivePage().showView(ID,Math.random()+"",IWorkbenchPage.VIEW_CREATE));
 				} catch (PartInitException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -405,7 +406,6 @@ public class ConstraintView extends ViewPart implements IUnsatCoreListener{
 		dm_old = dm;
 		
 		menu_subs.dispose();
-		System.out.println("disposed");
 		menu_subs = new Menu(btnSubsystemFilter);
 		btnSubsystemFilter.setMenu(menu_subs);
 		

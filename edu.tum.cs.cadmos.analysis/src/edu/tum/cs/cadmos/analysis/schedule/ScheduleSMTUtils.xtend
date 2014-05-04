@@ -76,6 +76,7 @@ class ScheduleSMTUtils {
 			stringVertex = stringVertex + " " + vertex.id + "_" + i 
 			i = i + 1
 		}
+		println(stringVertex)
 		stringVertex										
 	}
 	

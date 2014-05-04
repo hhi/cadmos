@@ -207,7 +207,7 @@ class ScheduleSMTGeneratorWithUnsatCore {
 		if(CORE__MULTIRATE_ALLOCATION_CONSISTENCY){
 		val s = new StringBuilder
 			for(pairSc : softwareComponentDFG.componentsWithStringConsecutivePeriodicity(periodMap)){
-				val name = pairSc.key.key.subSequence(0, pairSc.key.key.lastIndexOf('_'))
+				val name = pairSc.value.key+"_"+pairSc.key.key
 				val ass_name = "multirate_alloc_consistency_"+name
 				map.put(ass_name, null)
 				if(AssertionNameMapping.SINGLETON.isRelax(ass_name)){
@@ -227,7 +227,7 @@ class ScheduleSMTGeneratorWithUnsatCore {
 	if(CORE__MULTIRATE_CONSTANT_PERIOD){
 		val s = new StringBuilder
 		for(pairSc : softwareComponentDFG.componentsWithStringConsecutivePeriodicity(periodMap)){
-			val name = pairSc.key.key.subSequence(0, pairSc.key.key.lastIndexOf('_'))
+			val name = pairSc.value.key+"_"+pairSc.key.key
 			val ass_name = "multirate_const_period_"+name
 			map.put(ass_name, null)
 			if(AssertionNameMapping.SINGLETON.isRelax(ass_name)){
@@ -346,7 +346,7 @@ class ScheduleSMTGeneratorWithUnsatCore {
 					assertions.append("; relaxed assertion \n")
 					relaxed = ";"
 				}
-				
+				println(it.id)
 				val outComponentPort = it.id.substring(1, it.id.indexOf(", "))
 				val inComponentPort = it.id.substring(it.id.indexOf(", ") + 2, it.id.indexOf(")"))
 				var latency = transmissionLatency.get(new Pair(outComponentPort, ""))
