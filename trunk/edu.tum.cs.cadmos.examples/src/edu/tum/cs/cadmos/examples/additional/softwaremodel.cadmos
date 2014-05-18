@@ -1,0 +1,74 @@
+import edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.platform.*
+
+software component Model{
+	in i
+	out o
+	
+	embed SSubComponent s1
+	embed SSubComponent s2
+	
+	embed SSubComponent s3
+	embed SSubComponent s4
+	embed SSubComponent s5
+	
+	embed SSubComponent s6
+	
+	
+	
+	channel i -> s1.i
+	
+	channel i -> s2.i
+	
+	channel s1.o -> s3.i
+	channel s1.o -> s4.i
+	channel s2.o -> s5.i
+	
+	
+	channel s3.o -> s6.i
+	channel s4.o -> s6.i
+	
+	channel s5.o -> s6.i
+	
+	channel s6.o -> o	
+
+	
+}
+
+software component SSubComponent{
+	in i
+	out o
+}
+
+
+
+
+
+costmodel CostModel {
+	SSubComponent {
+		TriCore16P {
+			WCET = 150 
+		}
+		TriCore16PLockStep {
+			WCET = 400	
+		}
+		TriCore16ELockStep {
+			WCET = 600	
+		}
+	}
+	
+}
+
+requirements Requirements {
+	period Model = 5000
+	period SSubComponent = 2500
+
+	robustness [Model.s1][Model.s2] = [2..300]
+	latency Model.s1.i => Model.s2.o = [1000..10000]
+}
+
+deployment Deployment {
+	swc Model
+	plc InfineonAurixTC277T
+	cost CostModel
+	req Requirements
+}
