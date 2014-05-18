@@ -19,8 +19,6 @@ software component ChassisControlFunctions {
 	channel f3.output -> writer.input3
 	channel writer.output -> output
 
-	// assumption ATOMIC_SOFTWARE_COMPONENT
-	assumption NON_PREEMPTIVE	
 }
 
 /*

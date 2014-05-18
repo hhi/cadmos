@@ -9,6 +9,7 @@ deployment ChassisAurixDeployment {
 	plc InfineonAurixTC277T
 //	cost Chassis_on_AurixTC277T
 //	cost Chassis_on_AurixTC277T_VPMA
+//	cost Chassis_on_AurixTC277T_VPMA_not
 	cost Chassis_on_AurixTC277T_CDMA
 //	req ChassisAurixRequirements
 	req ChassisAurixRequirementsCD
