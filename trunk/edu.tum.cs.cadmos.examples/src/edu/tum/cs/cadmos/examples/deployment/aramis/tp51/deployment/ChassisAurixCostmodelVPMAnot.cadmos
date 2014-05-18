@@ -1,0 +1,54 @@
+package edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.^deployment
+
+import edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.^software.*
+import edu.tum.cs.cadmos.examples.^deployment.aramis.tp51.platform.*
+
+costmodel Chassis_on_AurixTC277T_VPMA_not {
+	
+	FlexRayReader {
+		TriCore16P { WCET = 2 }
+		TriCore16PLockStep { WCET = 2 }
+		TriCore16ELockStep { WCET = 2 }
+	}
+	ChassisFunction1 {
+		TriCore16P { WCET = 1 }
+		TriCore16PLockStep { WCET = 2 }
+		TriCore16ELockStep { WCET = 3 }
+	}
+	ChassisFunction2 {
+		TriCore16P { WCET = 2 }
+		TriCore16PLockStep { WCET = 2 }
+		TriCore16ELockStep { WCET = 3 }
+	}
+	ChassisFunction3 {
+		TriCore16P { WCET = 3 }
+		TriCore16PLockStep { WCET = 3 }
+		TriCore16ELockStep { WCET = 4 }
+	}
+	FlexRayWriter {
+		TriCore16P { WCET = 1 }
+		TriCore16PLockStep { WCET = 1 }
+		TriCore16ELockStep { WCET = 1 }
+	}
+	
+	FlexRayReader.output1 {
+		SRICrossBar { TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1 }
+	}
+	FlexRayReader.output2 {
+		SRICrossBar { TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1 }
+	}
+	FlexRayReader.output3 {
+		SRICrossBar { TRANSMISSION_LATENCY = 0	TRANSMISSION_DURATION = 1 }
+	}
+	ChassisFunction1.output { 
+		SRICrossBar { TRANSMISSION_LATENCY = 2	TRANSMISSION_DURATION = 2 }
+	}
+	ChassisFunction2.output {
+		SRICrossBar { TRANSMISSION_LATENCY = 1	TRANSMISSION_DURATION = 1 }
+	}
+	ChassisFunction3.output {
+		SRICrossBar { TRANSMISSION_LATENCY = 1	TRANSMISSION_DURATION = 1 }
+	}
+	
+	
+}

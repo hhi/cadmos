@@ -15,4 +15,5 @@ requirements ChassisAurixRequirementsCD {
 	robustness[ChassisControlFunctions.reader][ChassisControlFunctions.f3] = [2000..10000]
 
 	latency ChassisControlFunctions.reader.input => ChassisControlFunctions.writer.output = [5000..5000]
+
 }
