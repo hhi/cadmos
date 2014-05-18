@@ -114,4 +114,8 @@ class AssertionNameMapping {
 	def public getSchedule(){
 		schedule
 	}
+	
+	def public getRelaxSet(){
+		relaxSet
+	}
 }

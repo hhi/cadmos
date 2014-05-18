@@ -1,7 +1,7 @@
 package edu.tum.cs.cadmos.analysis.ui.perspective;
 
 import java.awt.Dimension;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Map.Entry;
 
 import org.eclipse.emf.ecore.EObject;
@@ -17,6 +17,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
@@ -26,18 +27,18 @@ import org.eclipse.xtext.xbase.lib.Pair;
 import edu.tum.cs.cadmos.analysis.architecture.model.Edge;
 import edu.tum.cs.cadmos.analysis.architecture.model.Vertex;
 import edu.tum.cs.cadmos.analysis.schedule.AssertionNameMapping;
+import edu.tum.cs.cadmos.analysis.schedule.IUnsatCoreListener;
 import edu.tum.cs.cadmos.language.cadmos.Embedding;
 import edu.tum.cs.cadmos.language.cadmos.Port;
 import edu.tum.cs.cadmos.language.cadmos.Role;
-import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
-import edu.uci.ics.jung.algorithms.layout.FRLayout2;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout;
+import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
-public class SchedulingAnalysisView extends ViewPart {
+public class SchedulingAnalysisView extends ViewPart implements IUnsatCoreListener{
 
 	public static final String ID = "edu.tum.cs.cadmos.analysis.ui.perspective.SchedulingAnalysisView"; //$NON-NLS-1$
+	private Canvas canvas;
 
 	public SchedulingAnalysisView() {
 		setPartName("Scheduling Analysis");
@@ -49,12 +50,16 @@ public class SchedulingAnalysisView extends ViewPart {
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
+		
+		//listener
+		AssertionNameMapping.registerListener(this);
+		
 		parent.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		container.setLayout(new GridLayout(1, false));
 		{
-			Canvas canvas = new Canvas(container, SWT.NONE);
+			canvas = new Canvas(container, SWT.NONE);
 			canvas.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 			canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 			canvas.addPaintListener(new PaintListener(){
@@ -80,7 +85,7 @@ public class SchedulingAnalysisView extends ViewPart {
 //			        // Draw a horizontal line halfway down the canvas
 //			        e.gc.drawLine(0, halfY, maxX, halfY);
 			        
-			        if(AssertionNameMapping.SINGLETON.getDeploymentModel() == null){
+			        if(AssertionNameMapping.SINGLETON.getDeploymentModel() == null || AssertionNameMapping.SINGLETON.getDeploymentModel().getSoftwareComponentDFG() == null){
 			        	return;
 			        }
 			        
@@ -118,7 +123,17 @@ public class SchedulingAnalysisView extends ViewPart {
 	        			int y1 = (int) layout.getY(graph.getSource(ed));
 	        			int x2 = (int) layout.getX(graph.getDest(ed));
 	        			int y2 = (int) layout.getY(graph.getDest(ed));
+	        			
+	        			e.gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
+	        			if(isRelaxed(graph, ed)){
+	        				e.gc.setAlpha(100);
+	        				e.gc.setLineWidth(4);
+	        				e.gc.setLineStyle(SWT.LINE_DOT);
+	        			}
 	        			e.gc.drawLine(x1, y1, x2, y2);
+	        			e.gc.setAlpha(255);
+	        			e.gc.setLineWidth(1);
+	        			e.gc.setLineStyle(SWT.LINE_SOLID);
 	        		}
 	        		for(Vertex v : graph.getVertices()){
 	        			double x = layout.getX(v);
@@ -136,7 +151,7 @@ public class SchedulingAnalysisView extends ViewPart {
 	        		FRLayout<Vertex, Edge> layoutD = new FRLayout<Vertex, Edge>(graph);
 	        		layoutD.setSize(new Dimension(maxX, halfY));
 	        		layoutD.setAttractionMultiplier(0.3);
-	        		layoutD.setRepulsionMultiplier(0.3);
+	        		layoutD.setRepulsionMultiplier(0.43);
 	        		
 	        		
 	        		
@@ -149,7 +164,10 @@ public class SchedulingAnalysisView extends ViewPart {
 	        				if(p.getComponent().getRole() == Role.BUS){
 	        					layoutD.setLocation(v, halfX, halfY-2*size);
 	        					layoutD.lock(v, true);
-	        				} 
+	        				} else {
+//	        					layoutD.setLocation(v, halfX, halfY-150);
+	        					layoutD.lock(v, false);
+	        				}
 	        			}
 	        		}
 	        		
@@ -249,6 +267,27 @@ public class SchedulingAnalysisView extends ViewPart {
 		initializeMenu();
 	}
 
+	protected boolean isRelaxed(DirectedSparseMultigraph<Vertex, Edge> graph,
+			Edge ed) {
+		HashSet<String> relax = AssertionNameMapping.SINGLETON.getRelaxSet();
+		if(relax.size() == 0){
+			return false;
+		}
+		String type = "precedence";
+		String c1 = graph.getSource(ed).getId();
+		String c2 = graph.getDest(ed).getId();
+		for(String s : relax){
+			if(s.contains(type) &&
+					s.contains(c1) &&
+					s.contains(c2)){
+				return true;
+			}
+		}
+		
+		
+		return false;
+	}
+
 	/**
 	 * Create the actions.
 	 */
@@ -275,5 +314,21 @@ public class SchedulingAnalysisView extends ViewPart {
 	@Override
 	public void setFocus() {
 		// Set the focus
+	}
+
+	@Override
+	public void notifyUnsatCoreChange() {
+		Display.getDefault().asyncExec(new Runnable(){
+			@Override
+			public void run() {
+				canvas.redraw();
+				
+			}
+		});
+	}
+	
+	@Override
+	public void dispose() {
+		AssertionNameMapping.unregisterListener(this);
 	}
 }

@@ -141,7 +141,7 @@ public class ComplementConstraintView extends ViewPart implements IUnsatCoreList
 		composite_1.setLayout(new GridLayout(1, false));
 		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		
-		Label lblFilters = new Label(composite_1, SWT.NONE);
+		Label lblFilters = new Label(composite_1, SWT.WRAP);
 		lblFilters.setText("Constraints not shown elsewhere  -  complement to union of all other constraint views");
 		
 		

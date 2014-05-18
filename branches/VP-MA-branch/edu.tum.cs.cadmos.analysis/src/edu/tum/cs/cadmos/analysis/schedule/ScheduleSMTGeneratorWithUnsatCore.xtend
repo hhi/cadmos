@@ -529,7 +529,7 @@ class ScheduleSMTGeneratorWithUnsatCore {
 					if(AssertionNameMapping.SINGLETON.isRelax(ass_name)){
 						s.append("; relaxed assertion \n;")					
 					}
-					s.append("(assert (!(= (dR "+task+" "+core+") "+dR+") :named "+ass_name+"))")
+					s.append("(assert (!(= (dR "+task+" "+core+") "+dR+") :named "+ass_name+"))\n")
 				}
 			}
 			
